@@ -6,7 +6,7 @@ from PIL import Image, ImageTk
 root = Tk()
 root.title('Ejercicio 5')
 
-original_image = Image.open("Modulo 2/Unidad 1/Ejercicios resueltos U5/giphy.gif")
+original_image = Image.open("imgs/python_logo.gif")
 resized_image = original_image.resize((50, 50))
 photo = ImageTk.PhotoImage(resized_image)
 
