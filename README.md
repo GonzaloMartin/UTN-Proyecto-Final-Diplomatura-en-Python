@@ -1,10 +1,12 @@
 # UTN-Python-TP1
 TP de la Diplomatura en Python (Nivel 1).  Luego le cambiamos el nombre.
 
-## Objetivo
+## Pautas del proyecto
+
+### Objetivo
 Probar los conocimientos adquiridos y que el alumno comience a pasar de la teoría a la práctica.
 
-## Alcance de la aplicación
+### Alcance de la aplicación
 Consta de la entrega de una app a la cual se le irán agregando:
 
 Unidad 1 a 5 – Toma de datos
@@ -18,11 +20,21 @@ Realizar un alta de registro en la base de datos solicitando al usuario que ingr
 
 Unidad 7 : Implementación de regex para validación de uno de los datos tomados en la unidad 6, realización de abmc (crud en ingles) (alta, baja, modificación, consulta)
 
-## Entrega parical (Unidad 5)
+### Entrega parical (Unidad 5)
 Esta entrega es a los fines que chequear el trabajo de cada alumno y poder brindar ayuda en el caso de que se note que el alumno o los alumnos no están participando. No es considerada con nota.
 
 La presentación se realiza en el foro de la unidad 5
 
-## Entrega final (Unidad 8)
+### Entrega final (Unidad 8)
 
 ![alt text](imgs/Evaluacion.jpg)
+
+## Ejecución del proyecto
+
+### Dependencias
+
+`pip install -r requirements.txt`
+
+### Correr el proyecto
+
+`python app/proyeto_final.py`
