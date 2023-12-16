@@ -297,7 +297,7 @@ def crear_tabla(conn):
             monto FLOAT,
             responsable TEXT,
             subtotal FLOAT,
-            rubro text,
+            rubro TEXT,
             proveedor TEXT,
             medio_de_pago TEXT,
             fecha DATE,
