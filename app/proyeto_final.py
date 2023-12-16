@@ -195,7 +195,7 @@ def baja():
 
     subtotal_str = valores[4]
 
-    if re.match(r'^\d+(\.\d+)?$', subtotal_str): # Enteros => 0 y decimales > 0
+    if re.match(r'^\d+(\.\d+)?$', subtotal_str): # Enteros >= 0 y decimales >= 0
         subtotal_eliminar = float(subtotal_str)
     else:
         mensaje_prompt = "El subtotal no es un número válido."
@@ -205,7 +205,7 @@ def baja():
 
     id_bd_str = tree.item(compra_id, 'text')
 
-    if re.match(r'^\d+$', id_bd_str): # Enteros => 0
+    if re.match(r'^\d+$', id_bd_str): # Enteros >= 0
         id_bd = int(id_bd_str)
     else:
         mensaje_prompt = "El ID no es un número válido."
@@ -442,7 +442,6 @@ var_vencimiento = StringVar()
 var_check_vencimiento = BooleanVar()
 var_consulta = StringVar()
 
-#-----VALIDACIONES-----#
 variables_a_validar = [var_producto,
                        var_cantidad,
                        var_monto,
@@ -460,7 +459,6 @@ opciones_medio_pago = ["Efectivo", "Billetera virtual",
                        "Tarjeta de Débito", "Transferencia", "Otro"]
 
 opciones_responsable = ["Gonzalo", "Matías", "Juan"]
-#-----FIN VALIDACIONES-----#
 
 #-----WIDGETS-----#
 
