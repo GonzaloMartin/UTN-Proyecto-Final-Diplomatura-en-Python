@@ -406,7 +406,7 @@ crear_tabla(conn)
 root = Tk()
 root.grid_rowconfigure(10, weight=1)
 root.title('Gestor de compras')
-root.geometry('1600x900')
+root.geometry('1600x900')     # Tamaño de la ventana standard notebook 14'
 # root.geometry('1024x768')   # Esta linea no hace falta
 # root.resizable(True, True)  # Esta linea no hace falta
 
@@ -429,9 +429,6 @@ frame_treeview.grid_columnconfigure(0, weight=1)
 
 frame_grafico = Frame(root, borderwidth=1, relief="solid")
 frame_grafico.grid(row=2, column=3, rowspan=8, padx=30, pady=0, sticky='s')
-bonton_temp = Button(frame_grafico, text='ACA VA EL GRÁFICO', bg='white',
-                     width=57, pady=118, state='disabled')
-bonton_temp.grid(row=0, column=0, padx=0, pady=0, sticky='e')
 #-----FIN FRAMES-----#
 
 var_id = IntVar()
@@ -571,6 +568,10 @@ ch_vencimiento = Checkbutton(frame_formulario, text='N/A',
                              variable=var_check_vencimiento,
                              command=actualizar_estado_fecha)
 ch_vencimiento.grid(row=6, column=2, sticky=SE, padx=5)
+
+grafico_temp = Button(frame_grafico, text='ACA VA EL GRÁFICO', bg='white',
+                     width=57, pady=118, state='disabled')
+grafico_temp.grid(row=0, column=0, padx=0, pady=0, sticky='e')
 #-----FIN BOTONES-----#
 
 #-----TREEVIEW-----#
