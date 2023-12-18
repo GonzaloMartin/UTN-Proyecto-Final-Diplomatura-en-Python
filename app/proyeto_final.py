@@ -406,13 +406,14 @@ crear_tabla(conn)
 root = Tk()
 root.grid_rowconfigure(10, weight=1)
 root.title('Gestor de compras')
-root.geometry('1024x768')
-root.resizable(True, True)
+root.geometry('1600x900')
+# root.geometry('1024x768')   # Esta linea no hace falta
+# root.resizable(True, True)  # Esta linea no hace falta
 
 #-----FRAMES-----#
 frame_formulario = LabelFrame(root, text="Ingreso de datos", padx=10, pady=10)
-frame_formulario.grid(row=2, column=0, columnspan=3, rowspan=6, padx=10,
-                      pady=10, sticky="nsew")
+frame_formulario.grid(row=2, column=0, columnspan=2, rowspan=6, padx=10,
+                      pady=10, sticky="we")
 frame_formulario.grid_columnconfigure(0, weight=1)
 frame_formulario.grid_columnconfigure(1, weight=1)
 frame_formulario.grid_columnconfigure(2, weight=1)
@@ -425,6 +426,12 @@ frame_treeview.grid(row=10, column=0, columnspan=11, padx=10, pady=10,
                     sticky='nsew')
 frame_treeview.grid_rowconfigure(0, weight=1)
 frame_treeview.grid_columnconfigure(0, weight=1)
+
+frame_grafico = Frame(root, borderwidth=1, relief="solid")
+frame_grafico.grid(row=2, column=3, rowspan=8, padx=30, pady=0, sticky='s')
+bonton_temp = Button(frame_grafico, text='ACA VA EL GRÁFICO', bg='white',
+                     width=57, pady=118, state='disabled')
+bonton_temp.grid(row=0, column=0, padx=0, pady=0, sticky='e')
 #-----FIN FRAMES-----#
 
 var_id = IntVar()
@@ -467,101 +474,103 @@ imagen_original = Image.open("imgs/python_logo_tn.png")
 imagen_resize = imagen_original.resize((50, 50))
 foto = ImageTk.PhotoImage(imagen_resize)
 img = Label(root, image=foto)
-img.grid(row=0, column=0, sticky='ns', padx = 10, pady=5)
+img.grid(row=0, column=0, pady=5)
 
 title = Label(root, text='GESTOR DE COMPRAS PYTHON',
               font = ('Arial', 20, 'bold'))
-title.grid(row=0, column=1, sticky=W, pady=5)
+title.grid(row=0, column=1, sticky=W)
 #-----FIN HEADER-----#
 
 #-----ESTADO-----#
 estado = Label(frame_estado, text=mensaje_prompt, font=('Arial', 10),
                width=50, anchor=W)
-estado.grid(row=0, column=2, sticky=W, padx=0, pady=0)
+estado.grid(row=0, column=0, sticky=W, padx=0, pady=0)
 #-----FIN ESTADO-----#
 
 #-----FORMULARIO-----#
-l_producto = Label(frame_formulario, text='Producto:      ', width=15)
-l_producto.grid(row=2, column=0, sticky=W, pady=5)
-e_producto = Entry(frame_formulario, textvariable=var_producto, width=15)
-e_producto.grid(row=3, column=0, sticky='nsew', pady=5)
+we_ancho = 30
+wcb_ancho = we_ancho - 2
+l_producto = Label(frame_formulario, text='Producto:')
+l_producto.grid(row=2, column=0, sticky=W)
+e_producto = Entry(frame_formulario, textvariable=var_producto, width=we_ancho)
+e_producto.grid(row=3, column=0, sticky='w', pady=5)
 
-l_cantidad = Label(frame_formulario, text='Cantidad:      ', width=15)
-l_cantidad.grid(row=2, column=1, sticky=W, pady=5)
-e_cantidad = Entry(frame_formulario, textvariable=var_cantidad, width=15)
-e_cantidad.grid(row=3, column=1, sticky='nsew', pady=5)
+l_cantidad = Label(frame_formulario, text='Cantidad:')
+l_cantidad.grid(row=2, column=1, sticky=W, padx=0)
+e_cantidad = Entry(frame_formulario, textvariable=var_cantidad, width=we_ancho)
+e_cantidad.grid(row=3, column=1, sticky='w', padx=0, pady=5)
 
-l_monto = Label(frame_formulario, text='Monto:         ', width=15)
-l_monto.grid(row=2, column=2, sticky=W, pady=5)
-e_monto = Entry(frame_formulario, textvariable=var_monto, width=15)
-e_monto.grid(row=3, column=2, sticky='nsew', pady=5)
+l_monto = Label(frame_formulario, text='Monto:')
+l_monto.grid(row=2, column=2, sticky=SW)
+e_monto = Entry(frame_formulario, textvariable=var_monto, width=we_ancho)
+e_monto.grid(row=3, column=2, sticky='w', pady=5)
 
-l_responsable = Label(frame_formulario, text='Responsable:   ', width=15)
-l_responsable.grid(row=4, column=0, sticky=W, pady=5)
+l_responsable = Label(frame_formulario, text='Responsable:')
+l_responsable.grid(row=4, column=0, sticky=SW)
 cb_responsable = ttk.Combobox(frame_formulario, values=opciones_responsable,
-                              width=13)
-cb_responsable.grid(row=5, column=0, sticky='nsew', pady=5)
+                              width=wcb_ancho)
+cb_responsable.grid(row=5, column=0, sticky='w', pady=5)
 
-l_rubro = Label(frame_formulario, text='Rubro:         ', width=15)
-l_rubro.grid(row=4, column=1, sticky=W, pady=5)
-cb_rubro = ttk.Combobox(frame_formulario, values=opciones_rubro, width=13)
-cb_rubro.grid(row=5, column=1, sticky='nsew', pady=5)
+l_rubro = Label(frame_formulario, text='Rubro:')
+l_rubro.grid(row=4, column=1, sticky=SW, padx=0)
+cb_rubro = ttk.Combobox(frame_formulario, values=opciones_rubro, width=wcb_ancho)
+cb_rubro.grid(row=5, column=1, sticky='w', padx=0, pady=5)
 
-l_proveedor = Label(frame_formulario, text='Proveedor:     ', width=15)
-l_proveedor.grid(row=4, column=2, sticky=W, pady=5)
-e_proveedor = Entry(frame_formulario, textvariable=var_proveedor, width=15)
-e_proveedor.grid(row=5, column=2, sticky='nsew', pady=5)
+l_proveedor = Label(frame_formulario, text='Proveedor:')
+l_proveedor.grid(row=4, column=2, sticky=SW)
+e_proveedor = Entry(frame_formulario, textvariable=var_proveedor, width=we_ancho)
+e_proveedor.grid(row=5, column=2, sticky='w', pady=5)
 
-l_medio_pago = Label(frame_formulario, text='Medio de pago: ', width=15)
-l_medio_pago.grid(row=6, column=0, sticky=W, pady=5)
+l_medio_pago = Label(frame_formulario, text='Medio de pago:')
+l_medio_pago.grid(row=6, column=0, sticky=SW)
 cb_medio_pago = ttk.Combobox(frame_formulario, values=opciones_medio_pago,
-                             width=13)
-cb_medio_pago.grid(row=7, column=0, sticky='nsew', pady=5)
+                             width=wcb_ancho)
+cb_medio_pago.grid(row=7, column=0, sticky='w', pady=5)
 
-l_fecha = Label(frame_formulario, text='Fecha:         ', width=15)
-l_fecha.grid(row=6, column=1, sticky=W, pady=5)
-cal_fecha = DateEntry(frame_formulario, width=12, background='darkblue',
+l_fecha = Label(frame_formulario, text='Fecha:')
+l_fecha.grid(row=6, column=1, sticky=SW, padx=0)
+cal_fecha = DateEntry(frame_formulario, width=wcb_ancho, background='darkblue',
                       foreground='white', borderwidth=2)
-cal_fecha.grid(row=7, column=1, sticky='nsew', pady=5)
+cal_fecha.grid(row=7, column=1, sticky='w', padx=0, pady=5)
 
-l_vencimiento = Label(frame_formulario, text='Vencimiento:   ', width=15)
-l_vencimiento.grid(row=6, column=2, sticky=W, pady=5)
-e_vencimiento = DateEntry(frame_formulario, width=12, background='darkblue',
+l_vencimiento = Label(frame_formulario, text='Vencimiento:')
+l_vencimiento.grid(row=6, column=2, sticky=SW)
+e_vencimiento = DateEntry(frame_formulario, width=wcb_ancho, background='darkblue',
                           foreground='white', borderwidth=2)
-e_vencimiento.grid(row=7, column=2, sticky='nsew', pady=5)
+e_vencimiento.grid(row=7, column=2, sticky='w', pady=5)
 
-l_consulta = Label(root, text='Consulta: ', width=15)
-l_consulta.grid(row=8, column=0, sticky=W, pady=5)
+l_consulta = Label(root, text='Consulta:')
+l_consulta.grid(row=8, column=0, sticky=W, padx=10, pady=5)
 e_consulta = Entry (root, textvariable=var_consulta, width=25)
 e_consulta.grid(row=9, column=0, sticky='nsew', padx=10, pady=5)
 
-l_total = Label(root, text='Total acumulado', width=15)
-l_total.grid(row=8, column=3, sticky=N, pady=5)
+l_total = Label(root, text='Total acumulado')
+l_total.grid(row=8, column=2, sticky=S, pady=5)
 e_total = Entry(root, textvariable=var_total, width=20)
-e_total.grid(row=9, column=3, sticky='nsew', padx=10, pady=5)
+e_total.grid(row=9, column=2, sticky='nsew', padx=10, pady=5)
 #-----FIN FORMULARIO-----#
 
 #-----BOTONES-----#
-boton_alta = Button(root, text='ALta', command=alta, width=15, bg='green',
+boton_alta = Button(root, text='Alta', command=alta, width=15, bg='green',
                     fg='white')
-boton_alta.grid(row=3, column=3, sticky=N)
+boton_alta.grid(row=3, column=2, sticky=N)
 
 boton_baja = Button(root, text='Baja', command=baja, width=15, bg='red',
                     fg='white')
-boton_baja.grid(row=5, column=3, sticky=N)
+boton_baja.grid(row=5, column=2, sticky=N)
 
-boton_baja = Button(root, text='Modificacion', command=modificacion, width=15,
+boton_modificacion = Button(root, text='Modificacion', command=modificacion, width=15,
                     bg='blue', fg='white')
-boton_baja.grid(row=7, column=3, sticky=N)
+boton_modificacion.grid(row=7, column=2, sticky=N)
 
-boton_baja = Button(root, text='Buscar', command=consulta, width=15,
+boton_buscar = Button(root, text='Buscar', command=consulta, width=15,
                     bg='orange',fg='black')
-boton_baja.grid(row=9, column=1, pady=5, sticky=W)
+boton_buscar.grid(row=9, column=1, pady=5, sticky=W)
 
 ch_vencimiento = Checkbutton(frame_formulario, text='N/A',
                              variable=var_check_vencimiento,
                              command=actualizar_estado_fecha)
-ch_vencimiento.grid(row=6, column=2, sticky=E, padx=5, pady=6)
+ch_vencimiento.grid(row=6, column=2, sticky=SE, padx=5)
 #-----FIN BOTONES-----#
 
 #-----TREEVIEW-----#
@@ -585,16 +594,16 @@ tree['column'] = ('col1', 'col2', 'col3', 'col4', 'col5',
                   'col6', 'col7', 'col8', 'col9', 'col10')
 
 tree.column('#0', width=50, minwidth=50, stretch=NO) # id
-tree.column('col1', width=270, minwidth=50, stretch=NO) # Producto
-tree.column('col2', width=100, minwidth=50, stretch=NO) # Cantidad
-tree.column('col3', width=170, minwidth=50, stretch=NO) # Monto
-tree.column('col4', width=170, minwidth=50, stretch=NO) # Responsable
-tree.column('col5', width=170, minwidth=50, stretch=NO) # Subtotal
-tree.column('col6', width=170, minwidth=50, stretch=NO) # Rubro
-tree.column('col7', width=270, minwidth=50, stretch=NO) # Proveedor
-tree.column('col8', width=170, minwidth=50, stretch=NO) # Medio de Pago
-tree.column('col9', width=170, minwidth=50, stretch=NO) # Fecha
-tree.column('col10', width=170, minwidth=50, stretch=NO) # Vencimiento
+tree.column('col1', width=190, minwidth=50, stretch=NO) # Producto
+tree.column('col2', width=70, minwidth=50, stretch=NO) # Cantidad
+tree.column('col3', width=90, minwidth=50, stretch=NO) # Monto
+tree.column('col4', width=105, minwidth=50, stretch=NO) # Responsable
+tree.column('col5', width=125, minwidth=50, stretch=NO) # Subtotal
+tree.column('col6', width=115, minwidth=50, stretch=NO) # Rubro
+tree.column('col7', width=180, minwidth=50, stretch=NO) # Proveedor
+tree.column('col8', width=120, minwidth=50, stretch=NO) # Medio de Pago
+tree.column('col9', width=90, minwidth=50, stretch=NO) # Fecha
+tree.column('col10', width=100, minwidth=50, stretch=NO) # Vencimiento
 
 tree.heading('#0', text='Id')
 tree.heading('col1', text='Producto')
