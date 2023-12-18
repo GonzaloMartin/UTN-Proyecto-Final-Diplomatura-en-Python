@@ -129,10 +129,10 @@ def alta():
 
     var_vencimiento.set(vencimiento_value)
 
-    if not validar_campos():
-        mensaje_prompt = "Todos los campos deben estar llenos."
-        showinfo("Info", mensaje_prompt)
+    if not var_producto.get() or not var_cantidad.get() or not var_monto.get() or not cb_responsable.get():
+        mensaje_prompt = "Todos los campos de ingreso de datos deben estar llenos."
         actualizar_estado_bar()
+        showinfo("Info", mensaje_prompt)
         return
 
     valores = {
