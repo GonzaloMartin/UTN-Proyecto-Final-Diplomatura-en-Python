@@ -12,14 +12,12 @@ from tkcalendar import DateEntry
 from PIL import Image, ImageTk
 
 
-mensaje_prompt = "Bienvenido."
+total_acumulado=0
 
 #-----------------------------INICIO CONTROLADOR-----------------------------#
 
-def actualizar_estado_bar():
-    global mensaje_prompt
-    
-    estado.config(text=mensaje_prompt)  # Actualiza texto del label
+def actualizar_estado_bar(mensaje): 
+    estado.config(text=mensaje)  # Actualiza texto del label
     root.update_idletasks()  # Fuerza la actualización de UI
 
 
@@ -61,15 +59,36 @@ def limpiar_formulario():
     cb_responsable.set('')
     cb_rubro.set('')
     cb_medio_pago.set('')
+
+    
+def preparar_alta():
+    boton_confirmar.config(state='normal', command=alta)
+    boton_cancelar.config(state='normal')
+
+
+def preparar_baja():
+    boton_confirmar.config(state='normal', command=baja)
+    boton_cancelar.config(state='normal')
+
+
+def confirmar():
+    # La acción se define en cada caso (alta, baja, modificacion)
+    boton_confirmar.config(state='disabled')
+    boton_cancelar.config(state='disabled')
+
+
+def cancelar():
+    boton_confirmar.config(state='disabled', command=None)
+    boton_cancelar.config(state='disabled')
+    limpiar_formulario()
     
     
 def aplicar_modificacion(compra_id, id_bd):
-    global mensaje_prompt
     
     if not validar_campos():
-        mensaje_prompt = "Todos los campos deben estar llenos."
-        actualizar_estado_bar()
-        showinfo("Info", mensaje_prompt)
+        actualizar_estado_bar("Todos los campos deben estar llenos.")
+        showinfo("Info", "Todos los campos deben estar llenos.")
+        cancelar()
         return
 
     nuevo_valor = {
@@ -100,11 +119,10 @@ def aplicar_modificacion(compra_id, id_bd):
             nuevo_valor['vencimiento']
         ))
 
-    mensaje_prompt = "Registro modificado con ID: " + str(id_bd)
-    actualizar_estado_bar()
+    actualizar_estado_bar("Registro modificado con ID: " + str(id_bd))
     cargar_total_acumulado()
     limpiar_formulario()
-    boton_alta.config(text='ALTA', command=alta)
+    confirmar()
 
 
 def cargar_datos_en_treeview():
@@ -130,7 +148,7 @@ def cargar_total_acumulado():
     var_total.set(f"$ {total_acumulado:.2f}")
 
 def actualizar_label_total_acumulado():
-    locale.setlocale(locale.LC_TIME, 'es_ES')  # Para que devuelva el mes en español
+    locale.setlocale(locale.LC_TIME, '')  # Para que devuelva el mes en español
     mes_actual = get_mes_actual()
     mes_actual_str = datetime.datetime.strptime(str(mes_actual), "%m").strftime("%B")
     mes_actual_str = mes_actual_str.capitalize()
@@ -144,7 +162,7 @@ def actualizar_label_total_acumulado():
 
 #-----ABMC-----#
 def alta():
-    global mensaje_prompt
+    global total_acumulado
     
     var_fecha.set(cal_fecha.get_date().strftime("%Y-%m-%d"))
     if var_check_vencimiento.get():
@@ -155,9 +173,9 @@ def alta():
     var_vencimiento.set(vencimiento_value)
 
     if not var_producto.get() or not var_cantidad.get() or not var_monto.get() or not cb_responsable.get():
-        mensaje_prompt = "Se deben completar todos los campos de ingreso"
-        actualizar_estado_bar()
-        showinfo("Info", mensaje_prompt)
+        actualizar_estado_bar("Se deben completar todos los campos de ingreso")
+        showinfo("Info", "Se deben completar todos los campos de ingreso")
+        cancelar()
         return
 
     valores = {
@@ -174,9 +192,9 @@ def alta():
 
     for valor in valores.values():
         if not valor:
-            mensaje_prompt = "Todos los campos de alta deben tener contenido."
-            showinfo("Info", mensaje_prompt)
-            actualizar_estado_bar()
+            showinfo("Info", "Todos los campos de alta deben tener contenido.")
+            actualizar_estado_bar("Todos los campos de alta deben tener contenido.")
+            cancelar()
             return
         
     conn = conectar_base_de_datos()
@@ -198,20 +216,20 @@ def alta():
                         valores['fecha'],
                         valores['vencimiento']))
 
-    mensaje_prompt = "Se dio de alta el registro con ID: " + str(ultimo_id)
     cargar_total_acumulado()
-    actualizar_estado_bar()
+    actualizar_estado_bar("Se dio de alta el registro con ID: " + str(ultimo_id))
     limpiar_formulario()
+    confirmar()
 
 
 def baja():
-    global mensaje_prompt
+    global total_acumulado
     
     compra_id = tree.focus()
     if not compra_id:
-        mensaje_prompt = "Debe seleccionar un registro para dar de Baja."
-        showinfo("Info", mensaje_prompt)
-        actualizar_estado_bar()
+        showinfo("Info", "Debe seleccionar un registro para dar de Baja.")
+        actualizar_estado_bar("Debe seleccionar un registro para dar de Baja.")
+        cancelar()
         return
     
     valores = tree.item(compra_id, 'values')
@@ -221,9 +239,9 @@ def baja():
     if re.match(r'^\d+(\.\d+)?$', subtotal_str): # Enteros >= 0 y decimales >= 0
         subtotal_eliminar = float(subtotal_str)
     else:
-        mensaje_prompt = "El subtotal no es un número válido."
-        showinfo("Error", mensaje_prompt)
-        actualizar_estado_bar()
+        showinfo("Error", "El subtotal no es un número válido.")
+        actualizar_estado_bar("El subtotal no es un número válido.")
+        cancelar()
         return
 
     id_bd_str = tree.item(compra_id, 'text')
@@ -231,9 +249,9 @@ def baja():
     if re.match(r'^\d+$', id_bd_str): # Enteros >= 0
         id_bd = int(id_bd_str)
     else:
-        mensaje_prompt = "El ID no es un número válido."
-        showinfo("Error", mensaje_prompt)
-        actualizar_estado_bar()
+        showinfo("Error",  "El ID no es un número válido.")
+        actualizar_estado_bar("El ID no es un número válido.")
+        cancelar()
         return
 
     baja_bd(id_bd)
@@ -241,23 +259,21 @@ def baja():
     cargar_total_acumulado()
     tree.delete(compra_id)
     
-    mensaje_prompt = "Se dio de baja el registro con ID: " + str(id_bd)
-    actualizar_estado_bar()
+    actualizar_estado_bar("Se dio de baja el registro con ID: " + str(id_bd))
+    confirmar()
     
     
 def modificacion():
-    global mensaje_prompt
-    
     compra_id = tree.focus()
     if not compra_id:
-        mensaje_prompt = "Debe seleccionar un registro para Modificar."
-        showinfo("Info", mensaje_prompt)
-        actualizar_estado_bar()
+        showinfo("Info", "Debe seleccionar un registro para Modificar.")
+        actualizar_estado_bar("Debe seleccionar un registro para Modificar.")
+        cancelar()
         return
     
-    valores = tree.item(compra_id, 'values')
     id_bd = int(tree.item(compra_id, 'text'))
     
+    valores = tree.item(compra_id, 'values')
     var_producto.set(valores[0])
     var_cantidad.set(valores[1])
     var_monto.set(valores[2])
@@ -268,15 +284,13 @@ def modificacion():
     var_proveedor.set(valores[6])
     var_vencimiento.set(valores[9])
     
-    boton_alta.config(text='MODIFICAR',
-                      command=lambda: aplicar_modificacion(compra_id, id_bd))
-    mensaje_prompt = "Modificando registro ID: " + str(id_bd)
-    actualizar_estado_bar()
+    actualizar_estado_bar("Modificando registro ID: " + str(id_bd))
+    
+    boton_confirmar.config(state='normal', command=lambda: aplicar_modificacion(compra_id, id_bd))
+    boton_cancelar.config(state='normal')
 
 
 def consulta():
-    global mensaje_prompt
-
     termino_busqueda = var_consulta.get()
     # Si término_busqueda contiene "*", se muestran todos los registros
     if "*" in termino_busqueda: termino_busqueda = ""
@@ -299,11 +313,12 @@ def consulta():
         tree.insert('', 'end', text=str(row[0]), values=row[1:])
 
     if termino_busqueda == "": # Si no se especifica un término de búsqueda
-        mensaje_prompt = "Se muestran todos los registros."
+        actualizar_estado_bar(f"Resultados de la búsqueda para: {termino_busqueda}")
     else:
-        mensaje_prompt = f"Resultados de la búsqueda para: {termino_busqueda}"
-    actualizar_estado_bar()
+        actualizar_estado_bar(f"Resultados de la búsqueda para: {termino_busqueda}")
+
     cargar_total_acumulado()
+    actualizar_estado_bar(f"Resultados de la búsqueda para: {termino_busqueda}")
 #-----FIN ABMC-----#
 
 #-----BASE DE DATOS-----#
@@ -437,7 +452,7 @@ crear_tabla(conn)
 #--------------------------------INICIO VISTA--------------------------------#
 
 root = Tk()
-root.grid_rowconfigure(10, weight=1)
+root.grid_rowconfigure(12, weight=1)
 root.title('Gestor de compras')
 root.geometry('1600x900')     # Tamaño de la ventana standard notebook 14'
 # screen_ancho = root.winfo_screenwidth()
@@ -449,15 +464,12 @@ root.geometry('1600x900')     # Tamaño de la ventana standard notebook 14'
 frame_formulario = LabelFrame(root, text="Ingreso de datos", padx=10, pady=10)
 frame_formulario.grid(row=2, column=0, columnspan=2, rowspan=6, padx=10,
                       pady=10, sticky="we")
-frame_formulario.grid_columnconfigure(0, weight=1)
-frame_formulario.grid_columnconfigure(1, weight=1)
-frame_formulario.grid_columnconfigure(2, weight=1)
 
 frame_estado = Frame(root, borderwidth=1, relief="solid")
 frame_estado.grid(row=0, column=2, padx=0, pady=10, columnspan=3)
 
 frame_treeview = Frame(root)
-frame_treeview.grid(row=10, column=0, columnspan=11, padx=10, pady=10,
+frame_treeview.grid(row=12, column=0, columnspan=11, padx=10, pady=10,
                     sticky='nsew')
 frame_treeview.grid_rowconfigure(0, weight=1)
 frame_treeview.grid_columnconfigure(0, weight=1)
@@ -506,7 +518,7 @@ imagen_original = Image.open("imgs/python_logo_tn.png")
 imagen_resize = imagen_original.resize((50, 50))
 foto = ImageTk.PhotoImage(imagen_resize)
 img = Label(root, image=foto)
-img.grid(row=0, column=0, pady=5)
+img.grid(row=0, column=0, padx=10, pady=5, sticky=E)
 
 title = Label(root, text='GESTOR DE COMPRAS PYTHON',
               font = ('Arial', 20, 'bold'))
@@ -514,7 +526,7 @@ title.grid(row=0, column=1, sticky=W)
 #-----FIN HEADER-----#
 
 #-----ESTADO-----#
-estado = Label(frame_estado, text=mensaje_prompt, font=('Arial', 10),
+estado = Label(frame_estado, text="Bienvenido.", font=('Arial', 10),
                width=50, anchor=W)
 estado.grid(row=0, column=0, sticky=W, padx=0, pady=0)
 #-----FIN ESTADO-----#
@@ -572,9 +584,9 @@ e_vencimiento = DateEntry(frame_formulario, width=wcb_ancho, background='darkblu
 e_vencimiento.grid(row=7, column=2, sticky='w', pady=5)
 
 l_consulta = Label(root, text='Consulta:')
-l_consulta.grid(row=8, column=0, sticky=W, padx=10, pady=5)
+l_consulta.grid(row=10, column=0, sticky=W, padx=10, pady=(0, 5))
 e_consulta = Entry (root, textvariable=var_consulta, width=25)
-e_consulta.grid(row=9, column=0, sticky='nsew', padx=10, pady=5)
+e_consulta.grid(row=11, column=0, sticky='nsew', padx=10)
 
 l_total = Label(root, text='Total ', font=('Arial', 10, 'bold'))
 l_total.grid(row=8, column=2, sticky=S, pady=5)
@@ -584,21 +596,26 @@ e_total.grid(row=9, column=2, sticky='nsew', padx=10, pady=5)
 #-----FIN FORMULARIO-----#
 
 #-----BOTONES-----#
-boton_alta = Button(root, text='Alta', command=alta, width=15, bg='green',
-                    fg='white')
+boton_alta = Button(root, text='Alta', command=preparar_alta, bg='grey',fg='black', width=15)
 boton_alta.grid(row=3, column=2, sticky=N)
 
-boton_baja = Button(root, text='Baja', command=baja, width=15, bg='red',
-                    fg='white')
+boton_baja = Button(root, text='Baja', command=preparar_baja, bg='grey',fg='black', width=15)
 boton_baja.grid(row=5, column=2, sticky=N)
 
-boton_modificacion = Button(root, text='Modificacion', command=modificacion, width=15,
-                    bg='blue', fg='white')
+boton_modificacion = Button(root, text='Modificacion',
+                            command=modificacion, bg='grey',fg='black', width=15)
 boton_modificacion.grid(row=7, column=2, sticky=N)
 
-boton_buscar = Button(root, text='Buscar', command=consulta, width=15,
-                    bg='orange',fg='black')
-boton_buscar.grid(row=9, column=1, pady=5, sticky=W)
+boton_buscar = Button(root, text='Buscar', command=consulta, bg='grey',fg='black',width=15)
+boton_buscar.grid(row=11, column=1, sticky=W)
+
+boton_confirmar = Button(root, text='Confirmar', state='disabled', command=confirmar, width=15,
+                         bg='green',fg='white')
+boton_confirmar.grid(row=8, column=0, sticky=E)
+
+boton_cancelar = Button(root, text='Cancelar', state='disabled', command=cancelar, width=15,
+                        bg='red',fg='white')
+boton_cancelar.grid(row=8, column=1, sticky=W)
 
 ch_vencimiento = Checkbutton(frame_formulario, text='N/A',
                              variable=var_check_vencimiento,
