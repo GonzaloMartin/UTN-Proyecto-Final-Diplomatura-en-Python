@@ -2,6 +2,7 @@ import re
 import sqlite3
 import tkinter as tk
 import datetime
+import locale
 
 from tkinter import *
 from tkinter import ttk
@@ -111,8 +112,11 @@ def cargar_datos_en_treeview():
     for row in registros:
         tree.insert('', 'end', text=str(row[0]), values=row[1:])
 
+def get_mes_actual():
+    return datetime.datetime.now().month
+
 def get_total_acumulado():
-    mes_actual = datetime.datetime.now().month
+    mes_actual = get_mes_actual()
     registros = consulta_bd(mes=mes_actual)
     
     total_acumulado = 0
@@ -125,6 +129,13 @@ def cargar_total_acumulado():
     total_acumulado = get_total_acumulado()
     var_total.set(f"$ {total_acumulado:.2f}")
 
+def actualizar_label_total_acumulado():
+    locale.setlocale(locale.LC_TIME, 'es_ES')  # Para que devuelva el mes en español
+    mes_actual = get_mes_actual()
+    mes_actual_str = datetime.datetime.strptime(str(mes_actual), "%m").strftime("%B")
+    mes_actual_str = mes_actual_str.capitalize()
+    l_total.config(text=f"Total {mes_actual_str}:")
+    
 #-------------------------------FIN CONTROLADOR------------------------------#
 
 ##############################################################################
@@ -565,7 +576,7 @@ l_consulta.grid(row=8, column=0, sticky=W, padx=10, pady=5)
 e_consulta = Entry (root, textvariable=var_consulta, width=25)
 e_consulta.grid(row=9, column=0, sticky='nsew', padx=10, pady=5)
 
-l_total = Label(root, text='Total acumulado')
+l_total = Label(root, text='Total ', font=('Arial', 10, 'bold'))
 l_total.grid(row=8, column=2, sticky=S, pady=5)
 e_total = Entry(root, textvariable=var_total, width=20, 
                 font=('Arial', 10, 'bold'), justify='center', state='readonly')
@@ -646,6 +657,7 @@ tree.heading('col10', text='Vencimiento')
 
 #-----FIN WIDGETS-----#
 
+actualizar_label_total_acumulado()
 cargar_total_acumulado()
 cargar_datos_en_treeview()
 root.mainloop()
