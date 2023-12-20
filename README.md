@@ -1,29 +1,34 @@
-# UTN-Python-TP1
-TP de la Diplomatura en Python (Nivel 1).  Luego le cambiamos el nombre.
+# Diplomatura en Python - Nivel 1 - Proyecto Final
+Proyecto final de la Diplomatura en Python (Nivel 1) dictado por la Universidad Tecnológica Nacional.
+
+Integrantes:
+- Gonzalo Montalvo | [@GonzaloMartin](https://github.com/GonzaloMartin)
+- Matias Falconaro | [@MatiasFalconaro](https://github.com/matiasfalconaro)
 
 ## Pautas del proyecto
 
 ### Objetivo
-Probar los conocimientos adquiridos y que el alumno comience a pasar de la teoría a la práctica.
+Este proyecto tendrá como objetivo la consolidación y la puesta en práctica de los conocimientos adquiridos durante la cursada del Nivel Inicial de la Diplomatura.  (Ver alcance de la aplicación).
 
-### Alcance de la aplicación
+### Alcance de la Aplicación
+El proyecto abarca las siguientes unidades, donde se pondrán en práctica los temas tratados en la cursada.
+
+## Detalles de las Unidades
 Consta de la entrega de una app a la cual se le irán agregando:
 
-Unidad 1 a 5 – Toma de datos
+- Unidad 1 a 5 – Toma de datos.
 
-Unidad 2 a 5 – Uso de funciones, condicionales y bucles.
+- Unidad 2 a 5 – Uso de funciones, condicionales y bucles.
 
-Unidad 6 – Uso de base de datos (SQLite3 a elección).
+- Unidad 6 – Uso de base de datos (SQLite3 a elección).
 
-Creación de base de datos y tablas desde Python.
-Realizar un alta de registro en la base de datos solicitando al usuario que ingrese los datos ya sea mediante consola si solo se utiliza Python o mediante campos del tipo Entry si se utiliza Tkinter.
+- Creación de base de datos y tablas desde Python.
+Realizar un alta de registro en la base de datos solicitando al usuario que ingrese los datos mediante campos en un formulario de ventana (con el paquete Tkinter).
 
-Unidad 7 : Implementación de regex para validación de uno de los datos tomados en la unidad 6, realización de abmc (crud en ingles) (alta, baja, modificación, consulta)
+Unidad 7 : Implementación de regex para validación de uno de los datos tomados en la unidad 6, realización de ABMC (CRUD en ingles) (Alta, Baja, Modificación, Consulta)
 
-### Entrega parical (Unidad 5)
-Esta entrega es a los fines que chequear el trabajo de cada alumno y poder brindar ayuda en el caso de que se note que el alumno o los alumnos no están participando. No es considerada con nota.
-
-La presentación se realiza en el foro de la unidad 5
+### Entrega Parcial (Unidad 5)
+Esta entrega es a los fines que chequear una propuesta de proyecto que se validará con los profesores. Una vez dado el visto bueno, se procede a partir de la base del mockup con el desarrollo.  La entrega parcial es sin nota y la presentación se realiza en el foro de la unidad 5.
 
 ### Entrega final (Unidad 8)
 
