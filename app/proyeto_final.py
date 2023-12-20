@@ -1,6 +1,7 @@
 import re
 import sqlite3
 import tkinter as tk
+import datetime
 
 from tkinter import *
 from tkinter import ttk
@@ -10,7 +11,6 @@ from tkcalendar import DateEntry
 from PIL import Image, ImageTk
 
 
-total_acumulado=0
 mensaje_prompt = "Bienvenido."
 
 #-----------------------------INICIO CONTROLADOR-----------------------------#
@@ -101,6 +101,7 @@ def aplicar_modificacion(compra_id, id_bd):
 
     mensaje_prompt = "Registro modificado con ID: " + str(id_bd)
     actualizar_estado_bar()
+    cargar_total_acumulado()
     limpiar_formulario()
     boton_alta.config(text='ALTA', command=alta)
 
@@ -110,6 +111,20 @@ def cargar_datos_en_treeview():
     for row in registros:
         tree.insert('', 'end', text=str(row[0]), values=row[1:])
 
+def get_total_acumulado():
+    mes_actual = datetime.datetime.now().month
+    registros = consulta_bd(mes=mes_actual)
+    
+    total_acumulado = 0
+    for row in registros:
+        total_acumulado += row[0]
+        
+    return total_acumulado
+
+def cargar_total_acumulado():
+    total_acumulado = get_total_acumulado()
+    var_total.set(f"$ {total_acumulado:.2f}")
+
 #-------------------------------FIN CONTROLADOR------------------------------#
 
 ##############################################################################
@@ -118,7 +133,6 @@ def cargar_datos_en_treeview():
 
 #-----ABMC-----#
 def alta():
-    global total_acumulado
     global mensaje_prompt
     
     var_fecha.set(cal_fecha.get_date().strftime("%Y-%m-%d"))
@@ -158,8 +172,6 @@ def alta():
     ultimo_id = alta_bd(conn, valores)
 
     subtotal_acumulado = valores['cantidad'] * valores['monto']
-    total_acumulado += subtotal_acumulado
-    var_total.set(f"{total_acumulado:.2f}")
 
     tree.insert('',
                 'end',
@@ -176,12 +188,12 @@ def alta():
                         valores['vencimiento']))
 
     mensaje_prompt = "Se dio de alta el registro con ID: " + str(ultimo_id)
+    cargar_total_acumulado()
     actualizar_estado_bar()
     limpiar_formulario()
 
 
 def baja():
-    global total_acumulado
     global mensaje_prompt
     
     compra_id = tree.focus()
@@ -214,10 +226,8 @@ def baja():
         return
 
     baja_bd(id_bd)
-
-    total_acumulado -= subtotal_eliminar
-    var_total.set(f"{total_acumulado:.2f}")
     
+    cargar_total_acumulado()
     tree.delete(compra_id)
     
     mensaje_prompt = "Se dio de baja el registro con ID: " + str(id_bd)
@@ -257,6 +267,9 @@ def consulta():
     global mensaje_prompt
 
     termino_busqueda = var_consulta.get()
+    # Si término_busqueda contiene "*", se muestran todos los registros
+    if "*" in termino_busqueda: termino_busqueda = ""
+    
     registros = consulta_bd()
 
     # Crea objeto regex desde 'termino_busqueda' NO sensible a mayúsculas
@@ -274,8 +287,12 @@ def consulta():
     for row in registros_filtrados:
         tree.insert('', 'end', text=str(row[0]), values=row[1:])
 
-    mensaje_prompt = f"Resultados de la búsqueda para: {termino_busqueda}"
+    if termino_busqueda == "": # Si no se especifica un término de búsqueda
+        mensaje_prompt = "Se muestran todos los registros."
+    else:
+        mensaje_prompt = f"Resultados de la búsqueda para: {termino_busqueda}"
     actualizar_estado_bar()
+    cargar_total_acumulado()
 #-----FIN ABMC-----#
 
 #-----BASE DE DATOS-----#
@@ -383,11 +400,16 @@ def modificacion_bd(id_registro, valores):
     desconectar_base_de_datos(conn)
 
     
-def consulta_bd():
+def consulta_bd(mes=None):
+    # Consulta todos los registros. Pero si se especifica 1 mes, filtra por mes
     conn = conectar_base_de_datos()
     cursor = conn.cursor()
-    query = """SELECT * FROM gastos;"""
-    cursor.execute(query)
+    if mes is not None:
+        query = "SELECT subtotal FROM gastos WHERE strftime('%m', fecha) = ?;"
+        cursor.execute(query, (f"{mes:02d}",))
+    else:
+        query = """SELECT * FROM gastos;"""
+        cursor.execute(query)
     rows = cursor.fetchall()
     desconectar_base_de_datos(conn)
     return rows
@@ -407,8 +429,10 @@ root = Tk()
 root.grid_rowconfigure(10, weight=1)
 root.title('Gestor de compras')
 root.geometry('1600x900')     # Tamaño de la ventana standard notebook 14'
-# root.geometry('1024x768')   # Esta linea no hace falta
-# root.resizable(True, True)  # Esta linea no hace falta
+# screen_ancho = root.winfo_screenwidth()
+# screen_alto = root.winfo_screenheight() - 75
+# root.geometry(f'{screen_ancho}x{screen_alto}')
+# root.resizable(False, False)  # Para que no se pueda redimensionar la ventana
 
 #-----FRAMES-----#
 frame_formulario = LabelFrame(root, text="Ingreso de datos", padx=10, pady=10)
@@ -543,7 +567,8 @@ e_consulta.grid(row=9, column=0, sticky='nsew', padx=10, pady=5)
 
 l_total = Label(root, text='Total acumulado')
 l_total.grid(row=8, column=2, sticky=S, pady=5)
-e_total = Entry(root, textvariable=var_total, width=20)
+e_total = Entry(root, textvariable=var_total, width=20, 
+                font=('Arial', 10, 'bold'), justify='center', state='readonly')
 e_total.grid(row=9, column=2, sticky='nsew', padx=10, pady=5)
 #-----FIN FORMULARIO-----#
 
@@ -621,6 +646,7 @@ tree.heading('col10', text='Vencimiento')
 
 #-----FIN WIDGETS-----#
 
+cargar_total_acumulado()
 cargar_datos_en_treeview()
 root.mainloop()
 #---------------------------------FIN VISTA----------------------------------#
