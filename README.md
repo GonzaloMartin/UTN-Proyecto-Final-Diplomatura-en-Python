@@ -1,40 +1,45 @@
-# UTN-Python-TP1
-TP de la Diplomatura en Python (Nivel 1).  Luego le cambiamos el nombre.
+# Diplomatura en Python - Nivel 1 - Proyecto Final
+Proyecto final de la Diplomatura en Python (Nivel 1), impartida por la Universidad Tecnológica Nacional.
 
-## Pautas del proyecto
+## Integrantes
+- Gonzalo Montalvo | [@GonzaloMartin](https://github.com/GonzaloMartin)
+- Matias Falconaro | [@MatiasFalconaro](https://github.com/matiasfalconaro)
+
+## Pautas del Proyecto
 
 ### Objetivo
-Probar los conocimientos adquiridos y que el alumno comience a pasar de la teoría a la práctica.
+El objetivo de este proyecto es consolidar y aplicar los conocimientos adquiridos durante el Nivel Inicial de la Diplomatura. (Ver alcance de la aplicación).
 
-### Alcance de la aplicación
-Consta de la entrega de una app a la cual se le irán agregando:
+### Alcance de la Aplicación
+El proyecto incluye las siguientes unidades, en las cuales se aplicarán los temas abordados durante el curso:
 
-Unidad 1 a 5 – Toma de datos
+### Detalles de las Unidades
 
-Unidad 2 a 5 – Uso de funciones, condicionales y bucles.
+El proyecto consta de la entrega de una aplicación con las siguientes características:
 
-Unidad 6 – Uso de base de datos (SQLite3 a elección).
+- **Unidades 1 a 5**: Toma de datos.
+- **Unidades 2 a 5**: Uso de funciones, condicionales y bucles.
+- **Unidad 6**: Uso de base de datos (SQLite3, a elección).
+  - Creación de base de datos y tablas desde Python.
+  - Alta de registros en la base de datos, solicitando al usuario ingresar datos a través de un formulario de ventana (con el paquete Tkinter).
+- **Unidad 7**: Implementación de regex para la validación de uno de los datos tomados en la unidad 6. Realización de ABMC (CRUD en inglés) (Alta, Baja, Modificación, Consulta).
 
-Creación de base de datos y tablas desde Python.
-Realizar un alta de registro en la base de datos solicitando al usuario que ingrese los datos ya sea mediante consola si solo se utiliza Python o mediante campos del tipo Entry si se utiliza Tkinter.
+### Entrega Parcial (Unidad 5)
 
-Unidad 7 : Implementación de regex para validación de uno de los datos tomados en la unidad 6, realización de abmc (crud en ingles) (alta, baja, modificación, consulta)
+Esta entrega sirve para revisar una propuesta de aplicación que se validará con los profesores. Tras la aprobación, se procederá con el desarrollo a partir del mockup. La entrega parcial no es calificada y se presenta en el foro de la unidad 5.
 
-### Entrega parical (Unidad 5)
-Esta entrega es a los fines que chequear el trabajo de cada alumno y poder brindar ayuda en el caso de que se note que el alumno o los alumnos no están participando. No es considerada con nota.
+### Entrega Final (Unidad 8)
 
-La presentación se realiza en el foro de la unidad 5
+![Evaluación](imgs/Evaluacion.jpg)
 
-### Entrega final (Unidad 8)
-
-![alt text](imgs/Evaluacion.jpg)
-
-## Ejecución del proyecto
+## Ejecución del Proyecto
 
 ### Dependencias
 
+Para instalar las dependencias:
 `pip install -r requirements.txt`
 
-### Correr el proyecto
+### Ejecutar el Proyecto
 
+Para correr el proyecto:
 `python app/proyeto_final.py`
