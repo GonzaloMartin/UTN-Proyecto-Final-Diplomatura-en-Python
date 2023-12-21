@@ -130,11 +130,11 @@ def cargar_datos_en_treeview():
     for row in registros:
         tree.insert('', 'end', text=str(row[0]), values=row[1:])
 
-def get_mes_actual():
+def obtener_mes_actual():
     return datetime.datetime.now().month
 
-def get_total_acumulado():
-    mes_actual = get_mes_actual()
+def obtener_total_acumulado():
+    mes_actual = obtener_mes_actual()
     registros = consulta_bd(mes=mes_actual)
     
     total_acumulado = 0
@@ -144,12 +144,12 @@ def get_total_acumulado():
     return total_acumulado
 
 def cargar_total_acumulado():
-    total_acumulado = get_total_acumulado()
+    total_acumulado = obtener_total_acumulado()
     var_total.set(f"$ {total_acumulado:.2f}")
 
 def actualizar_label_total_acumulado():
     locale.setlocale(locale.LC_TIME, '')  # Para que devuelva el mes en español
-    mes_actual = get_mes_actual()
+    mes_actual = obtener_mes_actual()
     mes_actual_str = datetime.datetime.strptime(str(mes_actual), "%m").strftime("%B")
     mes_actual_str = mes_actual_str.capitalize()
     l_total.config(text=f"Total {mes_actual_str}:")
