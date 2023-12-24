@@ -3,13 +3,18 @@ import sqlite3
 import tkinter as tk
 import datetime
 import locale
+import matplotlib.pyplot as plt
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+from tkinter import Tk, Frame
 
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import *
 from tkcalendar import DateEntry
 
-from PIL import Image, ImageTk
+from PIL import Image as PilImage, ImageTk
 
 
 
@@ -132,6 +137,12 @@ def cargar_datos_en_treeview():
 def obtener_mes_actual():
     return datetime.datetime.now().month
 
+def obtener_mes_palabra_actual():
+    locale.setlocale(locale.LC_TIME, '')  # Para que devuelva el mes en español
+    mes_actual = obtener_mes_actual()
+    mes_actual_str = datetime.datetime.strptime(str(mes_actual), "%m").strftime("%B")
+    return mes_actual_str.capitalize()
+
 def obtener_total_acumulado():
     mes_actual = obtener_mes_actual()
     registros = consulta_bd(mes=mes_actual)
@@ -148,10 +159,7 @@ def cargar_total_acumulado():
     return total_acumulado
 
 def actualizar_label_total_acumulado():
-    locale.setlocale(locale.LC_TIME, '')  # Para que devuelva el mes en español
-    mes_actual = obtener_mes_actual()
-    mes_actual_str = datetime.datetime.strptime(str(mes_actual), "%m").strftime("%B")
-    mes_actual_str = mes_actual_str.capitalize()
+    mes_actual_str = obtener_mes_palabra_actual()
     l_total.config(text=f"Total {mes_actual_str}:")
     
 #-------------------------------FIN CONTROLADOR------------------------------#
@@ -444,6 +452,18 @@ conn = conectar_base_de_datos()
 crear_tabla(conn)
 #-----FIN BASE DE DATOS-----#
 
+#-----GRAFICO (DATOS)-----#
+def get_data_for_graph():
+    conn = conectar_base_de_datos()
+    cursor = conn.cursor()
+    cursor.execute("SELECT rubro, SUM(subtotal) FROM gastos GROUP BY rubro")
+    data = cursor.fetchall()
+    num_mes_actual = str(obtener_mes_actual())
+    mes_palabra = obtener_mes_palabra_actual()
+    desconectar_base_de_datos(conn)
+    return data
+#-----FIN GRAFICO (DATOS)-----#
+
 #---------------------------------FIN MODELO---------------------------------#
 
 ##############################################################################
@@ -474,7 +494,7 @@ frame_treeview.grid_rowconfigure(0, weight=1)
 frame_treeview.grid_columnconfigure(0, weight=1)
 
 frame_grafico = Frame(root, borderwidth=1, relief="solid")
-frame_grafico.grid(row=2, column=3, rowspan=8, padx=30, pady=0, sticky='s')
+frame_grafico.grid(row=2, column=3, rowspan=9, padx=10, pady=0, sticky='nsew')
 #-----FIN FRAMES-----#
 
 var_id = IntVar()
@@ -513,7 +533,7 @@ opciones_responsable = ["Gonzalo", "Matías", "Juan"]
 #-----WIDGETS-----#
 
 #-----HEADER-----#
-imagen_original = Image.open("imgs/python_logo_tn.png")
+imagen_original = PilImage.open("imgs/python_logo_tn.png")
 imagen_resize = imagen_original.resize((50, 50))
 foto = ImageTk.PhotoImage(imagen_resize)
 img = Label(root, image=foto)
@@ -670,6 +690,41 @@ tree.heading('col8', text='Medio de pago')
 tree.heading('col9', text='Fecha')
 tree.heading('col10', text='Vencimiento')
 #-----FIN TREEVIEW-----#
+
+#-----GRAFICO-----#
+def create_graph(frame_grafico):
+    data = get_data_for_graph()
+    mes_palabra = obtener_mes_palabra_actual()
+    rubros = [row[0][:4] for row in data]
+    totales = [row[1] for row in data]
+    
+    fig = Figure(figsize=(6, 4), dpi=75)
+    plot = fig.add_subplot(1, 1, 1)
+    
+    colors = plt.cm.get_cmap('tab20', len(rubros))
+
+    bars = plot.bar(rubros, totales, color=[colors(i) for i in range(len(rubros))])
+    
+    plot.set_xticks(range(len(rubros)))
+    plot.set_xticklabels(rubros, ha='center', fontsize='small')
+    
+    # Keep the labels on top of the bars
+    for bar, total in zip(bars, totales):
+        yval = bar.get_height()
+        plot.text(bar.get_x() + bar.get_width()/2.0, yval, f'${total:.2f}', va='bottom', ha='center', fontsize='small')
+
+    # Remove y-axis labels (left side vertical axis)
+    plot.set_yticks([])
+    plot.set_title(f'Total de Gastos por Rubro en {mes_palabra}', fontsize=12)
+    
+    canvas = FigureCanvasTkAgg(fig, master=frame_grafico)
+    canvas.draw()
+    canvas.get_tk_widget().pack(fill='both', expand=True)
+
+
+grafico_temp.destroy()
+create_graph(frame_grafico)
+#-----FIN GRAFICO-----#
 
 #-----FIN WIDGETS-----#
 
