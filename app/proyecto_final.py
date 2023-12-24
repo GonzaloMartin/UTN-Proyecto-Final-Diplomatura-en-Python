@@ -653,8 +653,8 @@ tree.column('col3', width=90, minwidth=50, stretch=NO) # Monto
 tree.column('col4', width=105, minwidth=50, stretch=NO) # Responsable
 tree.column('col5', width=125, minwidth=50, stretch=NO) # Subtotal
 tree.column('col6', width=115, minwidth=50, stretch=NO) # Rubro
-tree.column('col7', width=180, minwidth=50, stretch=NO) # Proveedor
-tree.column('col8', width=120, minwidth=50, stretch=NO) # Medio de Pago
+tree.column('col7', width=220, minwidth=50, stretch=NO) # Proveedor
+tree.column('col8', width=180, minwidth=50, stretch=NO) # Medio de Pago
 tree.column('col9', width=90, minwidth=50, stretch=NO) # Fecha
 tree.column('col10', width=100, minwidth=50, stretch=NO) # Vencimiento
 
