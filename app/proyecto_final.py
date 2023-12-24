@@ -12,7 +12,6 @@ from tkcalendar import DateEntry
 from PIL import Image, ImageTk
 
 
-total_acumulado=0
 
 #-----------------------------INICIO CONTROLADOR-----------------------------#
 
@@ -146,6 +145,7 @@ def obtener_total_acumulado():
 def cargar_total_acumulado():
     total_acumulado = obtener_total_acumulado()
     var_total.set(f"$ {total_acumulado:.2f}")
+    return total_acumulado
 
 def actualizar_label_total_acumulado():
     locale.setlocale(locale.LC_TIME, '')  # Para que devuelva el mes en español
@@ -162,7 +162,7 @@ def actualizar_label_total_acumulado():
 
 #-----ABMC-----#
 def alta():
-    global total_acumulado
+    total_acumulado = cargar_total_acumulado()
     
     var_fecha.set(cal_fecha.get_date().strftime("%Y-%m-%d"))
     if var_check_vencimiento.get():
@@ -200,7 +200,7 @@ def alta():
     conn = conectar_base_de_datos()
     ultimo_id = alta_bd(conn, valores)
 
-    subtotal_acumulado = valores['cantidad'] * valores['monto']
+    subtotal_acumulado = round(valores['cantidad'] * valores['monto'], 2)
 
     tree.insert('',
                 'end',
@@ -223,7 +223,7 @@ def alta():
 
 
 def baja():
-    global total_acumulado
+    total_acumulado = cargar_total_acumulado()
     
     compra_id = tree.focus()
     if not compra_id:
@@ -313,12 +313,11 @@ def consulta():
         tree.insert('', 'end', text=str(row[0]), values=row[1:])
 
     if termino_busqueda == "": # Si no se especifica un término de búsqueda
-        actualizar_estado_bar(f"Resultados de la búsqueda para: {termino_busqueda}")
+        actualizar_estado_bar(f"Se muestran todos los registros.")
     else:
         actualizar_estado_bar(f"Resultados de la búsqueda para: {termino_busqueda}")
 
     cargar_total_acumulado()
-    actualizar_estado_bar(f"Resultados de la búsqueda para: {termino_busqueda}")
 #-----FIN ABMC-----#
 
 #-----BASE DE DATOS-----#
@@ -409,7 +408,7 @@ def modificacion_bd(id_registro, valores):
             vencimiento = ?
             WHERE id = ?;"""
 
-    subtotal = valores['cantidad'] * valores['monto']
+    subtotal = int(valores['cantidad'] * valores['monto'] * 100) / 100.0
     data = (valores['producto'],
             valores['cantidad'],
             valores['monto'],
@@ -540,9 +539,9 @@ e_producto = Entry(frame_formulario, textvariable=var_producto, width=we_ancho)
 e_producto.grid(row=3, column=0, sticky='w', pady=5)
 
 l_cantidad = Label(frame_formulario, text='Cantidad:')
-l_cantidad.grid(row=2, column=1, sticky=W, padx=0)
+l_cantidad.grid(row=2, column=1, sticky=W, padx=10)
 e_cantidad = Entry(frame_formulario, textvariable=var_cantidad, width=we_ancho)
-e_cantidad.grid(row=3, column=1, sticky='w', padx=0, pady=5)
+e_cantidad.grid(row=3, column=1, sticky='w', padx=10, pady=5)
 
 l_monto = Label(frame_formulario, text='Monto:')
 l_monto.grid(row=2, column=2, sticky=SW)
@@ -556,9 +555,9 @@ cb_responsable = ttk.Combobox(frame_formulario, values=opciones_responsable,
 cb_responsable.grid(row=5, column=0, sticky='w', pady=5)
 
 l_rubro = Label(frame_formulario, text='Rubro:')
-l_rubro.grid(row=4, column=1, sticky=SW, padx=0)
+l_rubro.grid(row=4, column=1, sticky=SW, padx=10)
 cb_rubro = ttk.Combobox(frame_formulario, values=opciones_rubro, width=wcb_ancho)
-cb_rubro.grid(row=5, column=1, sticky='w', padx=0, pady=5)
+cb_rubro.grid(row=5, column=1, sticky='w', padx=10, pady=5)
 
 l_proveedor = Label(frame_formulario, text='Proveedor:')
 l_proveedor.grid(row=4, column=2, sticky=SW)
@@ -572,10 +571,10 @@ cb_medio_pago = ttk.Combobox(frame_formulario, values=opciones_medio_pago,
 cb_medio_pago.grid(row=7, column=0, sticky='w', pady=5)
 
 l_fecha = Label(frame_formulario, text='Fecha:')
-l_fecha.grid(row=6, column=1, sticky=SW, padx=0)
+l_fecha.grid(row=6, column=1, sticky=SW, padx=10)
 cal_fecha = DateEntry(frame_formulario, width=wcb_ancho, background='darkblue',
                       foreground='white', borderwidth=2)
-cal_fecha.grid(row=7, column=1, sticky='w', padx=0, pady=5)
+cal_fecha.grid(row=7, column=1, sticky='w', padx=10, pady=5)
 
 l_vencimiento = Label(frame_formulario, text='Vencimiento:')
 l_vencimiento.grid(row=6, column=2, sticky=SW)
@@ -596,17 +595,17 @@ e_total.grid(row=9, column=2, sticky='nsew', padx=10, pady=5)
 #-----FIN FORMULARIO-----#
 
 #-----BOTONES-----#
-boton_alta = Button(root, text='Alta', command=preparar_alta, bg='grey',fg='black', width=15)
+boton_alta = Button(root, text='Alta', command=preparar_alta, bg='grey',fg='white', width=15)
 boton_alta.grid(row=3, column=2, sticky=N)
 
-boton_baja = Button(root, text='Baja', command=preparar_baja, bg='grey',fg='black', width=15)
+boton_baja = Button(root, text='Baja', command=preparar_baja, bg='grey',fg='white', width=15)
 boton_baja.grid(row=5, column=2, sticky=N)
 
 boton_modificacion = Button(root, text='Modificacion',
-                            command=modificacion, bg='grey',fg='black', width=15)
+                            command=modificacion, bg='grey',fg='white', width=15)
 boton_modificacion.grid(row=7, column=2, sticky=N)
 
-boton_buscar = Button(root, text='Buscar', command=consulta, bg='grey',fg='black',width=15)
+boton_buscar = Button(root, text='Buscar', command=consulta, bg='grey',fg='white',width=15)
 boton_buscar.grid(row=11, column=1, sticky=W)
 
 boton_confirmar = Button(root, text='Confirmar', state='disabled', command=confirmar, width=15,
