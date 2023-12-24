@@ -583,9 +583,9 @@ e_vencimiento = DateEntry(frame_formulario, width=wcb_ancho, background='darkblu
 e_vencimiento.grid(row=7, column=2, sticky='w', pady=5)
 
 l_consulta = Label(root, text='Consulta:')
-l_consulta.grid(row=10, column=0, sticky=W, padx=10, pady=(0, 5))
+l_consulta.grid(row=9, column=0, sticky=W, padx=10, pady=(0, 5))
 e_consulta = Entry (root, textvariable=var_consulta, width=25)
-e_consulta.grid(row=11, column=0, sticky='nsew', padx=10)
+e_consulta.grid(row=10, column=0, sticky='nsew', padx=10)
 
 l_total = Label(root, text='Total ', font=('Arial', 10, 'bold'))
 l_total.grid(row=8, column=2, sticky=S, pady=5)
@@ -606,7 +606,7 @@ boton_modificacion = Button(root, text='Modificacion',
 boton_modificacion.grid(row=7, column=2, sticky=N)
 
 boton_buscar = Button(root, text='Buscar', command=consulta, bg='grey',fg='white',width=15)
-boton_buscar.grid(row=11, column=1, sticky=W)
+boton_buscar.grid(row=10, column=1, sticky=W)
 
 boton_confirmar = Button(root, text='Confirmar', state='disabled', command=confirmar, width=15,
                          bg='green',fg='white')
