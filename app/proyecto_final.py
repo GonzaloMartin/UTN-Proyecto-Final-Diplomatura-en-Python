@@ -1,21 +1,20 @@
-import re
-import sqlite3
-import tkinter as tk
 import datetime
 import locale
 import matplotlib.pyplot as plt
+import re
+import sqlite3
+import tkinter as tk
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from tkinter import Tk, Frame
 
+from PIL import Image as PilImage, ImageTk
+
+from tkinter import Tk, Frame
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import *
 from tkcalendar import DateEntry
-
-from PIL import Image as PilImage, ImageTk
-
 
 
 #-----------------------------INICIO CONTROLADOR-----------------------------#
@@ -79,7 +78,11 @@ def confirmar():
     # La acción se define en cada caso (alta, baja, modificacion)
     boton_confirmar.config(state='disabled')
     boton_cancelar.config(state='disabled')
-
+    
+    for widget in frame_grafico.winfo_children():
+        widget.destroy()  # Borrar graficos anteriores
+        crear_grafico(frame_grafico)  # Grafico actualiazado
+        
 
 def cancelar():
     boton_confirmar.config(state='disabled', command=None)
@@ -138,7 +141,7 @@ def obtener_mes_actual():
     return datetime.datetime.now().month
 
 def obtener_mes_palabra_actual():
-    locale.setlocale(locale.LC_TIME, '')  # Para que devuelva el mes en español
+    locale.setlocale(locale.LC_TIME, '')  # Devuelva el mes en español
     mes_actual = obtener_mes_actual()
     mes_actual_str = datetime.datetime.strptime(str(mes_actual), "%m").strftime("%B")
     return mes_actual_str.capitalize()
@@ -170,8 +173,6 @@ def actualizar_label_total_acumulado():
 
 #-----ABMC-----#
 def alta():
-    total_acumulado = cargar_total_acumulado()
-    
     var_fecha.set(cal_fecha.get_date().strftime("%Y-%m-%d"))
     if var_check_vencimiento.get():
         vencimiento_value = 'N/A'
@@ -204,6 +205,10 @@ def alta():
             actualizar_estado_bar("Todos los campos de alta deben tener contenido.")
             cancelar()
             return
+
+        if valores['cantidad'] <= 0 or valores['monto'] <= 0:
+            actualizar_estado_bar("Cantidad y monto deben ser números positivos.")
+            return
         
     conn = conectar_base_de_datos()
     ultimo_id = alta_bd(conn, valores)
@@ -230,9 +235,7 @@ def alta():
     confirmar()
 
 
-def baja():
-    total_acumulado = cargar_total_acumulado()
-    
+def baja():    
     compra_id = tree.focus()
     if not compra_id:
         showinfo("Info", "Debe seleccionar un registro para dar de Baja.")
@@ -240,18 +243,6 @@ def baja():
         cancelar()
         return
     
-    valores = tree.item(compra_id, 'values')
-
-    subtotal_str = valores[4]
-
-    if re.match(r'^\d+(\.\d+)?$', subtotal_str): # Enteros >= 0 y decimales >= 0
-        subtotal_eliminar = float(subtotal_str)
-    else:
-        showinfo("Error", "El subtotal no es un número válido.")
-        actualizar_estado_bar("El subtotal no es un número válido.")
-        cancelar()
-        return
-
     id_bd_str = tree.item(compra_id, 'text')
 
     if re.match(r'^\d+$', id_bd_str): # Enteros >= 0
@@ -264,9 +255,8 @@ def baja():
 
     baja_bd(id_bd)
     
-    cargar_total_acumulado()
     tree.delete(compra_id)
-    
+    cargar_total_acumulado()
     actualizar_estado_bar("Se dio de baja el registro con ID: " + str(id_bd))
     confirmar()
     
@@ -453,13 +443,13 @@ crear_tabla(conn)
 #-----FIN BASE DE DATOS-----#
 
 #-----GRAFICO (DATOS)-----#
-def get_data_for_graph():
+def obtener_datos_grafico():
     conn = conectar_base_de_datos()
     cursor = conn.cursor()
-    cursor.execute("SELECT rubro, SUM(subtotal) FROM gastos GROUP BY rubro")
-    data = cursor.fetchall()
     num_mes_actual = str(obtener_mes_actual())
-    mes_palabra = obtener_mes_palabra_actual()
+    query = f"SELECT rubro, SUM(subtotal) FROM gastos WHERE strftime('%m', fecha) = '{num_mes_actual}' GROUP BY rubro"
+    cursor.execute(query)
+    data = cursor.fetchall()
     desconectar_base_de_datos(conn)
     return data
 #-----FIN GRAFICO (DATOS)-----#
@@ -471,30 +461,35 @@ def get_data_for_graph():
 #--------------------------------INICIO VISTA--------------------------------#
 
 root = Tk()
-root.grid_rowconfigure(12, weight=1)
-root.title('Gestor de compras')
+root.grid_rowconfigure(12, weight=1) # Expande el TreeView
+root.title('Gestor de Gastos Python')
 root.geometry('1600x900')     # Tamaño de la ventana standard notebook 14'
-# screen_ancho = root.winfo_screenwidth()
-# screen_alto = root.winfo_screenheight() - 75
-# root.geometry(f'{screen_ancho}x{screen_alto}')
-# root.resizable(False, False)  # Para que no se pueda redimensionar la ventana
 
 #-----FRAMES-----#
+header_frame = Frame(root)
+header_frame.grid(row=0, column=0, sticky='ew', padx=0, pady=5)
+
+frame_estado = Frame(root, borderwidth=1, relief="solid")
+frame_estado.grid(row=0, column=2, padx=0, pady=10, columnspan=3)
+
+frame_grafico = Frame(root, borderwidth=1, relief="solid")
+frame_grafico.grid(row=2, column=3, rowspan=9, padx=10, pady=0, sticky='nsew')
+
 frame_formulario = LabelFrame(root, text="Ingreso de datos", padx=10, pady=10)
 frame_formulario.grid(row=2, column=0, columnspan=2, rowspan=6, padx=10,
                       pady=10, sticky="we")
 
-frame_estado = Frame(root, borderwidth=1, relief="solid")
-frame_estado.grid(row=0, column=2, padx=0, pady=10, columnspan=3)
+frame_confirmacion = Frame(root)
+frame_confirmacion.grid(row=8, column=0, columnspan=2, padx=10, pady=10)
+frame_confirmacion.grid_rowconfigure(0, weight=1)
+frame_confirmacion.grid_columnconfigure(0, weight=1)
+frame_confirmacion.grid_columnconfigure(1, weight=1)
 
 frame_treeview = Frame(root)
 frame_treeview.grid(row=12, column=0, columnspan=11, padx=10, pady=10,
                     sticky='nsew')
 frame_treeview.grid_rowconfigure(0, weight=1)
 frame_treeview.grid_columnconfigure(0, weight=1)
-
-frame_grafico = Frame(root, borderwidth=1, relief="solid")
-frame_grafico.grid(row=2, column=3, rowspan=9, padx=10, pady=0, sticky='nsew')
 #-----FIN FRAMES-----#
 
 var_id = IntVar()
@@ -536,12 +531,12 @@ opciones_responsable = ["Gonzalo", "Matías", "Juan"]
 imagen_original = PilImage.open("imgs/python_logo_tn.png")
 imagen_resize = imagen_original.resize((50, 50))
 foto = ImageTk.PhotoImage(imagen_resize)
-img = Label(root, image=foto)
-img.grid(row=0, column=0, padx=10, pady=5, sticky=E)
 
-title = Label(root, text='GESTOR DE COMPRAS PYTHON',
-              font = ('Arial', 20, 'bold'))
-title.grid(row=0, column=1, sticky=W)
+img = Label(header_frame, image=foto)
+img.grid(row=0, column=0, padx=10, pady=5, sticky=W)
+
+title = Label(header_frame, text='GESTOR DE GASTOS PYTHON', font=('Arial', 20, 'bold'))
+title.grid(row=0, column=1, padx=0, sticky=W)
 #-----FIN HEADER-----#
 
 #-----ESTADO-----#
@@ -556,62 +551,62 @@ wcb_ancho = we_ancho - 2
 l_producto = Label(frame_formulario, text='Producto:')
 l_producto.grid(row=2, column=0, sticky=W)
 e_producto = Entry(frame_formulario, textvariable=var_producto, width=we_ancho)
-e_producto.grid(row=3, column=0, sticky='w', pady=5)
+e_producto.grid(row=3, column=0, sticky=W, pady=5)
 
 l_cantidad = Label(frame_formulario, text='Cantidad:')
 l_cantidad.grid(row=2, column=1, sticky=W, padx=10)
 e_cantidad = Entry(frame_formulario, textvariable=var_cantidad, width=we_ancho)
-e_cantidad.grid(row=3, column=1, sticky='w', padx=10, pady=5)
+e_cantidad.grid(row=3, column=1, sticky=W, padx=10, pady=5)
 
 l_monto = Label(frame_formulario, text='Monto:')
 l_monto.grid(row=2, column=2, sticky=SW)
 e_monto = Entry(frame_formulario, textvariable=var_monto, width=we_ancho)
-e_monto.grid(row=3, column=2, sticky='w', pady=5)
+e_monto.grid(row=3, column=2, sticky=W, pady=5)
 
 l_responsable = Label(frame_formulario, text='Responsable:')
 l_responsable.grid(row=4, column=0, sticky=SW)
 cb_responsable = ttk.Combobox(frame_formulario, values=opciones_responsable,
                               width=wcb_ancho)
-cb_responsable.grid(row=5, column=0, sticky='w', pady=5)
+cb_responsable.grid(row=5, column=0, sticky=W, pady=5)
 
 l_rubro = Label(frame_formulario, text='Rubro:')
 l_rubro.grid(row=4, column=1, sticky=SW, padx=10)
 cb_rubro = ttk.Combobox(frame_formulario, values=opciones_rubro, width=wcb_ancho)
-cb_rubro.grid(row=5, column=1, sticky='w', padx=10, pady=5)
+cb_rubro.grid(row=5, column=1, sticky=W, padx=10, pady=5)
 
 l_proveedor = Label(frame_formulario, text='Proveedor:')
 l_proveedor.grid(row=4, column=2, sticky=SW)
 e_proveedor = Entry(frame_formulario, textvariable=var_proveedor, width=we_ancho)
-e_proveedor.grid(row=5, column=2, sticky='w', pady=5)
+e_proveedor.grid(row=5, column=2, sticky=W, pady=5)
 
 l_medio_pago = Label(frame_formulario, text='Medio de pago:')
 l_medio_pago.grid(row=6, column=0, sticky=SW)
 cb_medio_pago = ttk.Combobox(frame_formulario, values=opciones_medio_pago,
                              width=wcb_ancho)
-cb_medio_pago.grid(row=7, column=0, sticky='w', pady=5)
+cb_medio_pago.grid(row=7, column=0, sticky=W, pady=5)
 
 l_fecha = Label(frame_formulario, text='Fecha:')
 l_fecha.grid(row=6, column=1, sticky=SW, padx=10)
 cal_fecha = DateEntry(frame_formulario, width=wcb_ancho, background='darkblue',
                       foreground='white', borderwidth=2)
-cal_fecha.grid(row=7, column=1, sticky='w', padx=10, pady=5)
+cal_fecha.grid(row=7, column=1, sticky=W, padx=10, pady=5)
 
 l_vencimiento = Label(frame_formulario, text='Vencimiento:')
 l_vencimiento.grid(row=6, column=2, sticky=SW)
 e_vencimiento = DateEntry(frame_formulario, width=wcb_ancho, background='darkblue',
                           foreground='white', borderwidth=2)
-e_vencimiento.grid(row=7, column=2, sticky='w', pady=5)
+e_vencimiento.grid(row=7, column=2, sticky=W, pady=5)
 
 l_consulta = Label(root, text='Consulta:')
-l_consulta.grid(row=9, column=0, sticky=W, padx=10, pady=(0, 5))
-e_consulta = Entry (root, textvariable=var_consulta, width=25)
-e_consulta.grid(row=10, column=0, sticky='nsew', padx=10)
+l_consulta.grid(row=9, column=0, sticky=W, padx=10, pady=5)
+e_consulta = Entry (root, textvariable=var_consulta, width=12)
+e_consulta.grid(row=10, column=0, sticky='nsew', padx=10, pady=5)
 
 l_total = Label(root, text='Total ', font=('Arial', 10, 'bold'))
 l_total.grid(row=8, column=2, sticky=S, pady=5)
 e_total = Entry(root, textvariable=var_total, width=20, 
                 font=('Arial', 10, 'bold'), justify='center', state='readonly')
-e_total.grid(row=9, column=2, sticky='nsew', padx=10, pady=5)
+e_total.grid(row=9, column=2, sticky=W, padx=10, pady=5)
 #-----FIN FORMULARIO-----#
 
 #-----BOTONES-----#
@@ -628,11 +623,11 @@ boton_modificacion.grid(row=7, column=2, sticky=N)
 boton_buscar = Button(root, text='Buscar', command=consulta, bg='grey',fg='white',width=15)
 boton_buscar.grid(row=10, column=1, sticky=W)
 
-boton_confirmar = Button(root, text='Confirmar', state='disabled', command=confirmar, width=15,
+boton_confirmar = Button(frame_confirmacion, text='Confirmar', state='disabled', command=confirmar, width=15,
                          bg='green',fg='white')
 boton_confirmar.grid(row=8, column=0, sticky=E)
 
-boton_cancelar = Button(root, text='Cancelar', state='disabled', command=cancelar, width=15,
+boton_cancelar = Button(frame_confirmacion, text='Cancelar', state='disabled', command=cancelar, width=15,
                         bg='red',fg='white')
 boton_cancelar.grid(row=8, column=1, sticky=W)
 
@@ -641,7 +636,7 @@ ch_vencimiento = Checkbutton(frame_formulario, text='N/A',
                              command=actualizar_estado_fecha)
 ch_vencimiento.grid(row=6, column=2, sticky=SE, padx=5)
 
-grafico_temp = Button(frame_grafico, text='ACA VA EL GRÁFICO', bg='white',
+grafico_temp = Button(frame_grafico, bg='white',
                      width=57, pady=118, state='disabled')
 grafico_temp.grid(row=0, column=0, padx=0, pady=0, sticky='e')
 #-----FIN BOTONES-----#
@@ -673,8 +668,8 @@ tree.column('col3', width=90, minwidth=50, stretch=NO) # Monto
 tree.column('col4', width=105, minwidth=50, stretch=NO) # Responsable
 tree.column('col5', width=125, minwidth=50, stretch=NO) # Subtotal
 tree.column('col6', width=115, minwidth=50, stretch=NO) # Rubro
-tree.column('col7', width=220, minwidth=50, stretch=NO) # Proveedor
-tree.column('col8', width=180, minwidth=50, stretch=NO) # Medio de Pago
+tree.column('col7', width=180, minwidth=50, stretch=NO) # Proveedor
+tree.column('col8', width=120, minwidth=50, stretch=NO) # Medio de Pago
 tree.column('col9', width=90, minwidth=50, stretch=NO) # Fecha
 tree.column('col10', width=100, minwidth=50, stretch=NO) # Vencimiento
 
@@ -692,28 +687,40 @@ tree.heading('col10', text='Vencimiento')
 #-----FIN TREEVIEW-----#
 
 #-----GRAFICO-----#
-def create_graph(frame_grafico):
-    data = get_data_for_graph()
+def crear_grafico(frame_grafico):
+    data = obtener_datos_grafico()
     mes_palabra = obtener_mes_palabra_actual()
-    rubros = [row[0][:4] for row in data]
-    totales = [row[1] for row in data]
+    rubros = []
+    totales = []
+   
+    for row in data:
+        rubros.append(row[0][:4])
+        totales.append(row[1])
+    
+    for rubro_op in opciones_rubro:
+        if rubro_op[:4] not in rubros:
+            rubros.append(rubro_op[:4])
+            totales.append(0)
     
     fig = Figure(figsize=(6, 4), dpi=75)
     plot = fig.add_subplot(1, 1, 1)
     
-    colors = plt.cm.get_cmap('tab20', len(rubros))
+    colors = plt.colormaps['tab20'](range(len(rubros)))
+    
+    lista_colores = []
+    for i in range(len(rubros)):
+        lista_colores.append(colors[i])
 
-    bars = plot.bar(rubros, totales, color=[colors(i) for i in range(len(rubros))])
+    bars = plot.bar(rubros, totales, color=lista_colores)
     
     plot.set_xticks(range(len(rubros)))
     plot.set_xticklabels(rubros, ha='center', fontsize='small')
     
-    # Keep the labels on top of the bars
     for bar, total in zip(bars, totales):
         yval = bar.get_height()
-        plot.text(bar.get_x() + bar.get_width()/2.0, yval, f'${total:.2f}', va='bottom', ha='center', fontsize='small')
+        plot.text(bar.get_x() + bar.get_width()/2.0, yval, f'${total:.2f}', 
+                  va='bottom', ha='center', fontsize='small')
 
-    # Remove y-axis labels (left side vertical axis)
     plot.set_yticks([])
     plot.set_title(f'Total de Gastos por Rubro en {mes_palabra}', fontsize=12)
     
@@ -723,7 +730,7 @@ def create_graph(frame_grafico):
 
 
 grafico_temp.destroy()
-create_graph(frame_grafico)
+crear_grafico(frame_grafico)
 #-----FIN GRAFICO-----#
 
 #-----FIN WIDGETS-----#
