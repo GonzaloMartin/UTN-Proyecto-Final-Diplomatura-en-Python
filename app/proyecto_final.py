@@ -528,7 +528,7 @@ opciones_responsable = ["Gonzalo", "Matías", "Juan"]
 #-----WIDGETS-----#
 
 #-----HEADER-----#
-imagen_original = PilImage.open("imgs/python_logo_tn.png")
+imagen_original = PilImage.open("app/rsc/python_logo_tn.png")
 imagen_resize = imagen_original.resize((50, 50))
 foto = ImageTk.PhotoImage(imagen_resize)
 
