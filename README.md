@@ -30,7 +30,7 @@ Esta entrega sirve para revisar una propuesta de aplicación que se validará co
 
 ### Entrega Final (Unidad 8)
 
-![Evaluación](imgs/Evaluacion.jpg)
+![Evaluación](app/rsc/Evaluacion.jpg)
 
 ## Ejecución del Proyecto
 
