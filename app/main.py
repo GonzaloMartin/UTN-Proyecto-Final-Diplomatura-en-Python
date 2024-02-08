@@ -1,4 +1,4 @@
-"""from mvc.model import ModelClass
+from mvc.model import ModelClass
 from mvc.view import ViewClass
 from mvc.controller import ControllerClass
 
@@ -12,4 +12,4 @@ def main():
     view.start()
 
 if __name__ == "__main__":
-    main()"""
+    main()
