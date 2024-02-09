@@ -39,7 +39,7 @@ from model import(consulta_bd,
 #-----------------------------INICIO CONTROLADOR-----------------------------#
 
 class ControllerClass:
-
+    
     #-----ABMC-----#
     def alta():
         var_fecha.set(cal_fecha.get_date().strftime("%Y-%m-%d"))
