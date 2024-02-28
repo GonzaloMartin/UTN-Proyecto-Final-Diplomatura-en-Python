@@ -1,15 +1,14 @@
-from mvc.model import ModelClass
-from mvc.view import ViewClass
-from mvc.controller import ControllerClass
+from mvc.model import Model
+from mvc.view import View
+from mvc.controller import Controller
 
 def main():
-    model = ModelClass()
-    view = ViewClass()
-    controller = ControllerClass(model, view)
-
-    view.set_controller(controller)
-    controller.initialize_view()
-    view.start()
+    model = Model()
+    controller = Controller(model)
+    view = View(controller)
+    
+    controller.set_view(view)
+    view.create_view()
 
 if __name__ == "__main__":
     main()

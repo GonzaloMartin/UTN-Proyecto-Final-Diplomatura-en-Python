@@ -1,4 +1,4 @@
-# Diplomatura en Python - Nivel 1 - Proyecto Final
+# Diplomatura en Python - Nivel Intermedio - Proyecto Final
 Proyecto final de la Diplomatura en Python (Nivel 1), impartida por la Universidad Tecnológica Nacional.
 
 ## Integrantes

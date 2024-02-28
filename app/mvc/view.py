@@ -27,23 +27,9 @@ from tkinter import ttk
 
 from tkcalendar import DateEntry
 
-from controller import (cancelar,
-                        confirmar,
-                        preparar_alta,
-                        preparar_baja,
-                        obtener_mes_palabra_actual,
-                        cargar_total_acumulado,
-                        cargar_datos_en_treeview,
-                        actualizar_estado_fecha,
-                        actualizar_label_total_acumulado)
+from .model import Model
 
-from model import(obtener_datos_grafico,
-                  modificacion,
-                  consulta)
-
-from .model import ModelClass
-
-class ViewClass:
+class View:
     
     opciones_rubro = ["Mantenimiento", "Impuestos", "Servicios",
                       "Mercado", "Limpieza", "Colegio", "Otros"]
@@ -55,7 +41,7 @@ class ViewClass:
     opciones_responsable = ["Gonzalo", "Matías", "Juan"]
     
     def __init__(self, controller):
-        self.model = ModelClass()
+        self.model = Model()
         self.controller = controller
         self.root = None
         self.tree = None
@@ -84,6 +70,7 @@ class ViewClass:
     
     def cargar_total_acumulado(self):
         total_acumulado = self.controller.obtener_total_acumulado()
+        print("AVERRRRR", total_acumulado)
         self.var_total.set(f"$ {total_acumulado:.2f}")
         return total_acumulado
 
@@ -114,13 +101,13 @@ class ViewClass:
             self.e_vencimiento.config(state='normal')
             
     def cargar_datos_en_treeview(self):
-        registros = self.controller.consulta_bd()
+        registros = self.controller.get_consulta_bd()
         for row in registros:
             self.tree.insert('', 'end', text=str(row[0]), values=row[1:])
 
     # GRÁFICO            
     def crear_grafico(self, frame_grafico):
-        data = self.controller.obtener_datos_grafico()
+        data = self.controller.get_obtener_datos_grafico()
         mes_palabra = self.controller.obtener_mes_palabra_actual()
         rubros = []
         totales = []
@@ -162,6 +149,7 @@ class ViewClass:
     # FIN GRÁFICO
     # FIN MÉTODOS
 
+    # VIEW
     def create_view(self):
         self.root = Tk()
         self.root.grid_columnconfigure(0, weight=1)
@@ -208,30 +196,30 @@ class ViewClass:
         frame_treeview.grid_columnconfigure(0, weight=1)        
         #-----FIN FRAMES-----#
 
-        var_id = IntVar()
-        var_producto = StringVar()
-        var_cantidad = IntVar()
-        var_monto = StringVar()
-        var_responsable = StringVar()
-        var_subtotal = StringVar()
-        var_total = StringVar()
-        var_rubro = StringVar()
-        var_proveedor = StringVar()
-        var_medio_pago = StringVar()
-        var_fecha = StringVar()
-        var_vencimiento = StringVar()
-        var_check_vencimiento = BooleanVar()
-        var_consulta = StringVar()
+        self.var_id = IntVar()
+        self.var_producto = StringVar()
+        self.var_cantidad = IntVar()
+        self.var_monto = StringVar()
+        self.var_responsable = StringVar()
+        self.var_subtotal = StringVar()
+        self.var_total = StringVar()
+        self.var_rubro = StringVar()
+        self.var_proveedor = StringVar()
+        self.var_medio_pago = StringVar()
+        self.var_fecha = StringVar()
+        self.var_vencimiento = StringVar()
+        self.var_check_vencimiento = BooleanVar()
+        self.var_consulta = StringVar()
 
-        self.variables_a_validar = [var_producto,
-                                    var_cantidad,
-                                    var_monto,
-                                    var_responsable,
-                                    var_proveedor,
-                                    var_medio_pago,
-                                    var_rubro, 
-                                    var_fecha, 
-                                    var_vencimiento]
+        self.variables_a_validar = [self.var_producto,
+                                    self.var_cantidad,
+                                    self.var_monto,
+                                    self.var_responsable,
+                                    self.var_proveedor,
+                                    self.var_medio_pago,
+                                    self.var_rubro, 
+                                    self.var_fecha, 
+                                    self.var_vencimiento]
         #-----WIDGETS-----#
 
         #-----HEADER-----#
@@ -334,7 +322,7 @@ class ViewClass:
         
         self.boton_modificacion = Button(self.root, text='Modificacion', command=self.controller.modificacion, 
                                          bg='grey',fg='white', width=15)
-        self.grid(row=7, column=2, sticky=N)
+        self.boton_modificacion.grid(row=7, column=2, sticky=N)
 
         self.boton_buscar = Button(self.root, text='Buscar', command=self.controller.consulta, 
                                    bg='grey',fg='white',width=15)
