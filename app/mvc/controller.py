@@ -6,8 +6,6 @@ from tkinter.messagebox import showinfo
 
 from utils.utils import obtener_mes_actual
 
-#-----------------------------INICIO CONTROLADOR-----------------------------#
-
 class Controller:
     
     def __init__(self, model):
@@ -15,18 +13,41 @@ class Controller:
         self.view = None
     
     def set_view(self, view):
+        """
+        Setea la vista para el controller.
+        :param view: Vista a setear.
+        """
+        
         self.view = view
     
     def get_obtener_datos_grafico(self):
+        """
+        Obtiene los datos para el gráfico.
+        Previamente se obtiene el mes actual desde el sistema.
+        :return: Lista con los datos para el gráfico.
+        """
+        
         mes_actual = obtener_mes_actual()
         return self.model.obtener_datos_grafico(mes_actual)
     
     def get_consulta_bd(self, mes=None):
+        """
+        Obtiene los registros de la base de datos.
+        :param mes: Mes a consultar (Valor opcional).
+        :return: Registros de la base de datos.
+        """
         return self.model.consulta_bd(mes)
     
         
     #-----ABMC-----#
     def alta(self):
+        """
+        Da de alta un registro en la base de datos.
+        Controla que todos los campos del formulario estén completos.
+        El alta se aplica en la base de datos y en el Treeview.
+        :return: None
+        """
+        
         self.view.var_fecha.set(self.view.cal_fecha.get_date().strftime("%Y-%m-%d"))
         
         if self.view.var_check_vencimiento.get():
@@ -70,7 +91,6 @@ class Controller:
             return
         
         ultimo_id = self.model.alta_bd(valores)
-        # ultimo_id = alta_bd(conn, valores)
 
         subtotal_acumulado = round(valores['cantidad'] * valores['monto'], 2)
 
@@ -95,6 +115,12 @@ class Controller:
 
 
     def baja(self):
+        """
+        Da de baja un registro en la base de datos.
+        La baja se aplica en la base de datos y en el Treeview.
+        :return: None
+        """
+        
         compra_id = self.view.tree.focus()
         if not compra_id:
             showinfo("Info", "Debe seleccionar un registro para dar de Baja.")
@@ -121,6 +147,13 @@ class Controller:
         
         
     def modificacion(self):
+        """
+        Prepara el formulario para la modificación de un registro.
+        Una vez completado el formulario, se aplica la modificación.
+        La modificación se aplica en la base de datos y en el Treeview.
+        :return: None
+        """
+        
         compra_id = self.view.tree.focus()
         if not compra_id:
             showinfo("Info", "Debe seleccionar un registro para Modificar.")
@@ -148,6 +181,13 @@ class Controller:
 
 
     def consulta(self):
+        """
+        Realiza una consulta en la base de datos.
+        Si el término de búsqueda es "*", se muestran todos los registros.
+        Si el término de búsqueda es un string, se muestran los registros que contengan ese string.
+        :return: None
+        """
+        
         termino_busqueda = self.view.var_consulta.get()
         # Si término_busqueda contiene "*", se muestran todos los registros
         if "*" in termino_busqueda: termino_busqueda = ""
@@ -194,7 +234,6 @@ class Controller:
                      self.view.cb_medio_pago]
         
         for var in campos_var:
-            # if (type(var) == str or type(var) == int) and not var:
             if isinstance(var, (str, int)) and not var:
                 return False
 
@@ -205,17 +244,33 @@ class Controller:
         return True
         
     def preparar_alta(self):
+        """
+        Prepara el formulario para el alta de un registro.
+        :return: None
+        """
+        
         self.view.boton_confirmar.config(state='normal', command=self.alta)
         self.view.boton_cancelar.config(state='normal')
 
 
     def preparar_baja(self):
+        """
+        Prepara el formulario para la baja de un registro.
+        :return: None
+        """
+        
         self.view.boton_confirmar.config(state='normal', command=self.baja)
         self.view.boton_cancelar.config(state='normal')
 
 
     def confirmar(self):
-        # La acción se define en cada caso (alta, baja, modificacion)
+        """
+        Confirma la acción realizada (alta, baja, modificación).
+        Maneja el estado de los botones de confirmar y cancelar.
+        Refresca el gráfico y el Treeview para mostrar los cambios.
+        :return: None
+        """
+
         self.view.boton_confirmar.config(state='disabled')
         self.view.boton_cancelar.config(state='disabled')
         
@@ -224,6 +279,11 @@ class Controller:
             self.view.crear_grafico(self.view.frame_grafico)  # Grafico actualiazado
             
     def cancelar(self):
+        """
+        Cancela la acción realizada (alta, baja, modificación).
+        Maneja el estado de los botones de confirmar y cancelar.
+        :return: None
+        """
         self.view.boton_confirmar.config(state='disabled', command=None)
         self.view.boton_cancelar.config(state='disabled')
         self.view.limpiar_formulario()
@@ -231,6 +291,7 @@ class Controller:
     def aplicar_modificacion(self, compra_id, id_bd):
         """
         Aplica la modificación de un registro en la base de datos.
+        Controla que todos los campos del formulario estén completos.
         :param compra_id: ID del registro a modificar en el Treeview.
         :param id_bd: ID del registro a modificar en la base de datos.
         :return: None
@@ -276,12 +337,24 @@ class Controller:
         self.confirmar()
 
     def obtener_mes_palabra_actual(self):
+        """
+        Obtiene el mes actual en formato palabra.
+        Para esta entrega se devuelve el mes en español.
+        :return: Mes actual en formato palabra.
+        """
+        
         locale.setlocale(locale.LC_TIME, '')  # Devuelva el mes en español
         mes_actual = obtener_mes_actual()
         mes_actual_str = datetime.datetime.strptime(str(mes_actual), "%m").strftime("%B")
         return mes_actual_str.capitalize()
 
     def obtener_total_acumulado(self):
+        """
+        Obtiene el total acumulado del mes actual.
+        El cálculo se realiza en base a los registros de la base de datos.
+        :return: Total acumulado del mes actual.
+        """
+        
         mes_actual = obtener_mes_actual()
         registros = self.model.consulta_bd(mes=mes_actual)
         
@@ -290,7 +363,3 @@ class Controller:
             total_acumulado += row[0]
             
         return total_acumulado
-
-
-
-#-------------------------------FIN CONTROLADOR------------------------------#

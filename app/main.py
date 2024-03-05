@@ -3,6 +3,10 @@ from mvc.view import View
 from mvc.controller import Controller
 
 def main():
+    """
+    Función principal para ejecutar la aplicación.
+    """
+    
     model = Model()
     controller = Controller(model)
     view = View(controller)

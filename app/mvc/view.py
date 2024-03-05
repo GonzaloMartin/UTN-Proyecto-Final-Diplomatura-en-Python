@@ -69,16 +69,31 @@ class View:
         self.cb_medio_pago = None
     
     def cargar_total_acumulado(self):
+        """
+        Carga el total acumulado en el Entry correspondiente.
+        :return: None
+        """
+        
         total_acumulado = self.controller.obtener_total_acumulado()
-        print("AVERRRRR", total_acumulado)
         self.var_total.set(f"$ {total_acumulado:.2f}")
         return total_acumulado
 
     def actualizar_label_total_acumulado(self):
+        """
+        Actualiza el label que indica el mes actual.
+        El mes actual se obtiene del controlador.
+        :return: None
+        """
+        
         mes_actual_str = self.controller.obtener_mes_palabra_actual()
         self.l_total.config(text=f"Total {mes_actual_str}:")
     
     def limpiar_formulario(self):
+        """
+        Limpia los campos del formulario.
+        :return: None
+        """
+        
         self.var_monto.set('')
         self.var_producto.set('')
         self.var_cantidad.set('')
@@ -91,22 +106,49 @@ class View:
         self.cb_medio_pago.set('')
         
     def actualizar_estado_bar(self, mensaje): 
+        """
+        Actualiza el estado de la barra de estado.
+        Fuerza la actualización de la UI.
+        :param mensaje: mensaje a mostrar.
+        :return: None
+        """
+        
         self.estado.config(text=mensaje)  # Actualiza texto del label
         self.root.update_idletasks()  # Fuerza la actualización de la UI
     
     def actualizar_estado_fecha(self):
+        """
+        Actualiza el estado del campo de fecha.
+        Si el checkbutton está seleccionado, deshabilita el campo de fecha.
+        Si no, habilita el campo de fecha.
+        :return: None
+        """
+        
         if self.var_check_vencimiento.get():
             self.e_vencimiento.config(state='disabled')
         else:
             self.e_vencimiento.config(state='normal')
             
     def cargar_datos_en_treeview(self):
+        """
+        Carga los datos de la base de datos en el TreeView.
+        :return: None
+        """
+        
         registros = self.controller.get_consulta_bd()
         for row in registros:
             self.tree.insert('', 'end', text=str(row[0]), values=row[1:])
 
     # GRÁFICO            
     def crear_grafico(self, frame_grafico):
+        """
+        Crea un gráfico de barras con los datos obtenidos de la base de datos.
+        El gráfico sólo muestra los rubros que tienen gastos en el mes actual.
+        Si el mes en curso no tiene gastos en un rubro, se muestra un gráfico vacío.
+        :param frame_grafico: Frame donde se ubicará el gráfico.
+        :return: None
+        """
+        
         data = self.controller.get_obtener_datos_grafico()
         mes_palabra = self.controller.obtener_mes_palabra_actual()
         rubros = []
@@ -151,6 +193,15 @@ class View:
 
     # VIEW
     def create_view(self):
+        """
+        Crea la vista principal de la aplicación.
+        Se establece una resolución por defecto de 1600x900.
+        La interfaz gráfica se compone de varios frames, labels, entrys, 
+        comboboxes, botones y un TreeView.
+        La vista puede variar según la resolución de la pantalla y el sistema operativo.
+        :return: None
+        """
+        
         self.root = Tk()
         self.root.grid_columnconfigure(0, weight=1)
         self.root.grid_columnconfigure(1, weight=0)
@@ -400,4 +451,3 @@ class View:
         self.cargar_total_acumulado()
         self.cargar_datos_en_treeview()
         self.root.mainloop()
-        # FIN VISTA

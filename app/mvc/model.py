@@ -1,11 +1,6 @@
 import sqlite3
 from utils.utils import obtener_mes_actual
 
-
-##############################################################################
-
-#--------------------------------INICIO MODELO-------------------------------#
-
 class Model:
         
     def __init__(self):
@@ -17,6 +12,7 @@ class Model:
         Conecta a la base de datos y devuelve el objeto conexión
         :return: objeto conexión
         """
+        
         conn = sqlite3.connect('database/base_de_datos.db')
         return conn
 
@@ -25,6 +21,7 @@ class Model:
         Desconecta de la base de datos 
         :return: None
         """
+        
         self.conn.close()
 
     def crear_tabla(self):
@@ -32,6 +29,7 @@ class Model:
         Crea la tabla si no existe en la base de datos
         :return: None
         """
+        
         cursor = self.conn.cursor()
         query = """CREATE TABLE IF NOT EXISTS gastos (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,7 +55,6 @@ class Model:
         :return: id del registro insertado
         """
         
-        # conn = conectar_base_de_datos()
         cursor = self.conn.cursor()
         query = """INSERT INTO gastos (producto_servicio,
                 cantidad,
@@ -85,7 +82,6 @@ class Model:
         cursor.execute(query, data)
         self.conn.commit()
         ultimo_id = cursor.lastrowid 
-        # desconectar_base_de_datos(conn)
         return ultimo_id
 
     def baja_bd(self, id_registro):
@@ -94,12 +90,12 @@ class Model:
         :param id_registro: id del registro a eliminar
         :return: None
         """
-        # conn = conectar_base_de_datos()
+        
         cursor = self.conn.cursor()
         query = "DELETE FROM gastos WHERE id = ?;"
         cursor.execute(query, (id_registro,))
         self.conn.commit()
-        # desconectar_base_de_datos(conn)
+
 
     def modificacion_bd(self, id_registro, valores):
         """
@@ -108,7 +104,7 @@ class Model:
         :param valores: diccionario con los valores a modificar
         :return: None
         """
-        # conn = conectar_base_de_datos()
+
         cursor = self.conn.cursor()
         query = """UPDATE gastos SET
                 producto_servicio = ?,
@@ -137,18 +133,15 @@ class Model:
 
         cursor.execute(query, data)
         self.conn.commit()
-        # desconectar_base_de_datos(conn)
-
+        
     def consulta_bd(self, mes=None):
-        # Consulta todos los registros. Pero si se especifica 1 mes, filtra por mes
         """
         Consulta todos los registros de la base de datos y devuelve una lista de tuplas
         Si se especifica un mes, filtra por ese mes.
-        :param mes: (opcoinal) mes a filtrar
-        :return: lista de tuplas
+        :param mes: (opcoinal) mes a filtrar.
+        :return: lista de tuplas.
         """
         
-        # conn = conectar_base_de_datos()
         cursor = self.conn.cursor()
         if mes is not None:
             query = "SELECT subtotal FROM gastos WHERE strftime('%m', fecha) = ?;"
@@ -157,11 +150,9 @@ class Model:
             query = """SELECT * FROM gastos;"""
             cursor.execute(query)
         rows = cursor.fetchall()
-        # desconectar_base_de_datos(conn)
+
         return rows
 
-    # conn = conectar_base_de_datos()
-    # crear_tabla(conn)
     
     #-----FIN BASE DE DATOS-----#
     def obtener_datos_grafico(self, obtener_mes_actual):
@@ -170,6 +161,7 @@ class Model:
         :param obtener_mes_actual: función que devuelve el número de mes actual.
         :return: lista de tuplas con los datos.
         """
+        
         cursor = self.conn.cursor()
         
         num_mes_actual = obtener_mes_actual
@@ -187,20 +179,3 @@ class Model:
         cursor.execute(query)
         data = cursor.fetchall()
         return data
-        
-    #-----GRAFICO (DATOS)-----#
-    # def obtener_datos_grafico(self):
-    #     # conn = conectar_base_de_datos()
-    #     cursor = self.conn.cursor()
-    #     
-    #     num_mes_actual = str(obtener_mes_actual())
-    #     query = f"SELECT rubro, SUM(subtotal) FROM gastos WHERE strftime('%m', fecha) = '{num_mes_actual}' GROUP BY rubro"
-    #     cursor.execute(query)
-    #     data = cursor.fetchall()
-    #     # desconectar_base_de_datos(conn)
-    #     return data
-    #-----FIN GRAFICO (DATOS)-----#
-
-    #---------------------------------FIN MODELO---------------------------------#
-
-##############################################################################
