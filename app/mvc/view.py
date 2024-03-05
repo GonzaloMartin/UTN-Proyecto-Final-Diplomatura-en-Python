@@ -213,8 +213,8 @@ class View:
 
         #-----FRAMES-----#
         header_frame = Frame(self.root)
-        header_frame.grid_columnconfigure(1, weight=1)
-        # header_frame.grid(row=0, column=0, sticky='ew', padx=0, pady=5)
+        ## header_frame.grid_columnconfigure(1, weight=1)
+        header_frame.grid(row=0, column=0, sticky='ew', padx=0, pady=5)
         
         version_frame = Frame(self.root, borderwidth=1, relief="solid")
         version_frame.grid(row=0, column=1, sticky='ew', padx=20, pady=10)
