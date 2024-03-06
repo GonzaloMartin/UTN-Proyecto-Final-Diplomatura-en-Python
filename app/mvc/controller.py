@@ -58,34 +58,30 @@ class Controller:
 
         self.view.var_vencimiento.set(vencimiento_value)        
 
-        if (not self.view.var_producto.get() or
-                not self.view.var_cantidad.get() or
-                not self.view.var_monto.get() or
-                not self.view.cb_responsable.get()):
-            self.view.actualizar_estado_bar("Se deben completar todos los campos de ingreso")
-            showinfo("Info", "Se deben completar todos los campos de ingreso")
-            self.cancelar()
-            return
-
         valores = {
-            'monto': float(self.view.var_monto.get()),
+            # 'monto': float(self.view.var_monto.get()),
+            'monto': self.view.var_monto.get(),
             'producto': self.view.var_producto.get(),
             'rubro': self.view.cb_rubro.get(),
             'fecha': self.view.cal_fecha.get_date().strftime("%Y-%m-%d"),
             'proveedor': self.view.var_proveedor.get(),
             'medio_pago': self.view.cb_medio_pago.get(),
             'responsable': self.view.cb_responsable.get(),
-            'cantidad': int(self.view.var_cantidad.get()),
+            # 'cantidad': int(self.view.var_cantidad.get()),
+            'cantidad': self.view.var_cantidad.get(),
             'vencimiento': vencimiento_value
         }
+        
+        if not self.validar_campos(valores=valores):
+            self.view.actualizar_estado_bar("Campos vacíos o inconsistentes. Revisar.")
+            showinfo("Info", "Campos vacíos o inconsistentes. Revisar.")
+            self.cancelar()
+            return
 
-        for valor in valores.values():
-            if not valor:
-                showinfo("Info", "Todos los campos de alta deben tener contenido.")
-                self.view.actualizar_estado_bar("Todos los campos de alta deben tener contenido.")
-                self.view.cancelar()
-                return
-
+        # Fuerzo con casting para poder agregar
+        valores['monto'] = float(valores['monto'])
+        valores['cantidad'] = int(valores['cantidad'])
+        
         if valores['cantidad'] <= 0 or valores['monto'] <= 0:
             self.view.actualizar_estado_bar("Cantidad y monto deben ser números positivos.")
             return
@@ -217,7 +213,7 @@ class Controller:
         self.view.cargar_total_acumulado()
     #-----FIN ABMC-----#
 
-    def validar_campos(self):
+    def validar_campos(self, valores=None, nuevo_valor=None):
         """
         Valida que todos los campos del formulario estén completos.
         :return: True si todos los campos están completos, False en caso contrario.        
@@ -240,6 +236,32 @@ class Controller:
         for cb in campos_cb:
             if not cb:
                 return False
+
+        # Validaciones Regex
+        patrones = {
+            'producto': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
+            'cantidad': r'^\d+$',
+            'monto': r'^\d+(\.\d+)?$',
+            'responsable': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
+            'rubro': r'^[a-zA-Z0-9 ]+$',
+            'proveedor': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
+            'medio_pago': r'^[a-zA-Z0-9 ]+$',
+            'fecha': r'^\d{4}-\d{2}-\d{2}$',
+            'vencimiento': r'^(?:\d{4}-\d{2}-\d{2}|N/A)$'  # N/A o fecha
+        }
+
+        diccionario_valor = {}
+        if valores:
+            diccionario_valor = valores
+        else:
+            diccionario_valor = nuevo_valor
+
+        for campo, valor in diccionario_valor.items():
+            # No intenta validar campos que no tienen un patrón definido
+            if campo in patrones:
+                if not re.match(patrones[campo], str(valor)):
+                    print(f"Campo {campo} no cumple con el patrón definido. Campo {campo}: {valor}")       
+                    return False
 
         return True
         
@@ -297,12 +319,6 @@ class Controller:
         :return: None
         """
         
-        if not self.validar_campos():
-            self.view.actualizar_estado_bar("Todos los campos deben estar llenos.")
-            showinfo("Info", "Todos los campos deben estar llenos.")
-            self.cancelar()
-            return
-
         nuevo_valor = {
             'producto': self.view.var_producto.get(),
             'cantidad': int(self.view.var_cantidad.get()),
@@ -314,6 +330,12 @@ class Controller:
             'fecha': self.view.var_fecha.get(),
             'vencimiento': self.view.var_vencimiento.get()
         }
+                
+        if not self.validar_campos(nuevo_valor=nuevo_valor):
+            self.view.actualizar_estado_bar("Campos vacíos o inconsistentes. Revisar.")
+            showinfo("Info", "Campos vacíos o inconsistentes. Revisar.")
+            self.cancelar()
+            return
 
         self.model.modificacion_bd(id_bd, nuevo_valor)
 

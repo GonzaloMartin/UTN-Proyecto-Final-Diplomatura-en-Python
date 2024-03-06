@@ -249,7 +249,8 @@ class View:
 
         self.var_id = IntVar()
         self.var_producto = StringVar()
-        self.var_cantidad = IntVar()
+        # var_cantidad StringVar en lugar de IntVar porque se valida en validar_campos()
+        self.var_cantidad = StringVar()
         self.var_monto = StringVar()
         self.var_responsable = StringVar()
         self.var_subtotal = StringVar()
