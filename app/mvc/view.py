@@ -29,6 +29,8 @@ from tkcalendar import DateEntry
 
 from .model import Model
 
+from utils.utils import obtener_fecha_actual
+
 class View:
     
     opciones_rubro = ["Mantenimiento", "Impuestos", "Servicios",
@@ -104,6 +106,10 @@ class View:
         self.cb_responsable.set('')
         self.cb_rubro.set('')
         self.cb_medio_pago.set('')
+        self.cal_fecha.set_date(obtener_fecha_actual())
+        self.var_check_vencimiento.set(False)
+        self.e_vencimiento.config(state='normal')
+        self.e_vencimiento.set_date(obtener_fecha_actual())
         
     def actualizar_estado_bar(self, mensaje): 
         """

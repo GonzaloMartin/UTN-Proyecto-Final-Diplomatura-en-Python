@@ -4,7 +4,7 @@ import re
 
 from tkinter.messagebox import showinfo
 
-from utils.utils import obtener_mes_actual
+from utils.utils import obtener_mes_actual, reformatear_fecha, des_reformatear_fecha
 
 class Controller:
     
@@ -56,10 +56,9 @@ class Controller:
             due_date = self.view.e_vencimiento.get_date()
             vencimiento_value = due_date.strftime("%Y-%m-%d")
 
-        self.view.var_vencimiento.set(vencimiento_value)        
+        self.view.var_vencimiento.set(vencimiento_value)
 
         valores = {
-            # 'monto': float(self.view.var_monto.get()),
             'monto': self.view.var_monto.get(),
             'producto': self.view.var_producto.get(),
             'rubro': self.view.cb_rubro.get(),
@@ -67,7 +66,6 @@ class Controller:
             'proveedor': self.view.var_proveedor.get(),
             'medio_pago': self.view.cb_medio_pago.get(),
             'responsable': self.view.cb_responsable.get(),
-            # 'cantidad': int(self.view.var_cantidad.get()),
             'cantidad': self.view.var_cantidad.get(),
             'vencimiento': vencimiento_value
         }
@@ -91,24 +89,23 @@ class Controller:
         subtotal_acumulado = round(valores['cantidad'] * valores['monto'], 2)
 
         self.view.tree.insert('',
-                              'end',
-                              text=str(ultimo_id),
-                              values=(valores['producto'],
-                                      valores['cantidad'],
-                                      valores['monto'],
-                                      valores['responsable'],
-                                      f"{subtotal_acumulado:.2f}",
-                                      valores['rubro'],
-                                      valores['proveedor'],
-                                      valores['medio_pago'],
-                                      valores['fecha'],
-                                      valores['vencimiento']))
+                            'end',
+                            text=str(ultimo_id),
+                            values=(valores['producto'],
+                                    valores['cantidad'],
+                                    valores['monto'],
+                                    valores['responsable'],
+                                    f"{subtotal_acumulado:.2f}",
+                                    valores['rubro'],
+                                    valores['proveedor'],
+                                    valores['medio_pago'],
+                                    valores['fecha'],
+                                    valores['vencimiento']))
 
         self.view.cargar_total_acumulado()
         self.view.actualizar_estado_bar("Se dio de alta el registro con ID: " + str(ultimo_id))
         self.view.limpiar_formulario()
         self.confirmar()
-
 
     def baja(self):
         """
@@ -163,12 +160,18 @@ class Controller:
         self.view.var_producto.set(valores[0])
         self.view.var_cantidad.set(valores[1])
         self.view.var_monto.set(valores[2])
-        self.view.var_fecha.set(valores[8])
+        self.view.cal_fecha.set_date(reformatear_fecha(valores[8]))
         self.view.cb_responsable.set(valores[3])
         self.view.cb_rubro.set(valores[5])
         self.view.cb_medio_pago.set(valores[7])
         self.view.var_proveedor.set(valores[6])
-        self.view.var_vencimiento.set(valores[9])
+
+        if valores[9] != 'N/A':
+            self.view.var_check_vencimiento.set(False)
+            self.view.e_vencimiento.set_date(reformatear_fecha(valores[9]))
+        else:
+            self.view.var_check_vencimiento.set(True)
+            self.view.e_vencimiento.config(state='disabled')
         
         self.view.actualizar_estado_bar("Modificando registro ID: " + str(id_bd))
         
@@ -237,7 +240,7 @@ class Controller:
             if not cb:
                 return False
 
-        # Validaciones Regex
+        # Validaciones Regex:
         patrones = {
             'producto': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
             'cantidad': r'^\d+$',
@@ -245,8 +248,8 @@ class Controller:
             'responsable': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
             'rubro': r'^[a-zA-Z0-9 ]+$',
             'proveedor': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
-            'medio_pago': r'^[a-zA-Z0-9 ]+$',
-            'fecha': r'^\d{4}-\d{2}-\d{2}$',
+            'medio_pago': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
+            'fecha': r'^\d{4}-\d{2}-\d{2}$',  # Formato fecha aaaa-mm-dd
             'vencimiento': r'^(?:\d{4}-\d{2}-\d{2}|N/A)$'  # N/A o fecha
         }
 
@@ -255,6 +258,8 @@ class Controller:
             diccionario_valor = valores
         else:
             diccionario_valor = nuevo_valor
+            diccionario_valor['fecha'] = des_reformatear_fecha(diccionario_valor['fecha'])
+            diccionario_valor['vencimiento'] = des_reformatear_fecha(diccionario_valor['vencimiento']) if diccionario_valor['vencimiento'] != 'N/A' else 'N/A'
 
         for campo, valor in diccionario_valor.items():
             # No intenta validar campos que no tienen un patrón definido
@@ -321,16 +326,20 @@ class Controller:
         
         nuevo_valor = {
             'producto': self.view.var_producto.get(),
-            'cantidad': int(self.view.var_cantidad.get()),
-            'monto': float(self.view.var_monto.get()),
+            'cantidad': self.view.var_cantidad.get(),
+            'monto': self.view.var_monto.get(),
             'responsable': self.view.cb_responsable.get(),
             'rubro': self.view.cb_rubro.get(),
             'proveedor': self.view.var_proveedor.get(),
             'medio_pago': self.view.cb_medio_pago.get(),
-            'fecha': self.view.var_fecha.get(),
-            'vencimiento': self.view.var_vencimiento.get()
+            'fecha': self.view.cal_fecha.get(),
+            'vencimiento': self.view.e_vencimiento.get()
         }
-                
+        
+        if self.view.var_check_vencimiento.get():
+            vencimiento_value = 'N/A'
+            nuevo_valor['vencimiento'] = vencimiento_value
+
         if not self.validar_campos(nuevo_valor=nuevo_valor):
             self.view.actualizar_estado_bar("Campos vacíos o inconsistentes. Revisar.")
             showinfo("Info", "Campos vacíos o inconsistentes. Revisar.")
@@ -339,13 +348,15 @@ class Controller:
 
         self.model.modificacion_bd(id_bd, nuevo_valor)
 
+        subtotal_acumulado = round(nuevo_valor['cantidad'] * nuevo_valor['monto'], 2)
+        
         if self.view.tree.exists(compra_id):
             self.view.tree.item(compra_id, values=(
                 nuevo_valor['producto'],
                 nuevo_valor['cantidad'],
                 nuevo_valor['monto'],
                 nuevo_valor['responsable'],
-                nuevo_valor['monto'] * nuevo_valor['cantidad'], # Subtotal
+                f"{subtotal_acumulado:.2f}", # Subtotal
                 nuevo_valor['rubro'],
                 nuevo_valor['proveedor'],
                 nuevo_valor['medio_pago'],

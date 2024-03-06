@@ -13,16 +13,22 @@ class Model:
         :return: objeto conexión
         """
         
-        conn = sqlite3.connect('database/base_de_datos.db')
-        return conn
+        try:
+            conn = sqlite3.connect('database/gastos.db')
+            return conn
+        except sqlite3.Error as e:
+            print(e)
+            return None
 
     def desconectar_base_de_datos(self):
         """
         Desconecta de la base de datos 
         :return: None
         """
-        
-        self.conn.close()
+        try:
+            self.conn.close()
+        except sqlite3.Error as e:
+            print(e)
 
     def crear_tabla(self):
         """
@@ -30,22 +36,25 @@ class Model:
         :return: None
         """
         
-        cursor = self.conn.cursor()
-        query = """CREATE TABLE IF NOT EXISTS gastos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                producto_servicio TEXT,
-                cantidad INTEGER,
-                monto FLOAT,
-                responsable TEXT,
-                subtotal FLOAT,
-                rubro TEXT,
-                proveedor TEXT,
-                medio_de_pago TEXT,
-                fecha DATE,
-                vencimiento DATE
-                );"""
-        cursor.execute(query)
-        self.conn.commit()
+        try:
+            cursor = self.conn.cursor()
+            query = """CREATE TABLE IF NOT EXISTS gastos (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    producto_servicio TEXT,
+                    cantidad INTEGER,
+                    monto FLOAT,
+                    responsable TEXT,
+                    subtotal FLOAT,
+                    rubro TEXT,
+                    proveedor TEXT,
+                    medio_de_pago TEXT,
+                    fecha DATE,
+                    vencimiento DATE
+                    );"""
+            cursor.execute(query)
+            self.conn.commit()
+        except sqlite3.Error as e:
+            print(e)
 
     def alta_bd(self, valores):
         """
@@ -54,35 +63,38 @@ class Model:
         :param valores: diccionario con los valores a insertar.
         :return: id del registro insertado
         """
-        
-        cursor = self.conn.cursor()
-        query = """INSERT INTO gastos (producto_servicio,
-                cantidad,
-                monto,
-                responsable,
-                subtotal,
-                rubro, proveedor,
-                medio_de_pago,
-                fecha,
-                vencimiento)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
-                
-        subtotal = valores['cantidad'] * valores['monto']
-        
-        data = (valores['producto'], 
-                valores['cantidad'], 
-                valores['monto'], 
-                valores['responsable'], 
-                subtotal, valores['rubro'], 
-                valores['proveedor'], 
-                valores['medio_pago'], 
-                valores['fecha'], 
-                valores['vencimiento'])
+        try:
+            cursor = self.conn.cursor()
+            query = """INSERT INTO gastos (producto_servicio,
+                    cantidad,
+                    monto,
+                    responsable,
+                    subtotal,
+                    rubro, proveedor,
+                    medio_de_pago,
+                    fecha,
+                    vencimiento)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+                    
+            subtotal = valores['cantidad'] * valores['monto']
+            
+            data = (valores['producto'], 
+                    valores['cantidad'], 
+                    valores['monto'], 
+                    valores['responsable'], 
+                    subtotal, valores['rubro'], 
+                    valores['proveedor'], 
+                    valores['medio_pago'], 
+                    valores['fecha'], 
+                    valores['vencimiento'])
 
-        cursor.execute(query, data)
-        self.conn.commit()
-        ultimo_id = cursor.lastrowid 
-        return ultimo_id
+            cursor.execute(query, data)
+            self.conn.commit()
+            ultimo_id = cursor.lastrowid 
+            return ultimo_id
+        except sqlite3.Error as e:
+            print(e)
+            return None
 
     def baja_bd(self, id_registro):
         """
@@ -91,11 +103,13 @@ class Model:
         :return: None
         """
         
-        cursor = self.conn.cursor()
-        query = "DELETE FROM gastos WHERE id = ?;"
-        cursor.execute(query, (id_registro,))
-        self.conn.commit()
-
+        try:
+            cursor = self.conn.cursor()
+            query = "DELETE FROM gastos WHERE id = ?;"
+            cursor.execute(query, (id_registro,))
+            self.conn.commit()
+        except sqlite3.Error as e:
+            print(e)
 
     def modificacion_bd(self, id_registro, valores):
         """
@@ -105,34 +119,37 @@ class Model:
         :return: None
         """
 
-        cursor = self.conn.cursor()
-        query = """UPDATE gastos SET
-                producto_servicio = ?,
-                cantidad = ?,
-                monto = ?,
-                responsable = ?,
-                subtotal = ?,
-                rubro = ?,
-                proveedor = ?,
-                medio_de_pago = ?,
-                fecha = ?,
-                vencimiento = ?
-                WHERE id = ?;"""
+        try:
+            cursor = self.conn.cursor()
+            query = """UPDATE gastos SET
+                    producto_servicio = ?,
+                    cantidad = ?,
+                    monto = ?,
+                    responsable = ?,
+                    subtotal = ?,
+                    rubro = ?,
+                    proveedor = ?,
+                    medio_de_pago = ?,
+                    fecha = ?,
+                    vencimiento = ?
+                    WHERE id = ?;"""
 
-        subtotal = int(valores['cantidad'] * valores['monto'] * 100) / 100.0
-        data = (valores['producto'],
-                valores['cantidad'],
-                valores['monto'],
-                valores['responsable'],
-                subtotal, valores['rubro'],
-                valores['proveedor'],
-                valores['medio_pago'],
-                valores['fecha'],
-                valores['vencimiento'],
-                id_registro)
+            subtotal = int(valores['cantidad'] * valores['monto'] * 100) / 100.0
+            data = (valores['producto'],
+                    valores['cantidad'],
+                    valores['monto'],
+                    valores['responsable'],
+                    subtotal, valores['rubro'],
+                    valores['proveedor'],
+                    valores['medio_pago'],
+                    valores['fecha'],
+                    valores['vencimiento'],
+                    id_registro)
 
-        cursor.execute(query, data)
-        self.conn.commit()
+            cursor.execute(query, data)
+            self.conn.commit()
+        except sqlite3.Error as e:
+            print(e)
         
     def consulta_bd(self, mes=None):
         """
@@ -142,16 +159,20 @@ class Model:
         :return: lista de tuplas.
         """
         
-        cursor = self.conn.cursor()
-        if mes is not None:
-            query = "SELECT subtotal FROM gastos WHERE strftime('%m', fecha) = ?;"
-            cursor.execute(query, (f"{mes:02d}",))
-        else:
-            query = """SELECT * FROM gastos;"""
-            cursor.execute(query)
-        rows = cursor.fetchall()
+        try:
+            cursor = self.conn.cursor()
+            if mes is not None:
+                query = "SELECT subtotal FROM gastos WHERE strftime('%m', fecha) = ?;"
+                cursor.execute(query, (f"{mes:02d}",))
+            else:
+                query = """SELECT * FROM gastos;"""
+                cursor.execute(query)
+            rows = cursor.fetchall()
 
-        return rows
+            return rows
+        except sqlite3.Error as e:
+            print(e)
+            return []
 
     
     #-----FIN BASE DE DATOS-----#
@@ -161,21 +182,24 @@ class Model:
         :param obtener_mes_actual: función que devuelve el número de mes actual.
         :return: lista de tuplas con los datos.
         """
-        
-        cursor = self.conn.cursor()
-        
-        num_mes_actual = obtener_mes_actual
-        if (not isinstance(num_mes_actual, int) or not (1 <= num_mes_actual <= 12)):
-            print("Número de mes inválido.")
+        try:
+            cursor = self.conn.cursor()
+            
+            num_mes_actual = obtener_mes_actual
+            if (not isinstance(num_mes_actual, int) or not (1 <= num_mes_actual <= 12)):
+                print("Número de mes inválido.")
+                return []
+            
+            mes_formateado = f"{num_mes_actual:02d}"  # formato de mes de 2 dígitos.
+            
+            query = f"""SELECT rubro, SUM(subtotal)
+                        FROM gastos
+                        WHERE strftime('%m', fecha) = '{mes_formateado}'
+                        GROUP BY rubro"""
+            
+            cursor.execute(query)
+            data = cursor.fetchall()
+            return data
+        except sqlite3.Error as e:
+            print(e)
             return []
-        
-        mes_formateado = f"{num_mes_actual:02d}"  # formato de mes de 2 dígitos.
-        
-        query = f"""SELECT rubro, SUM(subtotal)
-                    FROM gastos
-                    WHERE strftime('%m', fecha) = '{mes_formateado}'
-                    GROUP BY rubro"""
-        
-        cursor.execute(query)
-        data = cursor.fetchall()
-        return data
