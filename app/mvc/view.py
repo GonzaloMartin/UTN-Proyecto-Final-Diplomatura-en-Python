@@ -1,3 +1,13 @@
+"""
+view.py
+Contiene la clase View, que se encarga de la interfaz gráfica de la aplicación.
+Se usa la librería tkinter para la creación de la interfaz gráfica.
+Se vincula con el controlador y el modelo para realizar las operaciones necesarias.
+Se usa también la librería matplotlib para la creación de gráficos.
+El gráfico se muestra en un Frame de la interfaz gráfica, el cual se actualiza con los datos de la base de datos.
+La lista treeview se actualiza con los datos de la base de datos.
+"""
+
 import matplotlib.pyplot as plt
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -43,6 +53,14 @@ class View:
     opciones_responsable = ["Gonzalo", "Matías", "Juan"]
     
     def __init__(self, controller):
+        """
+        Constructor de la clase View.
+        Se inicializan las variables de la vista y se crea la instancia del modelo.
+        
+        :param controller: objeto Controller
+        :return: None
+        """
+        
         self.model = Model()
         self.controller = controller
         self.root = None
@@ -73,7 +91,10 @@ class View:
     def cargar_total_acumulado(self):
         """
         Carga el total acumulado en el Entry correspondiente.
-        :return: None
+        Total Acumulado se obtiene del controlador.
+        
+        :param self: objeto View
+        :return: Total Acumulado
         """
         
         total_acumulado = self.controller.obtener_total_acumulado()
@@ -84,6 +105,8 @@ class View:
         """
         Actualiza el label que indica el mes actual.
         El mes actual se obtiene del controlador.
+        
+        :param self: objeto View
         :return: None
         """
         
@@ -93,6 +116,9 @@ class View:
     def limpiar_formulario(self):
         """
         Limpia los campos del formulario.
+        Para fecha y vencimiento se establece la fecha actual.
+        
+        :param self: objeto View
         :return: None
         """
         
@@ -115,6 +141,8 @@ class View:
         """
         Actualiza el estado de la barra de estado.
         Fuerza la actualización de la UI.
+        
+        :param self: objeto View
         :param mensaje: mensaje a mostrar.
         :return: None
         """
@@ -127,6 +155,8 @@ class View:
         Actualiza el estado del campo de fecha.
         Si el checkbutton está seleccionado, deshabilita el campo de fecha.
         Si no, habilita el campo de fecha.
+        
+        :param self: objeto View
         :return: None
         """
         
@@ -138,6 +168,9 @@ class View:
     def cargar_datos_en_treeview(self):
         """
         Carga los datos de la base de datos en el TreeView.
+        Los datos se obtienen del controlador.
+        
+        :param self: objeto View
         :return: None
         """
         
@@ -151,6 +184,8 @@ class View:
         Crea un gráfico de barras con los datos obtenidos de la base de datos.
         El gráfico sólo muestra los rubros que tienen gastos en el mes actual.
         Si el mes en curso no tiene gastos en un rubro, se muestra un gráfico vacío.
+        
+        :param self: objeto View
         :param frame_grafico: Frame donde se ubicará el gráfico.
         :return: None
         """
@@ -205,6 +240,8 @@ class View:
         La interfaz gráfica se compone de varios frames, labels, entrys, 
         comboboxes, botones y un TreeView.
         La vista puede variar según la resolución de la pantalla y el sistema operativo.
+        
+        :param self: objeto View
         :return: None
         """
         

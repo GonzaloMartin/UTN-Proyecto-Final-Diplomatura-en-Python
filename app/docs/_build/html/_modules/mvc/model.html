@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mvc.model &mdash; documentación de Gestor de Gastos Python - 1.0.0</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=36c4ab74"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/translations.js?v=efdbd0b9"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Gestor de Gastos Python
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../main.html">main module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mvc.html">mvc package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Gestor de Gastos Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">mvc.model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para mvc.model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">model.py</span>
+<span class="sd">Este módulo contiene la clase Model que se encarga de la lógica de la aplicación.</span>
+<span class="sd">Tiene funciones inherentes a la base de datos y a la manipulación de los datos.</span>
+<span class="sd">Se vincula con el controlador y la vista para realizar las operaciones necesarias.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="kn">import</span> <span class="n">obtener_mes_actual</span>
+
+<div class="viewcode-block" id="Model">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model">[documentos]</a>
+<span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
+        
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor de la clase Model.</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto Model</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conectar_base_de_datos</span><span class="p">()</span>
+
+    <span class="c1">#-----BASE DE DATOS-----#</span>
+<div class="viewcode-block" id="Model.conectar_base_de_datos">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.conectar_base_de_datos">[documentos]</a>
+    <span class="k">def</span> <span class="nf">conectar_base_de_datos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Conecta a la base de datos y devuelve el objeto conexión</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto Model</span>
+<span class="sd">        :return: objeto conexión</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;database/gastos.db&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">conn</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.desconectar_base_de_datos">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.desconectar_base_de_datos">[documentos]</a>
+    <span class="k">def</span> <span class="nf">desconectar_base_de_datos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Desconecta de la base de datos </span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto Model</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Model.crear_tabla">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.crear_tabla">[documentos]</a>
+    <span class="k">def</span> <span class="nf">crear_tabla</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Crea la tabla si no existe en la base de datos</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto Model</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS gastos (</span>
+<span class="s2">                    id INTEGER PRIMARY KEY AUTOINCREMENT,</span>
+<span class="s2">                    producto_servicio TEXT,</span>
+<span class="s2">                    cantidad INTEGER,</span>
+<span class="s2">                    monto FLOAT,</span>
+<span class="s2">                    responsable TEXT,</span>
+<span class="s2">                    subtotal FLOAT,</span>
+<span class="s2">                    rubro TEXT,</span>
+<span class="s2">                    proveedor TEXT,</span>
+<span class="s2">                    medio_de_pago TEXT,</span>
+<span class="s2">                    fecha DATE,</span>
+<span class="s2">                    vencimiento DATE</span>
+<span class="s2">                    );&quot;&quot;&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Model.alta_bd">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.alta_bd">[documentos]</a>
+    <span class="k">def</span> <span class="nf">alta_bd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inserta un nuevo registro en la base de datos</span>
+<span class="sd">        y devuelve el id del registro insertado.</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto Model</span>
+<span class="sd">        :param valores: diccionario con los valores a insertar.</span>
+<span class="sd">        :return: id del registro insertado</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;INSERT INTO gastos (producto_servicio,</span>
+<span class="s2">                    cantidad,</span>
+<span class="s2">                    monto,</span>
+<span class="s2">                    responsable,</span>
+<span class="s2">                    subtotal,</span>
+<span class="s2">                    rubro, proveedor,</span>
+<span class="s2">                    medio_de_pago,</span>
+<span class="s2">                    fecha,</span>
+<span class="s2">                    vencimiento)</span>
+<span class="s2">                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);&quot;&quot;&quot;</span>
+                    
+            <span class="n">subtotal</span> <span class="o">=</span> <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">]</span>
+            
+            <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;producto&#39;</span><span class="p">],</span> 
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">],</span> 
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">],</span> 
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;responsable&#39;</span><span class="p">],</span> 
+                    <span class="n">subtotal</span><span class="p">,</span> <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;rubro&#39;</span><span class="p">],</span> 
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;proveedor&#39;</span><span class="p">],</span> 
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;medio_pago&#39;</span><span class="p">],</span> 
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;fecha&#39;</span><span class="p">],</span> 
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">])</span>
+
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">ultimo_id</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span> 
+            <span class="k">return</span> <span class="n">ultimo_id</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Model.baja_bd">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.baja_bd">[documentos]</a>
+    <span class="k">def</span> <span class="nf">baja_bd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_registro</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Elimina un registro de la base de datos</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto Model</span>
+<span class="sd">        :param id_registro: id del registro a eliminar</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;DELETE FROM gastos WHERE id = ?;&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">id_registro</span><span class="p">,))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Model.modificacion_bd">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.modificacion_bd">[documentos]</a>
+    <span class="k">def</span> <span class="nf">modificacion_bd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_registro</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modifica un registro de la base de datos con los valores pasados por parámetro.</span>
+<span class="sd">        Los valores son un diccionario con los campos a modificar.</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto Model        </span>
+<span class="sd">        :param id_registro: id del registro a modificar</span>
+<span class="sd">        :param valores: diccionario con los valores a modificar</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;UPDATE gastos SET</span>
+<span class="s2">                    producto_servicio = ?,</span>
+<span class="s2">                    cantidad = ?,</span>
+<span class="s2">                    monto = ?,</span>
+<span class="s2">                    responsable = ?,</span>
+<span class="s2">                    subtotal = ?,</span>
+<span class="s2">                    rubro = ?,</span>
+<span class="s2">                    proveedor = ?,</span>
+<span class="s2">                    medio_de_pago = ?,</span>
+<span class="s2">                    fecha = ?,</span>
+<span class="s2">                    vencimiento = ?</span>
+<span class="s2">                    WHERE id = ?;&quot;&quot;&quot;</span>
+
+            <span class="n">subtotal</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;producto&#39;</span><span class="p">],</span>
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">],</span>
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">],</span>
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;responsable&#39;</span><span class="p">],</span>
+                    <span class="n">subtotal</span><span class="p">,</span> <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;rubro&#39;</span><span class="p">],</span>
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;proveedor&#39;</span><span class="p">],</span>
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;medio_pago&#39;</span><span class="p">],</span>
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;fecha&#39;</span><span class="p">],</span>
+                    <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">],</span>
+                    <span class="n">id_registro</span><span class="p">)</span>
+
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+        
+<div class="viewcode-block" id="Model.consulta_bd">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.consulta_bd">[documentos]</a>
+    <span class="k">def</span> <span class="nf">consulta_bd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Consulta todos los registros de la base de datos y devuelve una lista de tuplas</span>
+<span class="sd">        Si se especifica un mes, filtra por ese mes.</span>
+<span class="sd">        Además, si no se especifica un mes, devuelve todos los registros.</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto Model</span>
+<span class="sd">        :param mes: (opcoinal) mes a filtrar.</span>
+<span class="sd">        :return: lista de tuplas.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">mes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT subtotal FROM gastos WHERE strftime(&#39;%m&#39;, fecha) = ?;&quot;</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mes</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;SELECT * FROM gastos;&quot;&quot;&quot;</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">rows</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+
+    
+    <span class="c1">#-----FIN BASE DE DATOS-----#</span>
+<div class="viewcode-block" id="Model.obtener_datos_grafico">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.obtener_datos_grafico">[documentos]</a>
+    <span class="k">def</span> <span class="nf">obtener_datos_grafico</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obtener_mes_actual</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtiene los datos para el gráfico de barras.</span>
+<span class="sd">        El gráfico muestra el total gastado por rubro en el mes actual.</span>
+<span class="sd">        Los datos que usa el gráfico son el rubro y el total gastado.</span>
+<span class="sd">        La información se obtiene de la base de datos.</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto Model</span>
+<span class="sd">        :param obtener_mes_actual: función que devuelve el número de mes actual.</span>
+<span class="sd">        :return: lista de tuplas con los datos.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            
+            <span class="n">num_mes_actual</span> <span class="o">=</span> <span class="n">obtener_mes_actual</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_mes_actual</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">num_mes_actual</span> <span class="o">&lt;=</span> <span class="mi">12</span><span class="p">)):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Número de mes inválido.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">[]</span>
+            
+            <span class="n">mes_formateado</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">num_mes_actual</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># formato de mes de 2 dígitos.</span>
+            
+            <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;SELECT rubro, SUM(subtotal)</span>
+<span class="s2">                        FROM gastos</span>
+<span class="s2">                        WHERE strftime(&#39;%m&#39;, fecha) = &#39;</span><span class="si">{</span><span class="n">mes_formateado</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">                        GROUP BY rubro&quot;&quot;&quot;</span>
+            
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2024, Gonzalo Montalvo - Matias Falconaro.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

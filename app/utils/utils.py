@@ -1,8 +1,15 @@
+"""
+utils.py
+Este módulo contiene funciones que son utilizadas por otros módulos.
+Contiene funciones para obtener el mes actual, la fecha actual, reformatear la fecha y des-reformatear la fecha.
+"""
+
 from datetime import datetime
 
 def obtener_mes_actual():
     """
     Obtiene el número de mes actual del sistema.
+    
     :return: número de mes actual.
     """
     
@@ -11,6 +18,7 @@ def obtener_mes_actual():
 def obtener_fecha_actual():
     """
     Obtiene la fecha actual del sistema con formato mm-dd-yyyy.
+    
     mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.
     dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.
     yyyy: año, 4 dígitos.
@@ -26,9 +34,11 @@ def obtener_fecha_actual():
 def reformatear_fecha(fecha):
     """
     Reformatea la fecha de AAAA-MM-DD a MM/DD/AAAA.
+    
     :param fecha: fecha a reformatear.
     :return: fecha reformateada.
     """
+    
     año, mes, dia = fecha.split("-")
     return f"{mes}/{dia}/{año}"
 
@@ -38,6 +48,7 @@ def des_reformatear_fecha(fecha):
     mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.
     dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.
     yyyy: año, 4 dígitos.
+    
     :param fecha: fecha a reformatear.
     :return: fecha reformateada.
     """

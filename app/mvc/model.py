@@ -1,15 +1,30 @@
+"""
+model.py
+Este módulo contiene la clase Model que se encarga de la lógica de la aplicación.
+Tiene funciones inherentes a la base de datos y a la manipulación de los datos.
+Se vincula con el controlador y la vista para realizar las operaciones necesarias.
+"""
+
 import sqlite3
 from utils.utils import obtener_mes_actual
 
 class Model:
         
     def __init__(self):
+        """
+        Constructor de la clase Model.
+        
+        :param self: objeto Model
+        :return: None
+        """
         self.conn = self.conectar_base_de_datos()
 
     #-----BASE DE DATOS-----#
     def conectar_base_de_datos(self):
         """
         Conecta a la base de datos y devuelve el objeto conexión
+        
+        :param self: objeto Model
         :return: objeto conexión
         """
         
@@ -23,6 +38,8 @@ class Model:
     def desconectar_base_de_datos(self):
         """
         Desconecta de la base de datos 
+        
+        :param self: objeto Model
         :return: None
         """
         try:
@@ -33,6 +50,8 @@ class Model:
     def crear_tabla(self):
         """
         Crea la tabla si no existe en la base de datos
+        
+        :param self: objeto Model
         :return: None
         """
         
@@ -60,9 +79,12 @@ class Model:
         """
         Inserta un nuevo registro en la base de datos
         y devuelve el id del registro insertado.
+        
+        :param self: objeto Model
         :param valores: diccionario con los valores a insertar.
         :return: id del registro insertado
         """
+        
         try:
             cursor = self.conn.cursor()
             query = """INSERT INTO gastos (producto_servicio,
@@ -99,6 +121,8 @@ class Model:
     def baja_bd(self, id_registro):
         """
         Elimina un registro de la base de datos
+        
+        :param self: objeto Model
         :param id_registro: id del registro a eliminar
         :return: None
         """
@@ -113,7 +137,10 @@ class Model:
 
     def modificacion_bd(self, id_registro, valores):
         """
-        Modifica un registro de la base de datos
+        Modifica un registro de la base de datos con los valores pasados por parámetro.
+        Los valores son un diccionario con los campos a modificar.
+        
+        :param self: objeto Model        
         :param id_registro: id del registro a modificar
         :param valores: diccionario con los valores a modificar
         :return: None
@@ -155,6 +182,9 @@ class Model:
         """
         Consulta todos los registros de la base de datos y devuelve una lista de tuplas
         Si se especifica un mes, filtra por ese mes.
+        Además, si no se especifica un mes, devuelve todos los registros.
+        
+        :param self: objeto Model
         :param mes: (opcoinal) mes a filtrar.
         :return: lista de tuplas.
         """
@@ -179,6 +209,11 @@ class Model:
     def obtener_datos_grafico(self, obtener_mes_actual):
         """
         Obtiene los datos para el gráfico de barras.
+        El gráfico muestra el total gastado por rubro en el mes actual.
+        Los datos que usa el gráfico son el rubro y el total gastado.
+        La información se obtiene de la base de datos.
+        
+        :param self: objeto Model
         :param obtener_mes_actual: función que devuelve el número de mes actual.
         :return: lista de tuplas con los datos.
         """

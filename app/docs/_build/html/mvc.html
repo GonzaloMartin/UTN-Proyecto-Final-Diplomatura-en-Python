@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mvc package &mdash; documentación de Gestor de Gastos Python - 1.0.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=36c4ab74"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/translations.js?v=efdbd0b9"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="prev" title="main module" href="main.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Gestor de Gastos Python
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">mvc package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mvc.controller">mvc.controller module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mvc.controller.Controller"><code class="docutils literal notranslate"><span class="pre">Controller</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.alta"><code class="docutils literal notranslate"><span class="pre">Controller.alta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.aplicar_modificacion"><code class="docutils literal notranslate"><span class="pre">Controller.aplicar_modificacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.baja"><code class="docutils literal notranslate"><span class="pre">Controller.baja()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.cancelar"><code class="docutils literal notranslate"><span class="pre">Controller.cancelar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.confirmar"><code class="docutils literal notranslate"><span class="pre">Controller.confirmar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.consulta"><code class="docutils literal notranslate"><span class="pre">Controller.consulta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.get_consulta_bd"><code class="docutils literal notranslate"><span class="pre">Controller.get_consulta_bd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.get_obtener_datos_grafico"><code class="docutils literal notranslate"><span class="pre">Controller.get_obtener_datos_grafico()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.modificacion"><code class="docutils literal notranslate"><span class="pre">Controller.modificacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.obtener_mes_palabra_actual"><code class="docutils literal notranslate"><span class="pre">Controller.obtener_mes_palabra_actual()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.obtener_total_acumulado"><code class="docutils literal notranslate"><span class="pre">Controller.obtener_total_acumulado()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.preparar_alta"><code class="docutils literal notranslate"><span class="pre">Controller.preparar_alta()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.preparar_baja"><code class="docutils literal notranslate"><span class="pre">Controller.preparar_baja()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.set_view"><code class="docutils literal notranslate"><span class="pre">Controller.set_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.controller.Controller.validar_campos"><code class="docutils literal notranslate"><span class="pre">Controller.validar_campos()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mvc.model">mvc.model module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mvc.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.model.Model.alta_bd"><code class="docutils literal notranslate"><span class="pre">Model.alta_bd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.model.Model.baja_bd"><code class="docutils literal notranslate"><span class="pre">Model.baja_bd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.model.Model.conectar_base_de_datos"><code class="docutils literal notranslate"><span class="pre">Model.conectar_base_de_datos()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.model.Model.consulta_bd"><code class="docutils literal notranslate"><span class="pre">Model.consulta_bd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.model.Model.crear_tabla"><code class="docutils literal notranslate"><span class="pre">Model.crear_tabla()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.model.Model.desconectar_base_de_datos"><code class="docutils literal notranslate"><span class="pre">Model.desconectar_base_de_datos()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.model.Model.modificacion_bd"><code class="docutils literal notranslate"><span class="pre">Model.modificacion_bd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.model.Model.obtener_datos_grafico"><code class="docutils literal notranslate"><span class="pre">Model.obtener_datos_grafico()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mvc.view">mvc.view module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mvc.view.View"><code class="docutils literal notranslate"><span class="pre">View</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.actualizar_estado_bar"><code class="docutils literal notranslate"><span class="pre">View.actualizar_estado_bar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.actualizar_estado_fecha"><code class="docutils literal notranslate"><span class="pre">View.actualizar_estado_fecha()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.actualizar_label_total_acumulado"><code class="docutils literal notranslate"><span class="pre">View.actualizar_label_total_acumulado()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.cargar_datos_en_treeview"><code class="docutils literal notranslate"><span class="pre">View.cargar_datos_en_treeview()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.cargar_total_acumulado"><code class="docutils literal notranslate"><span class="pre">View.cargar_total_acumulado()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.crear_grafico"><code class="docutils literal notranslate"><span class="pre">View.crear_grafico()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.create_view"><code class="docutils literal notranslate"><span class="pre">View.create_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.limpiar_formulario"><code class="docutils literal notranslate"><span class="pre">View.limpiar_formulario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.opciones_medio_pago"><code class="docutils literal notranslate"><span class="pre">View.opciones_medio_pago</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.opciones_responsable"><code class="docutils literal notranslate"><span class="pre">View.opciones_responsable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mvc.view.View.opciones_rubro"><code class="docutils literal notranslate"><span class="pre">View.opciones_rubro</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mvc">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Gestor de Gastos Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">mvc package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/mvc.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mvc-package">
+<h1>mvc package<a class="headerlink" href="#mvc-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-mvc.controller">
+<span id="mvc-controller-module"></span><h2>mvc.controller module<a class="headerlink" href="#module-mvc.controller" title="Link to this heading"></a></h2>
+<p>controller.py
+Este módulo contiene la clase Controller, que se encarga de manejar la lógica de la aplicación.
+Se vincula con la vista y el modelo para realizar las operaciones necesarias.
+También referencia a la clase Model para realizar las operaciones en la base de datos.
+Así mismo, referencia a la clase View para realizar las operaciones en la interfaz gráfica.
+De igual manera se encarga de manejar las operaciones de alta, baja, modificación y consulta de registros.
+Usa funciones reutilizables de utils.py para obtener el mes actual y reformatear fechas.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mvc.controller.Controller">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mvc.controller.</span></span><span class="sig-name descname"><span class="pre">Controller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.alta">
+<span class="sig-name descname"><span class="pre">alta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.alta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.alta" title="Link to this definition"></a></dt>
+<dd><p>Da de alta un registro en la base de datos.
+Controla que todos los campos del formulario estén completos.
+El alta se aplica en la base de datos y en el Treeview.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.aplicar_modificacion">
+<span class="sig-name descname"><span class="pre">aplicar_modificacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compra_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_bd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.aplicar_modificacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.aplicar_modificacion" title="Link to this definition"></a></dt>
+<dd><p>Aplica la modificación de un registro en la base de datos.
+Controla que todos los campos del formulario estén completos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – Objeto Controller.</p></li>
+<li><p><strong>compra_id</strong> – ID del registro a modificar en el Treeview.</p></li>
+<li><p><strong>id_bd</strong> – ID del registro a modificar en la base de datos.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.baja">
+<span class="sig-name descname"><span class="pre">baja</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.baja"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.baja" title="Link to this definition"></a></dt>
+<dd><p>Da de baja un registro en la base de datos.
+La baja se aplica en la base de datos y en el Treeview.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.cancelar">
+<span class="sig-name descname"><span class="pre">cancelar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.cancelar"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.cancelar" title="Link to this definition"></a></dt>
+<dd><p>Cancela la acción realizada (alta, baja, modificación).
+Maneja el estado de los botones de confirmar y cancelar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.confirmar">
+<span class="sig-name descname"><span class="pre">confirmar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.confirmar"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.confirmar" title="Link to this definition"></a></dt>
+<dd><p>Confirma la acción realizada (alta, baja, modificación).
+Maneja el estado de los botones de confirmar y cancelar.
+Refresca el gráfico y el Treeview para mostrar los cambios.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.consulta">
+<span class="sig-name descname"><span class="pre">consulta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.consulta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.consulta" title="Link to this definition"></a></dt>
+<dd><p>Realiza una consulta en la base de datos.
+Si el término de búsqueda es «*», se muestran todos los registros.
+Si el término de búsqueda es un string, se muestran los registros que contengan ese string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.get_consulta_bd">
+<span class="sig-name descname"><span class="pre">get_consulta_bd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.get_consulta_bd"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.get_consulta_bd" title="Link to this definition"></a></dt>
+<dd><p>Obtiene los registros de la base de datos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – Objeto Controller.</p></li>
+<li><p><strong>mes</strong> – Mes a consultar (Valor opcional).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Registros de la base de datos.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.get_obtener_datos_grafico">
+<span class="sig-name descname"><span class="pre">get_obtener_datos_grafico</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.get_obtener_datos_grafico"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.get_obtener_datos_grafico" title="Link to this definition"></a></dt>
+<dd><p>Obtiene los datos para el gráfico.
+Previamente se obtiene el mes actual desde el sistema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Lista con los datos para el gráfico.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.modificacion">
+<span class="sig-name descname"><span class="pre">modificacion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.modificacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.modificacion" title="Link to this definition"></a></dt>
+<dd><p>Prepara el formulario para la modificación de un registro.
+Una vez completado el formulario, se aplica la modificación.
+La modificación se aplica en la base de datos y en el Treeview.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.obtener_mes_palabra_actual">
+<span class="sig-name descname"><span class="pre">obtener_mes_palabra_actual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.obtener_mes_palabra_actual"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.obtener_mes_palabra_actual" title="Link to this definition"></a></dt>
+<dd><p>Obtiene el mes actual en formato palabra.
+Para esta entrega se devuelve el mes en español.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mes actual en formato palabra.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.obtener_total_acumulado">
+<span class="sig-name descname"><span class="pre">obtener_total_acumulado</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.obtener_total_acumulado"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.obtener_total_acumulado" title="Link to this definition"></a></dt>
+<dd><p>Obtiene el total acumulado del mes actual.
+El cálculo se realiza en base a los registros de la base de datos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Total acumulado del mes actual.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.preparar_alta">
+<span class="sig-name descname"><span class="pre">preparar_alta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.preparar_alta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.preparar_alta" title="Link to this definition"></a></dt>
+<dd><p>Prepara el formulario para el alta de un registro.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.preparar_baja">
+<span class="sig-name descname"><span class="pre">preparar_baja</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.preparar_baja"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.preparar_baja" title="Link to this definition"></a></dt>
+<dd><p>Prepara el formulario para la baja de un registro.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.set_view">
+<span class="sig-name descname"><span class="pre">set_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.set_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.set_view" title="Link to this definition"></a></dt>
+<dd><p>Setea la vista para el controller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – Objeto Controller.</p></li>
+<li><p><strong>view</strong> – Vista a setear.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.controller.Controller.validar_campos">
+<span class="sig-name descname"><span class="pre">validar_campos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nuevo_valor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.validar_campos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.validar_campos" title="Link to this definition"></a></dt>
+<dd><p>Valida que todos los campos del formulario estén completos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>True si todos los campos están completos, False en caso contrario.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mvc.model">
+<span id="mvc-model-module"></span><h2>mvc.model module<a class="headerlink" href="#module-mvc.model" title="Link to this heading"></a></h2>
+<p>model.py
+Este módulo contiene la clase Model que se encarga de la lógica de la aplicación.
+Tiene funciones inherentes a la base de datos y a la manipulación de los datos.
+Se vincula con el controlador y la vista para realizar las operaciones necesarias.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mvc.model.Model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mvc.model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><a class="reference internal" href="_modules/mvc/model.html#Model"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.model.Model.alta_bd">
+<span class="sig-name descname"><span class="pre">alta_bd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.alta_bd"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.alta_bd" title="Link to this definition"></a></dt>
+<dd><p>Inserta un nuevo registro en la base de datos
+y devuelve el id del registro insertado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – objeto Model</p></li>
+<li><p><strong>valores</strong> – diccionario con los valores a insertar.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>id del registro insertado</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.model.Model.baja_bd">
+<span class="sig-name descname"><span class="pre">baja_bd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_registro</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.baja_bd"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.baja_bd" title="Link to this definition"></a></dt>
+<dd><p>Elimina un registro de la base de datos</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – objeto Model</p></li>
+<li><p><strong>id_registro</strong> – id del registro a eliminar</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.model.Model.conectar_base_de_datos">
+<span class="sig-name descname"><span class="pre">conectar_base_de_datos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.conectar_base_de_datos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.conectar_base_de_datos" title="Link to this definition"></a></dt>
+<dd><p>Conecta a la base de datos y devuelve el objeto conexión</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – objeto Model</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>objeto conexión</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.model.Model.consulta_bd">
+<span class="sig-name descname"><span class="pre">consulta_bd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.consulta_bd"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.consulta_bd" title="Link to this definition"></a></dt>
+<dd><p>Consulta todos los registros de la base de datos y devuelve una lista de tuplas
+Si se especifica un mes, filtra por ese mes.
+Además, si no se especifica un mes, devuelve todos los registros.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – objeto Model</p></li>
+<li><p><strong>mes</strong> – (opcoinal) mes a filtrar.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>lista de tuplas.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.model.Model.crear_tabla">
+<span class="sig-name descname"><span class="pre">crear_tabla</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.crear_tabla"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.crear_tabla" title="Link to this definition"></a></dt>
+<dd><p>Crea la tabla si no existe en la base de datos</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – objeto Model</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.model.Model.desconectar_base_de_datos">
+<span class="sig-name descname"><span class="pre">desconectar_base_de_datos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.desconectar_base_de_datos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.desconectar_base_de_datos" title="Link to this definition"></a></dt>
+<dd><p>Desconecta de la base de datos</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – objeto Model</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.model.Model.modificacion_bd">
+<span class="sig-name descname"><span class="pre">modificacion_bd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_registro</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.modificacion_bd"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.modificacion_bd" title="Link to this definition"></a></dt>
+<dd><p>Modifica un registro de la base de datos con los valores pasados por parámetro.
+Los valores son un diccionario con los campos a modificar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – objeto Model</p></li>
+<li><p><strong>id_registro</strong> – id del registro a modificar</p></li>
+<li><p><strong>valores</strong> – diccionario con los valores a modificar</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.model.Model.obtener_datos_grafico">
+<span class="sig-name descname"><span class="pre">obtener_datos_grafico</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obtener_mes_actual</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.obtener_datos_grafico"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.obtener_datos_grafico" title="Link to this definition"></a></dt>
+<dd><p>Obtiene los datos para el gráfico de barras.
+El gráfico muestra el total gastado por rubro en el mes actual.
+Los datos que usa el gráfico son el rubro y el total gastado.
+La información se obtiene de la base de datos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – objeto Model</p></li>
+<li><p><strong>obtener_mes_actual</strong> – función que devuelve el número de mes actual.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>lista de tuplas con los datos.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mvc.view">
+<span id="mvc-view-module"></span><h2>mvc.view module<a class="headerlink" href="#module-mvc.view" title="Link to this heading"></a></h2>
+<p>view.py
+Contiene la clase View, que se encarga de la interfaz gráfica de la aplicación.
+Se usa la librería tkinter para la creación de la interfaz gráfica.
+Se vincula con el controlador y el modelo para realizar las operaciones necesarias.
+Se usa también la librería matplotlib para la creación de gráficos.
+El gráfico se muestra en un Frame de la interfaz gráfica, el cual se actualiza con los datos de la base de datos.
+La lista treeview se actualiza con los datos de la base de datos.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mvc.view.View">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mvc.view.</span></span><span class="sig-name descname"><span class="pre">View</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/view.html#View"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.view.View" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.view.View.actualizar_estado_bar">
+<span class="sig-name descname"><span class="pre">actualizar_estado_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mensaje</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/view.html#View.actualizar_estado_bar"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.view.View.actualizar_estado_bar" title="Link to this definition"></a></dt>
+<dd><p>Actualiza el estado de la barra de estado.
+Fuerza la actualización de la UI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – objeto View</p></li>
+<li><p><strong>mensaje</strong> – mensaje a mostrar.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.view.View.actualizar_estado_fecha">
+<span class="sig-name descname"><span class="pre">actualizar_estado_fecha</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/view.html#View.actualizar_estado_fecha"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.view.View.actualizar_estado_fecha" title="Link to this definition"></a></dt>
+<dd><p>Actualiza el estado del campo de fecha.
+Si el checkbutton está seleccionado, deshabilita el campo de fecha.
+Si no, habilita el campo de fecha.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – objeto View</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.view.View.actualizar_label_total_acumulado">
+<span class="sig-name descname"><span class="pre">actualizar_label_total_acumulado</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/view.html#View.actualizar_label_total_acumulado"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.view.View.actualizar_label_total_acumulado" title="Link to this definition"></a></dt>
+<dd><p>Actualiza el label que indica el mes actual.
+El mes actual se obtiene del controlador.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – objeto View</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.view.View.cargar_datos_en_treeview">
+<span class="sig-name descname"><span class="pre">cargar_datos_en_treeview</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/view.html#View.cargar_datos_en_treeview"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.view.View.cargar_datos_en_treeview" title="Link to this definition"></a></dt>
+<dd><p>Carga los datos de la base de datos en el TreeView.
+Los datos se obtienen del controlador.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – objeto View</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.view.View.cargar_total_acumulado">
+<span class="sig-name descname"><span class="pre">cargar_total_acumulado</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/view.html#View.cargar_total_acumulado"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.view.View.cargar_total_acumulado" title="Link to this definition"></a></dt>
+<dd><p>Carga el total acumulado en el Entry correspondiente.
+Total Acumulado se obtiene del controlador.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – objeto View</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Total Acumulado</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.view.View.crear_grafico">
+<span class="sig-name descname"><span class="pre">crear_grafico</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_grafico</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/view.html#View.crear_grafico"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.view.View.crear_grafico" title="Link to this definition"></a></dt>
+<dd><p>Crea un gráfico de barras con los datos obtenidos de la base de datos.
+El gráfico sólo muestra los rubros que tienen gastos en el mes actual.
+Si el mes en curso no tiene gastos en un rubro, se muestra un gráfico vacío.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – objeto View</p></li>
+<li><p><strong>frame_grafico</strong> – Frame donde se ubicará el gráfico.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.view.View.create_view">
+<span class="sig-name descname"><span class="pre">create_view</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/view.html#View.create_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.view.View.create_view" title="Link to this definition"></a></dt>
+<dd><p>Crea la vista principal de la aplicación.
+Se establece una resolución por defecto de 1600x900.
+La interfaz gráfica se compone de varios frames, labels, entrys, 
+comboboxes, botones y un TreeView.
+La vista puede variar según la resolución de la pantalla y el sistema operativo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – objeto View</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mvc.view.View.limpiar_formulario">
+<span class="sig-name descname"><span class="pre">limpiar_formulario</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/view.html#View.limpiar_formulario"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.view.View.limpiar_formulario" title="Link to this definition"></a></dt>
+<dd><p>Limpia los campos del formulario.
+Para fecha y vencimiento se establece la fecha actual.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – objeto View</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mvc.view.View.opciones_medio_pago">
+<span class="sig-name descname"><span class="pre">opciones_medio_pago</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Efectivo',</span> <span class="pre">'Billetera</span> <span class="pre">virtual',</span> <span class="pre">'Cheque',</span> <span class="pre">'Tarjeta</span> <span class="pre">de</span> <span class="pre">Crédito',</span> <span class="pre">'Tarjeta</span> <span class="pre">de</span> <span class="pre">Débito',</span> <span class="pre">'Transferencia',</span> <span class="pre">'Otro']</span></em><a class="headerlink" href="#mvc.view.View.opciones_medio_pago" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mvc.view.View.opciones_responsable">
+<span class="sig-name descname"><span class="pre">opciones_responsable</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Gonzalo',</span> <span class="pre">'Matías',</span> <span class="pre">'Juan']</span></em><a class="headerlink" href="#mvc.view.View.opciones_responsable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mvc.view.View.opciones_rubro">
+<span class="sig-name descname"><span class="pre">opciones_rubro</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Mantenimiento',</span> <span class="pre">'Impuestos',</span> <span class="pre">'Servicios',</span> <span class="pre">'Mercado',</span> <span class="pre">'Limpieza',</span> <span class="pre">'Colegio',</span> <span class="pre">'Otros']</span></em><a class="headerlink" href="#mvc.view.View.opciones_rubro" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mvc">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mvc" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="main.html" class="btn btn-neutral float-left" title="main module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2024, Gonzalo Montalvo - Matias Falconaro.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

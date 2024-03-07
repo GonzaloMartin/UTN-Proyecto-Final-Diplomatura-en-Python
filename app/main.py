@@ -1,3 +1,8 @@
+"""
+main.py
+Este archivo es el punto de entrada para ejecutar la aplicación.
+"""
+
 from mvc.model import Model
 from mvc.view import View
 from mvc.controller import Controller

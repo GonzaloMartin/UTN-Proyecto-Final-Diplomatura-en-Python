@@ -1,3 +1,13 @@
+"""
+controller.py
+Este módulo contiene la clase Controller, que se encarga de manejar la lógica de la aplicación.
+Se vincula con la vista y el modelo para realizar las operaciones necesarias.
+También referencia a la clase Model para realizar las operaciones en la base de datos.
+Así mismo, referencia a la clase View para realizar las operaciones en la interfaz gráfica.
+De igual manera se encarga de manejar las operaciones de alta, baja, modificación y consulta de registros.
+Usa funciones reutilizables de utils.py para obtener el mes actual y reformatear fechas.
+"""
+
 import datetime
 import locale
 import re
@@ -9,12 +19,21 @@ from utils.utils import obtener_mes_actual, reformatear_fecha, des_reformatear_f
 class Controller:
     
     def __init__(self, model):
+        """
+        Constructor de la clase Controller.
+        
+        :param self: Objeto Controller.
+        :param model: Objeto Model.
+        """
+
         self.model = model
         self.view = None
     
     def set_view(self, view):
         """
         Setea la vista para el controller.
+        
+        :param self: Objeto Controller.
         :param view: Vista a setear.
         """
         
@@ -24,6 +43,8 @@ class Controller:
         """
         Obtiene los datos para el gráfico.
         Previamente se obtiene el mes actual desde el sistema.
+        
+        :param self: Objeto Controller.
         :return: Lista con los datos para el gráfico.
         """
         
@@ -33,6 +54,8 @@ class Controller:
     def get_consulta_bd(self, mes=None):
         """
         Obtiene los registros de la base de datos.
+        
+        :param self: Objeto Controller.
         :param mes: Mes a consultar (Valor opcional).
         :return: Registros de la base de datos.
         """
@@ -45,6 +68,8 @@ class Controller:
         Da de alta un registro en la base de datos.
         Controla que todos los campos del formulario estén completos.
         El alta se aplica en la base de datos y en el Treeview.
+        
+        :param self: Objeto Controller.
         :return: None
         """
         
@@ -111,6 +136,8 @@ class Controller:
         """
         Da de baja un registro en la base de datos.
         La baja se aplica en la base de datos y en el Treeview.
+        
+        :param self: Objeto Controller.
         :return: None
         """
         
@@ -144,6 +171,8 @@ class Controller:
         Prepara el formulario para la modificación de un registro.
         Una vez completado el formulario, se aplica la modificación.
         La modificación se aplica en la base de datos y en el Treeview.
+        
+        :param self: Objeto Controller.
         :return: None
         """
         
@@ -184,6 +213,8 @@ class Controller:
         Realiza una consulta en la base de datos.
         Si el término de búsqueda es "*", se muestran todos los registros.
         Si el término de búsqueda es un string, se muestran los registros que contengan ese string.
+        
+        :param self: Objeto Controller.
         :return: None
         """
         
@@ -219,6 +250,8 @@ class Controller:
     def validar_campos(self, valores=None, nuevo_valor=None):
         """
         Valida que todos los campos del formulario estén completos.
+        
+        :param self: Objeto Controller.
         :return: True si todos los campos están completos, False en caso contrario.        
         """
         
@@ -273,6 +306,8 @@ class Controller:
     def preparar_alta(self):
         """
         Prepara el formulario para el alta de un registro.
+        
+        :param self: Objeto Controller.
         :return: None
         """
         
@@ -283,6 +318,8 @@ class Controller:
     def preparar_baja(self):
         """
         Prepara el formulario para la baja de un registro.
+        
+        :param self: Objeto Controller.
         :return: None
         """
         
@@ -295,6 +332,8 @@ class Controller:
         Confirma la acción realizada (alta, baja, modificación).
         Maneja el estado de los botones de confirmar y cancelar.
         Refresca el gráfico y el Treeview para mostrar los cambios.
+        
+        :param self: Objeto Controller.
         :return: None
         """
 
@@ -309,8 +348,11 @@ class Controller:
         """
         Cancela la acción realizada (alta, baja, modificación).
         Maneja el estado de los botones de confirmar y cancelar.
+        
+        :param self: Objeto Controller.
         :return: None
         """
+        
         self.view.boton_confirmar.config(state='disabled', command=None)
         self.view.boton_cancelar.config(state='disabled')
         self.view.limpiar_formulario()
@@ -319,6 +361,8 @@ class Controller:
         """
         Aplica la modificación de un registro en la base de datos.
         Controla que todos los campos del formulario estén completos.
+        
+        :param self: Objeto Controller.
         :param compra_id: ID del registro a modificar en el Treeview.
         :param id_bd: ID del registro a modificar en la base de datos.
         :return: None
@@ -373,6 +417,8 @@ class Controller:
         """
         Obtiene el mes actual en formato palabra.
         Para esta entrega se devuelve el mes en español.
+        
+        :param self: Objeto Controller.
         :return: Mes actual en formato palabra.
         """
         
@@ -385,6 +431,8 @@ class Controller:
         """
         Obtiene el total acumulado del mes actual.
         El cálculo se realiza en base a los registros de la base de datos.
+        
+        :param self: Objeto Controller.
         :return: Total acumulado del mes actual.
         """
         
