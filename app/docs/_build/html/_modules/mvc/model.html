@@ -45,10 +45,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../main.html">main module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../mvc.html">mvc package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mvc.html">MVC Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils Module</a></li>
 </ul>
 
         </div>
@@ -105,13 +106,14 @@
     <span class="k">def</span> <span class="nf">conectar_base_de_datos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Conecta a la base de datos y devuelve el objeto conexión</span>
+<span class="sd">        La base de datos se encuentra en la carpeta database.</span>
 <span class="sd">        </span>
 <span class="sd">        :param self: objeto Model</span>
 <span class="sd">        :return: objeto conexión</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;database/gastos.db&#39;</span><span class="p">)</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;database/registros.db&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">conn</span>
         <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -122,7 +124,7 @@
 <a class="viewcode-back" href="../../mvc.html#mvc.model.Model.desconectar_base_de_datos">[documentos]</a>
     <span class="k">def</span> <span class="nf">desconectar_base_de_datos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Desconecta de la base de datos </span>
+<span class="sd">        Desconecta de la base de datos.</span>
 <span class="sd">        </span>
 <span class="sd">        :param self: objeto Model</span>
 <span class="sd">        :return: None</span>
@@ -137,7 +139,8 @@
 <a class="viewcode-back" href="../../mvc.html#mvc.model.Model.crear_tabla">[documentos]</a>
     <span class="k">def</span> <span class="nf">crear_tabla</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Crea la tabla si no existe en la base de datos</span>
+<span class="sd">        Crea la tabla si no existe en la base de datos.</span>
+<span class="sd">        La base de datos es registros.db</span>
 <span class="sd">        </span>
 <span class="sd">        :param self: objeto Model</span>
 <span class="sd">        :return: None</span>
@@ -170,6 +173,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Inserta un nuevo registro en la base de datos</span>
 <span class="sd">        y devuelve el id del registro insertado.</span>
+<span class="sd">        La información a insertar se pasa por parámetro en un diccionario.</span>
 <span class="sd">        </span>
 <span class="sd">        :param self: objeto Model</span>
 <span class="sd">        :param valores: diccionario con los valores a insertar.</span>
@@ -214,7 +218,8 @@
 <a class="viewcode-back" href="../../mvc.html#mvc.model.Model.baja_bd">[documentos]</a>
     <span class="k">def</span> <span class="nf">baja_bd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_registro</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Elimina un registro de la base de datos</span>
+<span class="sd">        Elimina un registro de la base de datos.</span>
+<span class="sd">        La base de datos es registros.db</span>
 <span class="sd">        </span>
 <span class="sd">        :param self: objeto Model</span>
 <span class="sd">        :param id_registro: id del registro a eliminar</span>
@@ -314,7 +319,6 @@
 <span class="sd">        Obtiene los datos para el gráfico de barras.</span>
 <span class="sd">        El gráfico muestra el total gastado por rubro en el mes actual.</span>
 <span class="sd">        Los datos que usa el gráfico son el rubro y el total gastado.</span>
-<span class="sd">        La información se obtiene de la base de datos.</span>
 <span class="sd">        </span>
 <span class="sd">        :param self: objeto Model</span>
 <span class="sd">        :param obtener_mes_actual: función que devuelve el número de mes actual.</span>

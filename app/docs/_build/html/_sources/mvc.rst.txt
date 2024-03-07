@@ -1,4 +1,4 @@
-mvc package
+MVC Package
 ===========
 
 Submodules

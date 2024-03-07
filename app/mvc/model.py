@@ -23,13 +23,14 @@ class Model:
     def conectar_base_de_datos(self):
         """
         Conecta a la base de datos y devuelve el objeto conexión
+        La base de datos se encuentra en la carpeta database.
         
         :param self: objeto Model
         :return: objeto conexión
         """
         
         try:
-            conn = sqlite3.connect('database/gastos.db')
+            conn = sqlite3.connect('database/registros.db')
             return conn
         except sqlite3.Error as e:
             print(e)
@@ -37,7 +38,7 @@ class Model:
 
     def desconectar_base_de_datos(self):
         """
-        Desconecta de la base de datos 
+        Desconecta de la base de datos.
         
         :param self: objeto Model
         :return: None
@@ -49,7 +50,8 @@ class Model:
 
     def crear_tabla(self):
         """
-        Crea la tabla si no existe en la base de datos
+        Crea la tabla si no existe en la base de datos.
+        La base de datos es registros.db
         
         :param self: objeto Model
         :return: None
@@ -79,6 +81,7 @@ class Model:
         """
         Inserta un nuevo registro en la base de datos
         y devuelve el id del registro insertado.
+        La información a insertar se pasa por parámetro en un diccionario.
         
         :param self: objeto Model
         :param valores: diccionario con los valores a insertar.
@@ -120,7 +123,8 @@ class Model:
 
     def baja_bd(self, id_registro):
         """
-        Elimina un registro de la base de datos
+        Elimina un registro de la base de datos.
+        La base de datos es registros.db
         
         :param self: objeto Model
         :param id_registro: id del registro a eliminar
@@ -211,7 +215,6 @@ class Model:
         Obtiene los datos para el gráfico de barras.
         El gráfico muestra el total gastado por rubro en el mes actual.
         Los datos que usa el gráfico son el rubro y el total gastado.
-        La información se obtiene de la base de datos.
         
         :param self: objeto Model
         :param obtener_mes_actual: función que devuelve el número de mes actual.

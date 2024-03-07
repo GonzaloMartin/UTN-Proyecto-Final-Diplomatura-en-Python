@@ -10,7 +10,6 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../'))
 
-
 project = 'Gestor de Gastos Python'
 copyright = '2024, Gonzalo Montalvo - Matias Falconaro'
 author = 'Gonzalo Montalvo - Matias Falconaro'

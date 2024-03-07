@@ -3,19 +3,26 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Gestor de Gastos Python's documentation!
-===================================================
+.. Welcome to Gestor de Gastos Python's documentation!
+.. ===================================================
+
+Gestor de Gastos Python - Documentación
+=======================================
 
 .. toctree::
    :maxdepth: 4
-   :caption: Contents:
+   :caption: Contenido:
 
    main
    mvc
+   utils
 
 
-Indices and tables
-==================
+.. Indices and tables
+.. ==================
+
+Índices y Tablas
+================
 
 * :ref:`genindex`
 * :ref:`modindex`

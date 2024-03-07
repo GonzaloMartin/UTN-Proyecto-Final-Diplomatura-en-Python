@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mvc package &mdash; documentación de Gestor de Gastos Python - 1.0.0</title>
+  <title>MVC Package &mdash; documentación de Gestor de Gastos Python - 1.0.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -22,7 +22,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="prev" title="main module" href="main.html" /> 
+    <link rel="next" title="Utils Module" href="utils.html" />
+    <link rel="prev" title="Main Module" href="main.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,10 +48,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="main.html">main module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">mvc package</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MVC Package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-mvc.controller">mvc.controller module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#mvc.controller.Controller"><code class="docutils literal notranslate"><span class="pre">Controller</span></code></a><ul>
@@ -107,6 +108,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-mvc">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils Module</a></li>
 </ul>
 
         </div>
@@ -123,7 +125,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">mvc package</li>
+      <li class="breadcrumb-item active">MVC Package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/mvc.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
       </li>
@@ -134,7 +136,7 @@
            <div itemprop="articleBody">
              
   <section id="mvc-package">
-<h1>mvc package<a class="headerlink" href="#mvc-package" title="Link to this heading"></a></h1>
+<h1>MVC Package<a class="headerlink" href="#mvc-package" title="Link to this heading"></a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
@@ -399,7 +401,8 @@ Se vincula con el controlador y la vista para realizar las operaciones necesaria
 <dt class="sig sig-object py" id="mvc.model.Model.alta_bd">
 <span class="sig-name descname"><span class="pre">alta_bd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valores</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.alta_bd"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.alta_bd" title="Link to this definition"></a></dt>
 <dd><p>Inserta un nuevo registro en la base de datos
-y devuelve el id del registro insertado.</p>
+y devuelve el id del registro insertado.
+La información a insertar se pasa por parámetro en un diccionario.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parámetros<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -416,7 +419,8 @@ y devuelve el id del registro insertado.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mvc.model.Model.baja_bd">
 <span class="sig-name descname"><span class="pre">baja_bd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_registro</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.baja_bd"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.baja_bd" title="Link to this definition"></a></dt>
-<dd><p>Elimina un registro de la base de datos</p>
+<dd><p>Elimina un registro de la base de datos.
+La base de datos es registros.db</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parámetros<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -433,7 +437,8 @@ y devuelve el id del registro insertado.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mvc.model.Model.conectar_base_de_datos">
 <span class="sig-name descname"><span class="pre">conectar_base_de_datos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.conectar_base_de_datos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.conectar_base_de_datos" title="Link to this definition"></a></dt>
-<dd><p>Conecta a la base de datos y devuelve el objeto conexión</p>
+<dd><p>Conecta a la base de datos y devuelve el objeto conexión
+La base de datos se encuentra en la carpeta database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parámetros<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>self</strong> – objeto Model</p>
@@ -466,7 +471,8 @@ Además, si no se especifica un mes, devuelve todos los registros.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mvc.model.Model.crear_tabla">
 <span class="sig-name descname"><span class="pre">crear_tabla</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.crear_tabla"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.crear_tabla" title="Link to this definition"></a></dt>
-<dd><p>Crea la tabla si no existe en la base de datos</p>
+<dd><p>Crea la tabla si no existe en la base de datos.
+La base de datos es registros.db</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parámetros<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>self</strong> – objeto Model</p>
@@ -480,7 +486,7 @@ Además, si no se especifica un mes, devuelve todos los registros.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mvc.model.Model.desconectar_base_de_datos">
 <span class="sig-name descname"><span class="pre">desconectar_base_de_datos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.desconectar_base_de_datos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.desconectar_base_de_datos" title="Link to this definition"></a></dt>
-<dd><p>Desconecta de la base de datos</p>
+<dd><p>Desconecta de la base de datos.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parámetros<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>self</strong> – objeto Model</p>
@@ -515,8 +521,7 @@ Los valores son un diccionario con los campos a modificar.</p>
 <span class="sig-name descname"><span class="pre">obtener_datos_grafico</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obtener_mes_actual</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/model.html#Model.obtener_datos_grafico"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model.obtener_datos_grafico" title="Link to this definition"></a></dt>
 <dd><p>Obtiene los datos para el gráfico de barras.
 El gráfico muestra el total gastado por rubro en el mes actual.
-Los datos que usa el gráfico son el rubro y el total gastado.
-La información se obtiene de la base de datos.</p>
+Los datos que usa el gráfico son el rubro y el total gastado.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parámetros<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -704,7 +709,8 @@ Para fecha y vencimiento se establece la fecha actual.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="main.html" class="btn btn-neutral float-left" title="main module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="main.html" class="btn btn-neutral float-left" title="Main Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="utils.html" class="btn btn-neutral float-right" title="Utils Module" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
