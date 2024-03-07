@@ -1,11 +1,11 @@
 """
 controller.py
-Este módulo contiene la clase Controller, que se encarga de manejar la lógica de la aplicación.
-Se vincula con la vista y el modelo para realizar las operaciones necesarias.
-También referencia a la clase Model para realizar las operaciones en la base de datos.
-Así mismo, referencia a la clase View para realizar las operaciones en la interfaz gráfica.
-De igual manera se encarga de manejar las operaciones de alta, baja, modificación y consulta de registros.
-Usa funciones reutilizables de utils.py para obtener el mes actual y reformatear fechas.
+    Este módulo contiene la clase Controller, que se encarga de manejar la lógica de la aplicación.
+    Se vincula con la vista y el modelo para realizar las operaciones necesarias.
+    También referencia a la clase Model para realizar las operaciones en la base de datos.
+    Así mismo, referencia a la clase View para realizar las operaciones en la interfaz gráfica.
+    De igual manera se encarga de manejar las operaciones de alta, baja, modificación y consulta de registros.
+    Usa funciones reutilizables de utils.py para obtener el mes actual y reformatear fechas.
 """
 
 import datetime
@@ -14,7 +14,7 @@ import re
 
 from tkinter.messagebox import showinfo
 
-from utils.utils import obtener_mes_actual, reformatear_fecha, des_reformatear_fecha
+from utils.utils import obtener_mes_actual, reformatear_fecha, des_reformatear_fecha, validar_regex
 
 class Controller:
     
@@ -249,10 +249,12 @@ class Controller:
 
     def validar_campos(self, valores=None, nuevo_valor=None):
         """
-        Valida que todos los campos del formulario estén completos.
+        Valida que todos los campos del formulario no tengan inconsistencias.
         
         :param self: Objeto Controller.
-        :return: True si todos los campos están completos, False en caso contrario.        
+        :param valores: Diccionario con los valores a validar.
+        :param nuevo_valor: Diccionario con los valores a validar.
+        :return: True si los valores cumplen con los patrones definidos, False en caso contrario.
         """
         
         campos_var = [self.view.var_producto,
@@ -274,32 +276,8 @@ class Controller:
                 return False
 
         # Validaciones Regex:
-        patrones = {
-            'producto': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
-            'cantidad': r'^\d+$',
-            'monto': r'^\d+(\.\d+)?$',
-            'responsable': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
-            'rubro': r'^[a-zA-Z0-9 ]+$',
-            'proveedor': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
-            'medio_pago': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
-            'fecha': r'^\d{4}-\d{2}-\d{2}$',  # Formato fecha aaaa-mm-dd
-            'vencimiento': r'^(?:\d{4}-\d{2}-\d{2}|N/A)$'  # N/A o fecha
-        }
-
-        diccionario_valor = {}
-        if valores:
-            diccionario_valor = valores
-        else:
-            diccionario_valor = nuevo_valor
-            diccionario_valor['fecha'] = des_reformatear_fecha(diccionario_valor['fecha'])
-            diccionario_valor['vencimiento'] = des_reformatear_fecha(diccionario_valor['vencimiento']) if diccionario_valor['vencimiento'] != 'N/A' else 'N/A'
-
-        for campo, valor in diccionario_valor.items():
-            # No intenta validar campos que no tienen un patrón definido
-            if campo in patrones:
-                if not re.match(patrones[campo], str(valor)):
-                    print(f"Campo {campo} no cumple con el patrón definido. Campo {campo}: {valor}")       
-                    return False
+        if not validar_regex(valores=valores, nuevo_valor=nuevo_valor):
+            return False
 
         return True
         

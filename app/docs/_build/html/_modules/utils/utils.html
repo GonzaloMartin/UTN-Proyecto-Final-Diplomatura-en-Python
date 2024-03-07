@@ -45,11 +45,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../main.html">main module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../mvc.html">mvc package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mvc.html">MVC Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils Module</a></li>
 </ul>
 
         </div>
@@ -79,10 +79,10 @@
   <h1>Código fuente para utils.utils</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">utils.py</span>
-<span class="sd">Este módulo contiene funciones que son utilizadas por otros módulos.</span>
-<span class="sd">Contiene funciones para obtener el mes actual, la fecha actual, reformatear la fecha y des-reformatear la fecha.</span>
+<span class="sd">    Este módulo contiene funciones que son utilizadas por otros módulos.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
 <div class="viewcode-block" id="obtener_mes_actual">
@@ -151,6 +151,47 @@
             <span class="n">fecha_objeto</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">fecha</span><span class="p">,</span> <span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y&quot;</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">fecha_objeto</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="validar_regex">
+<a class="viewcode-back" href="../../utils.html#utils.utils.validar_regex">[documentos]</a>
+<span class="k">def</span> <span class="nf">validar_regex</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nuevo_valor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Valida que los valores ingresados cumplan con los patrones definidos.</span>
+<span class="sd">    Las validaciones se realizan con expresiones regulares.</span>
+<span class="sd">    </span>
+<span class="sd">    :param valores: diccionario con los valores a validar.</span>
+<span class="sd">    :param nuevo_valor: diccionario con los valores a validar.</span>
+<span class="sd">    :return: True si los valores cumplen con los patrones definidos, False en caso contrario.&quot;&quot;&quot;</span>
+    
+    <span class="n">patrones</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;producto&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;cantidad&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^\d+$&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;monto&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^\d+(\.\d+)?$&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;responsable&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;rubro&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 ]+$&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;proveedor&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;medio_pago&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;fecha&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^\d</span><span class="si">{4}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">$&#39;</span><span class="p">,</span>  <span class="c1"># Formato fecha aaaa-mm-dd</span>
+        <span class="s1">&#39;vencimiento&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^(?:\d</span><span class="si">{4}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">|N/A)$&#39;</span>  <span class="c1"># N/A o fecha</span>
+    <span class="p">}</span>
+
+    <span class="n">diccionario_valor</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">valores</span><span class="p">:</span>
+        <span class="n">diccionario_valor</span> <span class="o">=</span> <span class="n">valores</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">diccionario_valor</span> <span class="o">=</span> <span class="n">nuevo_valor</span>
+        <span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;fecha&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">des_reformatear_fecha</span><span class="p">(</span><span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;fecha&#39;</span><span class="p">])</span>
+        <span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">des_reformatear_fecha</span><span class="p">(</span><span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;N/A&#39;</span> <span class="k">else</span> <span class="s1">&#39;N/A&#39;</span>
+
+    <span class="k">for</span> <span class="n">campo</span><span class="p">,</span> <span class="n">valor</span> <span class="ow">in</span> <span class="n">diccionario_valor</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># No intenta validar campos que no tienen un patrón definido</span>
+        <span class="k">if</span> <span class="n">campo</span> <span class="ow">in</span> <span class="n">patrones</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">patrones</span><span class="p">[</span><span class="n">campo</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Campo </span><span class="si">{</span><span class="n">campo</span><span class="si">}</span><span class="s2"> no cumple con el patrón definido. Campo </span><span class="si">{</span><span class="n">campo</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">valor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>       
+                <span class="k">return</span> <span class="kc">False</span>
+            
+    <span class="k">return</span> <span class="kc">True</span></div>
 
 </pre></div>
 

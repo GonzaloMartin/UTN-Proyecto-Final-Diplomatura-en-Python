@@ -1,11 +1,11 @@
 """
 view.py
-Contiene la clase View, que se encarga de la interfaz gráfica de la aplicación.
-Se usa la librería tkinter para la creación de la interfaz gráfica.
-Se vincula con el controlador y el modelo para realizar las operaciones necesarias.
-Se usa también la librería matplotlib para la creación de gráficos.
-El gráfico se muestra en un Frame de la interfaz gráfica, el cual se actualiza con los datos de la base de datos.
-La lista treeview se actualiza con los datos de la base de datos.
+    Contiene la clase View, que se encarga de la interfaz gráfica de la aplicación.
+    Se usa la librería tkinter para la creación de la interfaz gráfica.
+    Se vincula con el controlador y el modelo para realizar las operaciones necesarias.
+    Se usa también la librería matplotlib para la creación de gráficos.
+    El gráfico se muestra en un Frame de la interfaz gráfica, el cual se actualiza con los datos de la base de datos.
+    La lista treeview se actualiza con los datos de la base de datos.
 """
 
 import matplotlib.pyplot as plt

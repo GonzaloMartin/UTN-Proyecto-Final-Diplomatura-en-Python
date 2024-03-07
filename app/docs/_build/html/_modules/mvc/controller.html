@@ -45,10 +45,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../main.html">main module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../mvc.html">mvc package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mvc.html">MVC Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils Module</a></li>
 </ul>
 
         </div>
@@ -78,12 +79,12 @@
   <h1>Código fuente para mvc.controller</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">controller.py</span>
-<span class="sd">Este módulo contiene la clase Controller, que se encarga de manejar la lógica de la aplicación.</span>
-<span class="sd">Se vincula con la vista y el modelo para realizar las operaciones necesarias.</span>
-<span class="sd">También referencia a la clase Model para realizar las operaciones en la base de datos.</span>
-<span class="sd">Así mismo, referencia a la clase View para realizar las operaciones en la interfaz gráfica.</span>
-<span class="sd">De igual manera se encarga de manejar las operaciones de alta, baja, modificación y consulta de registros.</span>
-<span class="sd">Usa funciones reutilizables de utils.py para obtener el mes actual y reformatear fechas.</span>
+<span class="sd">    Este módulo contiene la clase Controller, que se encarga de manejar la lógica de la aplicación.</span>
+<span class="sd">    Se vincula con la vista y el modelo para realizar las operaciones necesarias.</span>
+<span class="sd">    También referencia a la clase Model para realizar las operaciones en la base de datos.</span>
+<span class="sd">    Así mismo, referencia a la clase View para realizar las operaciones en la interfaz gráfica.</span>
+<span class="sd">    De igual manera se encarga de manejar las operaciones de alta, baja, modificación y consulta de registros.</span>
+<span class="sd">    Usa funciones reutilizables de utils.py para obtener el mes actual y reformatear fechas.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">datetime</span>
@@ -92,7 +93,7 @@
 
 <span class="kn">from</span> <span class="nn">tkinter.messagebox</span> <span class="kn">import</span> <span class="n">showinfo</span>
 
-<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="kn">import</span> <span class="n">obtener_mes_actual</span><span class="p">,</span> <span class="n">reformatear_fecha</span><span class="p">,</span> <span class="n">des_reformatear_fecha</span>
+<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="kn">import</span> <span class="n">obtener_mes_actual</span><span class="p">,</span> <span class="n">reformatear_fecha</span><span class="p">,</span> <span class="n">des_reformatear_fecha</span><span class="p">,</span> <span class="n">validar_regex</span>
 
 <div class="viewcode-block" id="Controller">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller">[documentos]</a>
@@ -352,10 +353,12 @@
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.validar_campos">[documentos]</a>
     <span class="k">def</span> <span class="nf">validar_campos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nuevo_valor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Valida que todos los campos del formulario estén completos.</span>
+<span class="sd">        Valida que todos los campos del formulario no tengan inconsistencias.</span>
 <span class="sd">        </span>
 <span class="sd">        :param self: Objeto Controller.</span>
-<span class="sd">        :return: True si todos los campos están completos, False en caso contrario.        </span>
+<span class="sd">        :param valores: Diccionario con los valores a validar.</span>
+<span class="sd">        :param nuevo_valor: Diccionario con los valores a validar.</span>
+<span class="sd">        :return: True si los valores cumplen con los patrones definidos, False en caso contrario.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
         <span class="n">campos_var</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_producto</span><span class="p">,</span>
@@ -377,32 +380,8 @@
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Validaciones Regex:</span>
-        <span class="n">patrones</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;producto&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;cantidad&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^\d+$&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;monto&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^\d+(\.\d+)?$&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;responsable&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;rubro&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 ]+$&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;proveedor&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;medio_pago&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;fecha&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^\d</span><span class="si">{4}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">$&#39;</span><span class="p">,</span>  <span class="c1"># Formato fecha aaaa-mm-dd</span>
-            <span class="s1">&#39;vencimiento&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^(?:\d</span><span class="si">{4}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">|N/A)$&#39;</span>  <span class="c1"># N/A o fecha</span>
-        <span class="p">}</span>
-
-        <span class="n">diccionario_valor</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">valores</span><span class="p">:</span>
-            <span class="n">diccionario_valor</span> <span class="o">=</span> <span class="n">valores</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">diccionario_valor</span> <span class="o">=</span> <span class="n">nuevo_valor</span>
-            <span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;fecha&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">des_reformatear_fecha</span><span class="p">(</span><span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;fecha&#39;</span><span class="p">])</span>
-            <span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">des_reformatear_fecha</span><span class="p">(</span><span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;N/A&#39;</span> <span class="k">else</span> <span class="s1">&#39;N/A&#39;</span>
-
-        <span class="k">for</span> <span class="n">campo</span><span class="p">,</span> <span class="n">valor</span> <span class="ow">in</span> <span class="n">diccionario_valor</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="c1"># No intenta validar campos que no tienen un patrón definido</span>
-            <span class="k">if</span> <span class="n">campo</span> <span class="ow">in</span> <span class="n">patrones</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">patrones</span><span class="p">[</span><span class="n">campo</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Campo </span><span class="si">{</span><span class="n">campo</span><span class="si">}</span><span class="s2"> no cumple con el patrón definido. Campo </span><span class="si">{</span><span class="n">campo</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">valor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>       
-                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">validar_regex</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="n">valores</span><span class="p">,</span> <span class="n">nuevo_valor</span><span class="o">=</span><span class="n">nuevo_valor</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 

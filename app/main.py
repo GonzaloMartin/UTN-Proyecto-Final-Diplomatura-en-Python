@@ -1,6 +1,6 @@
 """
 main.py
-Este archivo es el punto de entrada para ejecutar la aplicación.
+    Este archivo es el punto de entrada para ejecutar la aplicación.
 """
 
 from mvc.model import Model

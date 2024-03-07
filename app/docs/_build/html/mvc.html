@@ -142,13 +142,15 @@
 </section>
 <section id="module-mvc.controller">
 <span id="mvc-controller-module"></span><h2>mvc.controller module<a class="headerlink" href="#module-mvc.controller" title="Link to this heading"></a></h2>
-<p>controller.py
-Este módulo contiene la clase Controller, que se encarga de manejar la lógica de la aplicación.
+<dl class="simple">
+<dt>controller.py</dt><dd><p>Este módulo contiene la clase Controller, que se encarga de manejar la lógica de la aplicación.
 Se vincula con la vista y el modelo para realizar las operaciones necesarias.
 También referencia a la clase Model para realizar las operaciones en la base de datos.
 Así mismo, referencia a la clase View para realizar las operaciones en la interfaz gráfica.
 De igual manera se encarga de manejar las operaciones de alta, baja, modificación y consulta de registros.
 Usa funciones reutilizables de utils.py para obtener el mes actual y reformatear fechas.</p>
+</dd>
+</dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="mvc.controller.Controller">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mvc.controller.</span></span><span class="sig-name descname"><span class="pre">Controller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller" title="Link to this definition"></a></dt>
@@ -373,13 +375,17 @@ El cálculo se realiza en base a los registros de la base de datos.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mvc.controller.Controller.validar_campos">
 <span class="sig-name descname"><span class="pre">validar_campos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nuevo_valor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/controller.html#Controller.validar_campos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.controller.Controller.validar_campos" title="Link to this definition"></a></dt>
-<dd><p>Valida que todos los campos del formulario estén completos.</p>
+<dd><p>Valida que todos los campos del formulario no tengan inconsistencias.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>self</strong> – Objeto Controller.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – Objeto Controller.</p></li>
+<li><p><strong>valores</strong> – Diccionario con los valores a validar.</p></li>
+<li><p><strong>nuevo_valor</strong> – Diccionario con los valores a validar.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>True si todos los campos están completos, False en caso contrario.</p>
+<dd class="field-even"><p>True si los valores cumplen con los patrones definidos, False en caso contrario.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -389,10 +395,12 @@ El cálculo se realiza en base a los registros de la base de datos.</p>
 </section>
 <section id="module-mvc.model">
 <span id="mvc-model-module"></span><h2>mvc.model module<a class="headerlink" href="#module-mvc.model" title="Link to this heading"></a></h2>
-<p>model.py
-Este módulo contiene la clase Model que se encarga de la lógica de la aplicación.
+<dl class="simple">
+<dt>model.py</dt><dd><p>Este módulo contiene la clase Model que se encarga de la lógica de la aplicación.
 Tiene funciones inherentes a la base de datos y a la manipulación de los datos.
 Se vincula con el controlador y la vista para realizar las operaciones necesarias.</p>
+</dd>
+</dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="mvc.model.Model">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mvc.model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><a class="reference internal" href="_modules/mvc/model.html#Model"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.model.Model" title="Link to this definition"></a></dt>
@@ -540,13 +548,15 @@ Los datos que usa el gráfico son el rubro y el total gastado.</p>
 </section>
 <section id="module-mvc.view">
 <span id="mvc-view-module"></span><h2>mvc.view module<a class="headerlink" href="#module-mvc.view" title="Link to this heading"></a></h2>
-<p>view.py
-Contiene la clase View, que se encarga de la interfaz gráfica de la aplicación.
+<dl class="simple">
+<dt>view.py</dt><dd><p>Contiene la clase View, que se encarga de la interfaz gráfica de la aplicación.
 Se usa la librería tkinter para la creación de la interfaz gráfica.
 Se vincula con el controlador y el modelo para realizar las operaciones necesarias.
 Se usa también la librería matplotlib para la creación de gráficos.
 El gráfico se muestra en un Frame de la interfaz gráfica, el cual se actualiza con los datos de la base de datos.
 La lista treeview se actualiza con los datos de la base de datos.</p>
+</dd>
+</dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="mvc.view.View">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mvc.view.</span></span><span class="sig-name descname"><span class="pre">View</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mvc/view.html#View"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#mvc.view.View" title="Link to this definition"></a></dt>

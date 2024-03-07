@@ -1,8 +1,8 @@
 """
 model.py
-Este módulo contiene la clase Model que se encarga de la lógica de la aplicación.
-Tiene funciones inherentes a la base de datos y a la manipulación de los datos.
-Se vincula con el controlador y la vista para realizar las operaciones necesarias.
+    Este módulo contiene la clase Model que se encarga de la lógica de la aplicación.
+    Tiene funciones inherentes a la base de datos y a la manipulación de los datos.
+    Se vincula con el controlador y la vista para realizar las operaciones necesarias.
 """
 
 import sqlite3
