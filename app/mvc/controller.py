@@ -370,7 +370,8 @@ class Controller:
 
         self.model.modificacion_bd(id_bd, nuevo_valor)
 
-        subtotal_acumulado = round(nuevo_valor['cantidad'] * nuevo_valor['monto'], 2)
+        subtotal_acumulado = round(int(nuevo_valor['cantidad']) * 
+                                   float(nuevo_valor['monto']), 2)
         
         if self.view.tree.exists(compra_id):
             self.view.tree.item(compra_id, values=(

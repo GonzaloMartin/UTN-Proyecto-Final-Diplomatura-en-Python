@@ -165,7 +165,7 @@ class Model:
                     vencimiento = ?
                     WHERE id = ?;"""
 
-            subtotal = int(valores['cantidad'] * valores['monto'] * 100) / 100.0
+            subtotal = int(valores['cantidad']) * float(valores['monto']) * 100 / 100.0
             data = (valores['producto'],
                     valores['cantidad'],
                     valores['monto'],

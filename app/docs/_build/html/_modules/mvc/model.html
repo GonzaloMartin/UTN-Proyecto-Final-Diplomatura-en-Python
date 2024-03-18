@@ -263,7 +263,7 @@
 <span class="s2">                    vencimiento = ?</span>
 <span class="s2">                    WHERE id = ?;&quot;&quot;&quot;</span>
 
-            <span class="n">subtotal</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0</span>
+            <span class="n">subtotal</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="mf">100.0</span>
             <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;producto&#39;</span><span class="p">],</span>
                     <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">],</span>
                     <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">],</span>
