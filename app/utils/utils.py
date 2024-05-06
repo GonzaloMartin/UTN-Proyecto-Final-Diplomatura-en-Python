@@ -6,6 +6,7 @@ utils.py
 import re
 from datetime import datetime
 
+
 def obtener_mes_actual():
     """
     Obtiene el número de mes actual del sistema.
@@ -14,6 +15,7 @@ def obtener_mes_actual():
     """
     
     return datetime.now().month
+
 
 def obtener_fecha_actual():
     """
@@ -31,6 +33,7 @@ def obtener_fecha_actual():
     año = str(fecha_actual.year)
     return f"{mes}/{dia}/{año}"
 
+
 def reformatear_fecha(fecha):
     """
     Reformatea la fecha de AAAA-MM-DD a MM/DD/AAAA.
@@ -41,6 +44,7 @@ def reformatear_fecha(fecha):
     
     año, mes, dia = fecha.split("-")
     return f"{mes}/{dia}/{año}"
+
 
 def des_reformatear_fecha(fecha):
     """
@@ -62,40 +66,27 @@ def des_reformatear_fecha(fecha):
     
     return fecha_objeto.strftime("%Y-%m-%d")
 
-def validar_regex(valores=None, nuevo_valor=None):
+
+def logs(func):
     """
-    Valida que los valores ingresados cumplan con los patrones definidos.
-    Las validaciones se realizan con expresiones regulares.
-    
-    :param valores: diccionario con los valores a validar.
-    :param nuevo_valor: diccionario con los valores a validar.
-    :return: True si los valores cumplen con los patrones definidos, False en caso contrario."""
-    
-    patrones = {
-        'producto': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
-        'cantidad': r'^\d+$',
-        'monto': r'^\d+(\.\d+)?$',
-        'responsable': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
-        'rubro': r'^[a-zA-Z0-9 ]+$',
-        'proveedor': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
-        'medio_pago': r'^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$',
-        'fecha': r'^\d{4}-\d{2}-\d{2}$',  # Formato fecha aaaa-mm-dd
-        'vencimiento': r'^(?:\d{4}-\d{2}-\d{2}|N/A)$'  # N/A o fecha
-    }
+    Decorator that logs actions taken by the decorated functions.
 
-    diccionario_valor = {}
-    if valores:
-        diccionario_valor = valores
-    else:
-        diccionario_valor = nuevo_valor
-        diccionario_valor['fecha'] = des_reformatear_fecha(diccionario_valor['fecha'])
-        diccionario_valor['vencimiento'] = des_reformatear_fecha(diccionario_valor['vencimiento']) if diccionario_valor['vencimiento'] != 'N/A' else 'N/A'
+    :param func: función a decorar.
+    :return: función envoltura que incluye capacidades de registro.
+    """
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
 
-    for campo, valor in diccionario_valor.items():
-        # No intenta validar campos que no tienen un patrón definido
-        if campo in patrones:
-            if not re.match(patrones[campo], str(valor)):
-                print(f"Campo {campo} no cumple con el patrón definido. Campo {campo}: {valor}")       
-                return False
-            
-    return True
+        if func.__name__ == 'alta_bd':
+            valores = args[1]
+            print(f"Nuevo registro ingresado: {valores}")
+        elif func.__name__ == 'baja_bd':
+            id_registro = args[1]
+            print(f"Registro eliminado con ID: {id_registro}")
+        elif func.__name__ == 'modificacion_bd':
+            id_registro = args[1]
+            valores = args[2]
+            print(f"Registro actualizado con ID: {id_registro} y datos: {valores}")
+
+        return result
+    return wrapper

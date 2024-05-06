@@ -41,6 +41,7 @@ from .model import Model
 
 from utils.utils import obtener_fecha_actual
 
+
 class View:
     
     opciones_rubro = ["Mantenimiento", "Impuestos", "Servicios",
@@ -51,6 +52,7 @@ class View:
                            "Tarjeta de Débito", "Transferencia", "Otro"]
 
     opciones_responsable = ["Gonzalo", "Matías", "Juan"]
+    
     
     def __init__(self, controller):
         """
@@ -87,6 +89,7 @@ class View:
         self.e_vencimiento = None
         self.var_check_vencimiento = None
         self.cb_medio_pago = None
+        
     
     def cargar_total_acumulado(self):
         """
@@ -101,6 +104,7 @@ class View:
         self.var_total.set(f"$ {total_acumulado:.2f}")
         return total_acumulado
 
+
     def actualizar_label_total_acumulado(self):
         """
         Actualiza el label que indica el mes actual.
@@ -112,6 +116,7 @@ class View:
         
         mes_actual_str = self.controller.obtener_mes_palabra_actual()
         self.l_total.config(text=f"Total {mes_actual_str}:")
+        
     
     def limpiar_formulario(self):
         """
@@ -137,6 +142,7 @@ class View:
         self.e_vencimiento.config(state='normal')
         self.e_vencimiento.set_date(obtener_fecha_actual())
         
+        
     def actualizar_estado_bar(self, mensaje): 
         """
         Actualiza el estado de la barra de estado.
@@ -149,6 +155,7 @@ class View:
         
         self.estado.config(text=mensaje)  # Actualiza texto del label
         self.root.update_idletasks()  # Fuerza la actualización de la UI
+        
     
     def actualizar_estado_fecha(self):
         """
@@ -165,6 +172,7 @@ class View:
         else:
             self.e_vencimiento.config(state='normal')
             
+            
     def cargar_datos_en_treeview(self):
         """
         Carga los datos de la base de datos en el TreeView.
@@ -177,6 +185,7 @@ class View:
         registros = self.controller.get_consulta_bd()
         for row in registros:
             self.tree.insert('', 'end', text=str(row[0]), values=row[1:])
+
 
     # GRÁFICO            
     def crear_grafico(self, frame_grafico):
@@ -229,8 +238,7 @@ class View:
         canvas = FigureCanvasTkAgg(fig, master=frame_grafico)
         canvas.draw()
         canvas.get_tk_widget().pack(fill='both', expand=True)
-    # FIN GRÁFICO
-    # FIN MÉTODOS
+
 
     # VIEW
     def create_view(self):

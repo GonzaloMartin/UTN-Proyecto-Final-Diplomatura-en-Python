@@ -14,10 +14,13 @@ import re
 
 from tkinter.messagebox import showinfo
 
-from utils.utils import obtener_mes_actual, reformatear_fecha, des_reformatear_fecha, validar_regex
+from utils.utils import obtener_mes_actual, des_reformatear_fecha
+from utils.validators import DataValidator
+
 
 class Controller:
-    
+
+
     def __init__(self, model):
         """
         Constructor de la clase Controller.
@@ -28,7 +31,8 @@ class Controller:
 
         self.model = model
         self.view = None
-    
+
+
     def set_view(self, view):
         """
         Setea la vista para el controller.
@@ -38,7 +42,8 @@ class Controller:
         """
         
         self.view = view
-    
+
+
     def get_obtener_datos_grafico(self):
         """
         Obtiene los datos para el gráfico.
@@ -50,7 +55,8 @@ class Controller:
         
         mes_actual = obtener_mes_actual()
         return self.model.obtener_datos_grafico(mes_actual)
-    
+
+
     def get_consulta_bd(self, mes=None):
         """
         Obtiene los registros de la base de datos.
@@ -60,9 +66,9 @@ class Controller:
         :return: Registros de la base de datos.
         """
         return self.model.consulta_bd(mes)
-    
-        
-    #-----ABMC-----#
+
+
+    # ABMC
     def alta(self):
         """
         Da de alta un registro en la base de datos.
@@ -94,21 +100,37 @@ class Controller:
             'cantidad': self.view.var_cantidad.get(),
             'vencimiento': vencimiento_value
         }
-        
-        if not self.validar_campos(valores=valores):
-            self.view.actualizar_estado_bar("Campos vacíos o inconsistentes. Revisar.")
-            showinfo("Info", "Campos vacíos o inconsistentes. Revisar.")
+
+        # Validar campos requeridos y formatos
+        resultado, mensaje = DataValidator.validar_campos_requeridos(**valores)
+        if not resultado:
+            self.view.actualizar_estado_bar(mensaje)
+            showinfo("Error de Validación", mensaje)
             self.cancelar()
             return
 
-        # Fuerzo con casting para poder agregar
+        # Validar monto y cantidad como números positivos
+        resultado, mensaje = DataValidator.validar_numero_positivo(valores['monto'])
+        if not resultado:
+            self.view.actualizar_estado_bar(mensaje)
+            return
+
+        resultado, mensaje = DataValidator.validar_numero_positivo(valores['cantidad'])
+        if not resultado:
+            self.view.actualizar_estado_bar(mensaje)
+            return
+
+        # Validar fecha
+        resultado, mensaje = DataValidator.validar_fecha(valores['fecha'])
+        if not resultado:
+            self.view.actualizar_estado_bar(mensaje)
+            return
+
+        # Convertir a tipos adecuados para evitar errores en la inserción
         valores['monto'] = float(valores['monto'])
         valores['cantidad'] = int(valores['cantidad'])
-        
-        if valores['cantidad'] <= 0 or valores['monto'] <= 0:
-            self.view.actualizar_estado_bar("Cantidad y monto deben ser números positivos.")
-            return
-        
+
+        # Insertar en la base de datos
         ultimo_id = self.model.alta_bd(valores)
 
         subtotal_acumulado = round(valores['cantidad'] * valores['monto'], 2)
@@ -132,6 +154,7 @@ class Controller:
         self.view.limpiar_formulario()
         self.confirmar()
 
+
     def baja(self):
         """
         Da de baja un registro en la base de datos.
@@ -150,22 +173,25 @@ class Controller:
         
         id_bd_str = self.view.tree.item(compra_id, 'text')
 
-        if re.match(r'^\d+$', id_bd_str): # Enteros >= 0
-            id_bd = int(id_bd_str)
-        else:
-            showinfo("Error",  "El ID no es un número válido.")
-            self.view.actualizar_estado_bar("El ID no es un número válido.")
+        # Validar que el ID es un número positivo
+        resultado, mensaje = DataValidator.validar_numero_positivo(id_bd_str)
+        if not resultado:
+            showinfo("Error", mensaje)
+            self.view.actualizar_estado_bar(mensaje)
             self.view.cancelar()
             return
+        
+        id_bd = int(id_bd_str)  # Convertir el ID a entero después de validar
 
+        # Proceder con la baja en la base de datos
         self.model.baja_bd(id_bd)
         
         self.view.tree.delete(compra_id)
         self.view.cargar_total_acumulado()
-        self.view.actualizar_estado_bar("Se dio de baja el registro con ID: " + str(id_bd))
+        self.view.actualizar_estado_bar(f"Se dio de baja el registro con ID: {id_bd}")
         self.confirmar()
-        
-        
+
+
     def modificacion(self):
         """
         Prepara el formulario para la modificación de un registro.
@@ -182,14 +208,24 @@ class Controller:
             self.view.actualizar_estado_bar("Debe seleccionar un registro para Modificar.")
             self.cancelar()
             return
-        
-        id_bd = int(self.view.tree.item(compra_id, 'text'))
-        
+
+        id_bd_str = self.view.tree.item(compra_id, 'text')
+
+        # Validar que el ID es un número positivo
+        resultado, mensaje = DataValidator.validar_numero_positivo(id_bd_str)
+        if not resultado:
+            showinfo("Error", mensaje)
+            self.view.actualizar_estado_bar(mensaje)
+            self.cancelar()
+            return
+
+        id_bd = int(id_bd_str)  # Convertir el ID a entero después de validar
+
         valores = self.view.tree.item(compra_id, 'values')
         self.view.var_producto.set(valores[0])
         self.view.var_cantidad.set(valores[1])
         self.view.var_monto.set(valores[2])
-        self.view.cal_fecha.set_date(reformatear_fecha(valores[8]))
+        self.view.cal_fecha.set_date(des_reformatear_fecha(valores[8]))
         self.view.cb_responsable.set(valores[3])
         self.view.cb_rubro.set(valores[5])
         self.view.cb_medio_pago.set(valores[7])
@@ -197,7 +233,8 @@ class Controller:
 
         if valores[9] != 'N/A':
             self.view.var_check_vencimiento.set(False)
-            self.view.e_vencimiento.set_date(reformatear_fecha(valores[9]))
+            self.view.e_vencimiento.set_date(des_reformatear_fecha(valores[9]))
+            self.view.e_vencimiento.config(state='normal')
         else:
             self.view.var_check_vencimiento.set(True)
             self.view.e_vencimiento.config(state='disabled')
@@ -218,69 +255,41 @@ class Controller:
         :return: None
         """
         
-        termino_busqueda = self.view.var_consulta.get()
+        termino_busqueda = self.view.var_consulta.get().strip()
         # Si término_busqueda contiene "*", se muestran todos los registros
-        if "*" in termino_busqueda: termino_busqueda = ""
+        if "*" in termino_busqueda:
+            termino_busqueda = ""
         
         registros = self.model.consulta_bd()
 
-        # Crea objeto regex desde 'termino_busqueda' NO sensible a mayúsculas
-        regex = re.compile(termino_busqueda, re.IGNORECASE) 
+        if termino_busqueda:  # Solo compila la regex si hay un término a buscar
+            # Crea objeto regex desde 'termino_busqueda' NO sensible a mayúsculas
+            regex = re.compile(termino_busqueda, re.IGNORECASE)
 
-        registros_filtrados = []
-        for row in registros:
-            row_str = ' '.join(map(str, row))  # Registro -> cadena
-            if regex.search(row_str):
-                registros_filtrados.append(row)
+            registros_filtrados = [row for row in registros if regex.search(' '.join(map(str, row)))]
+        else:
+            registros_filtrados = registros  # Mostrar todos los registros si no hay término de búsqueda
 
+        # Limpiar el Treeview antes de insertar nuevos registros
         for i in self.view.tree.get_children():
             self.view.tree.delete(i)
 
+        # Insertar registros filtrados en el Treeview
         for row in registros_filtrados:
             self.view.tree.insert('', 'end', text=str(row[0]), values=row[1:])
 
-        if termino_busqueda == "": # Si no se especifica un término de búsqueda
-            self.view.actualizar_estado_bar(f"Se muestran todos los registros.")
-        else:
+        # Actualizar la barra de estado con información relevante
+        if not registros_filtrados:
+            self.view.actualizar_estado_bar("No se encontraron registros que coincidan con la búsqueda.")
+        elif termino_busqueda:
             self.view.actualizar_estado_bar(f"Resultados de la búsqueda para: {termino_busqueda}")
+        else:
+            self.view.actualizar_estado_bar("Se muestran todos los registros.")
 
         self.view.cargar_total_acumulado()
-    #-----FIN ABMC-----#
+    # FIN ABMC
 
-    def validar_campos(self, valores=None, nuevo_valor=None):
-        """
-        Valida que todos los campos del formulario no tengan inconsistencias.
-        
-        :param self: Objeto Controller.
-        :param valores: Diccionario con los valores a validar.
-        :param nuevo_valor: Diccionario con los valores a validar.
-        :return: True si los valores cumplen con los patrones definidos, False en caso contrario.
-        """
-        
-        campos_var = [self.view.var_producto,
-                      self.view.var_cantidad,
-                      self.view.var_monto,
-                      self.view.var_proveedor,
-                      self.view.var_fecha,
-                      self.view.var_vencimiento]
-        campos_cb = [self.view.cb_responsable,
-                     self.view.cb_rubro,
-                     self.view.cb_medio_pago]
-        
-        for var in campos_var:
-            if isinstance(var, (str, int)) and not var:
-                return False
 
-        for cb in campos_cb:
-            if not cb:
-                return False
-
-        # Validaciones Regex:
-        if not validar_regex(valores=valores, nuevo_valor=nuevo_valor):
-            return False
-
-        return True
-        
     def preparar_alta(self):
         """
         Prepara el formulario para el alta de un registro.
@@ -321,7 +330,8 @@ class Controller:
         for widget in self.view.frame_grafico.winfo_children():
             widget.destroy()  # Borrar graficos anteriores
             self.view.crear_grafico(self.view.frame_grafico)  # Grafico actualiazado
-            
+
+
     def cancelar(self):
         """
         Cancela la acción realizada (alta, baja, modificación).
@@ -334,14 +344,15 @@ class Controller:
         self.view.boton_confirmar.config(state='disabled', command=None)
         self.view.boton_cancelar.config(state='disabled')
         self.view.limpiar_formulario()
-        
+
+
     def aplicar_modificacion(self, compra_id, id_bd):
         """
         Aplica la modificación de un registro en la base de datos.
         Controla que todos los campos del formulario estén completos.
         
         :param self: Objeto Controller.
-        :param compra_id: ID del registro a modificar en el Treeview.
+        :param compra_id: ID del registro a modificar en the Treeview.
         :param id_bd: ID del registro a modificar en la base de datos.
         :return: None
         """
@@ -354,24 +365,28 @@ class Controller:
             'rubro': self.view.cb_rubro.get(),
             'proveedor': self.view.var_proveedor.get(),
             'medio_pago': self.view.cb_medio_pago.get(),
-            'fecha': self.view.cal_fecha.get(),
-            'vencimiento': self.view.e_vencimiento.get()
+            'fecha': self.view.cal_fecha.get_date().strftime("%Y-%m-%d"),  # Ensure proper date formatting
+            'vencimiento': self.view.e_vencimiento.get_date().strftime("%Y-%m-%d") if not self.view.var_check_vencimiento.get() else 'N/A'
         }
-        
-        if self.view.var_check_vencimiento.get():
-            vencimiento_value = 'N/A'
-            nuevo_valor['vencimiento'] = vencimiento_value
 
-        if not self.validar_campos(nuevo_valor=nuevo_valor):
-            self.view.actualizar_estado_bar("Campos vacíos o inconsistentes. Revisar.")
-            showinfo("Info", "Campos vacíos o inconsistentes. Revisar.")
+        # Validate each field using DataValidator
+        error_messages = []
+        for field, value in nuevo_valor.items():
+            if field in ['monto', 'cantidad'] and not DataValidator.validar_numero_positivo(value)[0]:
+                error_messages.append(DataValidator.validar_numero_positivo(value)[1])
+            elif field in ['fecha', 'vencimiento'] and value != 'N/A' and not DataValidator.validar_fecha(value)[0]:
+                error_messages.append(DataValidator.validar_fecha(value)[1])
+
+        if error_messages:
+            error_message = "Error en campos: " + ", ".join(error_messages)
+            self.view.actualizar_estado_bar(error_message)
+            showinfo("Errores de validación", error_message)
             self.cancelar()
             return
 
         self.model.modificacion_bd(id_bd, nuevo_valor)
 
-        subtotal_acumulado = round(int(nuevo_valor['cantidad']) * 
-                                   float(nuevo_valor['monto']), 2)
+        subtotal_acumulado = round(float(nuevo_valor['cantidad']) * float(nuevo_valor['monto']), 2)
         
         if self.view.tree.exists(compra_id):
             self.view.tree.item(compra_id, values=(
@@ -379,7 +394,7 @@ class Controller:
                 nuevo_valor['cantidad'],
                 nuevo_valor['monto'],
                 nuevo_valor['responsable'],
-                f"{subtotal_acumulado:.2f}", # Subtotal
+                f"{subtotal_acumulado:.2f}",  # Subtotal
                 nuevo_valor['rubro'],
                 nuevo_valor['proveedor'],
                 nuevo_valor['medio_pago'],
@@ -391,6 +406,7 @@ class Controller:
         self.view.cargar_total_acumulado()
         self.view.limpiar_formulario()
         self.confirmar()
+
 
     def obtener_mes_palabra_actual(self):
         """
@@ -405,6 +421,7 @@ class Controller:
         mes_actual = obtener_mes_actual()
         mes_actual_str = datetime.datetime.strptime(str(mes_actual), "%m").strftime("%B")
         return mes_actual_str.capitalize()
+
 
     def obtener_total_acumulado(self):
         """

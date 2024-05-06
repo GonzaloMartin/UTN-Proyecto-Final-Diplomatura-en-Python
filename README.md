@@ -5,7 +5,6 @@ Proyecto Final de la Diplomatura en Python impartida por la Universidad Tecnoló
 - Gonzalo Montalvo | [@GonzaloMartin](https://github.com/GonzaloMartin)
 - Matias Falconaro | [@MatiasFalconaro](https://github.com/matiasfalconaro)
 
-
 ## Pautas del Proyecto
 
 ### Objetivo
@@ -32,12 +31,14 @@ El proyecto incluye las siguientes unidades, en las cuales se aplicarán los tem
 
 ## Ejecución del Proyecto
 
+### Instalacion
+
+Se requiere la versión de `python>=3.9`, en adelante y `pip>=24.0`.
+
 ### Dependencias
 
-Para instalar las dependencias:
 `pip install -r requirements.txt`
 
 ### Ejecutar el Proyecto
 
-Para correr el proyecto:
-`python app/main.py`
+`python3 app/main.py`
