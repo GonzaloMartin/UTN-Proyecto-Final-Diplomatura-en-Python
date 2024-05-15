@@ -14,7 +14,7 @@ import re
 
 from tkinter.messagebox import showinfo
 
-from utils.utils import obtener_mes_actual, des_reformatear_fecha
+from utils.utils import obtener_mes_actual, reformatear_fecha
 from utils.validators import DataValidator
 
 
@@ -120,12 +120,6 @@ class Controller:
             self.view.actualizar_estado_bar(mensaje)
             return
 
-        # Validar fecha
-        resultado, mensaje = DataValidator.validar_fecha(valores['fecha'])
-        if not resultado:
-            self.view.actualizar_estado_bar(mensaje)
-            return
-
         # Convertir a tipos adecuados para evitar errores en la inserción
         valores['monto'] = float(valores['monto'])
         valores['cantidad'] = int(valores['cantidad'])
@@ -225,7 +219,7 @@ class Controller:
         self.view.var_producto.set(valores[0])
         self.view.var_cantidad.set(valores[1])
         self.view.var_monto.set(valores[2])
-        self.view.cal_fecha.set_date(des_reformatear_fecha(valores[8]))
+        self.view.cal_fecha.set_date(reformatear_fecha(valores[8]))
         self.view.cb_responsable.set(valores[3])
         self.view.cb_rubro.set(valores[5])
         self.view.cb_medio_pago.set(valores[7])
@@ -233,7 +227,7 @@ class Controller:
 
         if valores[9] != 'N/A':
             self.view.var_check_vencimiento.set(False)
-            self.view.e_vencimiento.set_date(des_reformatear_fecha(valores[9]))
+            self.view.e_vencimiento.set_date(reformatear_fecha(valores[9]))
             self.view.e_vencimiento.config(state='normal')
         else:
             self.view.var_check_vencimiento.set(True)
@@ -368,22 +362,7 @@ class Controller:
             'fecha': self.view.cal_fecha.get_date().strftime("%Y-%m-%d"),  # Ensure proper date formatting
             'vencimiento': self.view.e_vencimiento.get_date().strftime("%Y-%m-%d") if not self.view.var_check_vencimiento.get() else 'N/A'
         }
-
-        # Validate each field using DataValidator
-        error_messages = []
-        for field, value in nuevo_valor.items():
-            if field in ['monto', 'cantidad'] and not DataValidator.validar_numero_positivo(value)[0]:
-                error_messages.append(DataValidator.validar_numero_positivo(value)[1])
-            elif field in ['fecha', 'vencimiento'] and value != 'N/A' and not DataValidator.validar_fecha(value)[0]:
-                error_messages.append(DataValidator.validar_fecha(value)[1])
-
-        if error_messages:
-            error_message = "Error en campos: " + ", ".join(error_messages)
-            self.view.actualizar_estado_bar(error_message)
-            showinfo("Errores de validación", error_message)
-            self.cancelar()
-            return
-
+        
         self.model.modificacion_bd(id_bd, nuevo_valor)
 
         subtotal_acumulado = round(float(nuevo_valor['cantidad']) * float(nuevo_valor['monto']), 2)
