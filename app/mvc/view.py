@@ -39,10 +39,21 @@ from tkcalendar import DateEntry
 
 from .model import Model
 
+from utils.observer import Observable, Observer
 from utils.utils import obtener_fecha_actual
 
 
-class View:
+class ThemeManager(Observable):
+    def __init__(self):
+        super().__init__()
+        self.theme = 'light'  # Default theme
+
+    def set_theme(self, theme):
+        self.theme = theme
+        self.notify_observers(theme=theme)
+
+
+class View(Observer):
     
     opciones_rubro = ["Mantenimiento", "Impuestos", "Servicios",
                       "Mercado", "Limpieza", "Colegio", "Otros"]
@@ -91,6 +102,54 @@ class View:
         self.cb_medio_pago = None
         
     
+    def set_theme_manager(self, theme_manager):
+        self.theme_manager = theme_manager
+
+
+    def toggle_theme(self):
+        """
+        Toggle the theme based on the current theme
+        """
+        new_theme = 'dark' if self.theme_manager.theme == 'light' else 'light'
+        self.theme_manager.set_theme(new_theme)
+
+
+    def update(self, **kwargs):
+        """
+        Handle theme changes
+        """
+        if 'theme' in kwargs:
+            self.apply_theme(kwargs['theme'])
+
+
+    def apply_theme(self, theme):
+        """
+        Update the colors based on the theme
+        """
+        colors = self.get_color_scheme(theme)
+        self.update_widget_colors(colors)
+
+
+    def get_color_scheme(self, theme):
+        """
+        Define color schemes for light and dark themes
+        """
+        return {
+            'bg': '#FFF' if theme == 'light' else '#333',
+            'fg': '#000' if theme == 'light' else '#FFF'
+        }
+
+
+    def update_widget_colors(self, colors):
+        """
+        Apply colors to widgets
+        """
+        self.root.config(background=colors['bg'])
+        self.estado.config(bg=colors['bg'], fg=colors['fg'])
+        self.l_total.config(bg=colors['bg'], fg=colors['fg'])
+
+        
+        
     def cargar_total_acumulado(self):
         """
         Carga el total acumulado en el Entry correspondiente.
@@ -295,7 +354,10 @@ class View:
         frame_treeview.grid(row=12, column=0, columnspan=11, padx=10, pady=10,
                             sticky='nsew')
         frame_treeview.grid_rowconfigure(0, weight=1)
-        frame_treeview.grid_columnconfigure(0, weight=1)        
+        frame_treeview.grid_columnconfigure(0, weight=1)
+        
+        frame_theme = Frame(self.root, borderwidth=1, relief="solid")
+        frame_theme.grid(row=0, column=2, sticky='ew', padx=20, pady=10)
         #-----FIN FRAMES-----#
 
         self.var_id = IntVar()
@@ -415,6 +477,9 @@ class View:
         #-----FIN FORMULARIO-----#
 
         #-----BOTONES-----#
+        self.toggle_theme_button = Button(frame_theme, text="Theme", command=self.toggle_theme)
+        self.toggle_theme_button.grid(row=0, column=2, sticky=N)
+        
         self.boton_alta = Button(self.root, text='Alta', command=self.controller.preparar_alta, 
                                  bg='grey',fg='white', width=15)
         self.boton_alta.grid(row=3, column=2, sticky=N)

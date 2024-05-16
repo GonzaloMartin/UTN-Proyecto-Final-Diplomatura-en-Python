@@ -4,7 +4,7 @@ main.py
 """
 
 from mvc.model import Model
-from mvc.view import View
+from mvc.view import View, ThemeManager
 from mvc.controller import Controller
 
 
@@ -17,10 +17,18 @@ def main():
     model.initialize_database()
     
     controller = Controller(model)
-    view = View(controller)
-    
+    view = View(controller)  # View initializes with controller
+
+    # Create and configure ThemeManager
+    theme_manager = ThemeManager()
+    theme_manager.add_observer(view)  # Add view as an observer to theme changes
+    view.set_theme_manager(theme_manager)  # Set theme manager to view
+
     controller.set_view(view)
-    view.create_view()
+    view.create_view()  # This should setup the root and other UI components
+
+    # Set initial theme
+    theme_manager.set_theme('light')
 
 
 if __name__ == "__main__":
