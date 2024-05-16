@@ -114,7 +114,7 @@ class View(Observer):
         self.theme_manager.set_theme(new_theme)
 
 
-    def update(self, **kwargs):
+    def update(self, *args, **kwargs):
         """
         Handle theme changes
         """

@@ -1,5 +1,5 @@
 class Observer:
-    def update(self):
+    def update(self, observable, *args, **kwargs):
         pass
 
 class Observable:
