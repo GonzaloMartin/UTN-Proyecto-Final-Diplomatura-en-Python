@@ -119,6 +119,11 @@ class Controller:
         if not resultado:
             self.view.actualizar_estado_bar(mensaje)
             return
+        
+        resultado, mensaje = DataValidator.validar_regex(nuevo_valor=valores)
+        if not resultado:
+            self.view.actualizar_estado_bar(mensaje)
+            return
 
         # Convertir a tipos adecuados para evitar errores en la inserción
         valores['monto'] = float(valores['monto'])
@@ -362,6 +367,23 @@ class Controller:
             'fecha': self.view.cal_fecha.get_date().strftime("%Y-%m-%d"),  # Ensure proper date formatting
             'vencimiento': self.view.e_vencimiento.get_date().strftime("%Y-%m-%d") if not self.view.var_check_vencimiento.get() else 'N/A'
         }
+        
+         # Validate each field using DataValidator
+        error_messages = []
+        """for field, value in nuevo_valor.items():
+            if field in ['monto', 'cantidad'] and not DataValidator.validar_numero_positivo(value)[0]:
+                error_messages.append(DataValidator.validar_numero_positivo(value)[1])"""
+        
+        if not DataValidator.validar_regex(nuevo_valor=nuevo_valor)[0]:
+            error_messages.append(DataValidator.validar_regex(nuevo_valor=nuevo_valor)[1])
+
+
+        if error_messages:
+            error_message = "Error: " + ", ".join(error_messages)
+            self.view.actualizar_estado_bar(error_message)
+            showinfo("Errores de validación", error_message)
+            self.cancelar()
+            return
         
         self.model.modificacion_bd(id_bd, nuevo_valor)
 

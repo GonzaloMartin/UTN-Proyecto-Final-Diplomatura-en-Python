@@ -47,6 +47,16 @@ def reformatear_fecha(fecha):
 
 
 def des_reformatear_fecha(fecha):
+    """
+    Reformatea la fecha de MM/DD/AA a AAAA-MM-DD.
+    mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.
+    dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.
+    yyyy: año, 4 dígitos.
+    
+    :param fecha: fecha a reformatear.
+    :return: fecha reformateada.
+    """
+    
     try:
         fecha_objeto = datetime.strptime(fecha, "%m/%d/%y")
         fecha_reformateada = fecha_objeto.strftime("%Y-%m-%d")

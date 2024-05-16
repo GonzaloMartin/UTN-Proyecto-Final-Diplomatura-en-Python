@@ -54,14 +54,15 @@ class DataValidator:
             diccionario_valor = valores
         else:
             diccionario_valor = nuevo_valor
-            diccionario_valor['fecha'] = des_reformatear_fecha(diccionario_valor['fecha'])
-            diccionario_valor['vencimiento'] = des_reformatear_fecha(diccionario_valor['vencimiento']) if diccionario_valor['vencimiento'] != 'N/A' else 'N/A'
+            # diccionario_valor['fecha'] = des_reformatear_fecha(diccionario_valor['fecha'])
+            # diccionario_valor['vencimiento'] = des_reformatear_fecha(diccionario_valor['vencimiento']) if diccionario_valor['vencimiento'] != 'N/A' else 'N/A'
 
         for campo, valor in diccionario_valor.items():
             # No intenta validar campos que no tienen un patrón definido
             if campo in patrones:
                 if not re.match(patrones[campo], str(valor)):
-                    print(f"Campo {campo} no cumple con el patrón definido. Campo {campo}: {valor}")       
-                    return False
-                
-        return True
+                    if valor != '':
+                        return False, f"Inconsistencia en patrón. Campo {campo}: {valor}"
+                    else:
+                        return False, f"El campo '{campo}' está vacío."
+        return True, "OK"
