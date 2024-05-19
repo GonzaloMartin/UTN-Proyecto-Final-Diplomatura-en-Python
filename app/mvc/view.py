@@ -126,8 +126,11 @@ class View(Observer):
         """
         Update the colors based on the theme
         """
-        colors = self.get_color_scheme(theme)
-        self.update_widget_colors(colors)
+        if self.root:  # Check if the root window exists
+            colors = self.get_color_scheme(theme)
+            self.update_widget_colors(colors)
+        else:
+            print("Root widget is not initialized.")
 
 
     def get_color_scheme(self, theme):
@@ -141,13 +144,16 @@ class View(Observer):
 
 
     def update_widget_colors(self, colors):
-        """
-        Apply colors to widgets
-        """
-        self.root.config(background=colors['bg'])
-        self.estado.config(bg=colors['bg'], fg=colors['fg'])
-        self.l_total.config(bg=colors['bg'], fg=colors['fg'])
+        if self.root and self.root.winfo_exists():
+            self.root.config(background=colors['bg'])
+            if self.estado:
+                self.estado.config(bg=colors['bg'], fg=colors['fg'])
+            if self.l_total:
+                self.l_total.config(bg=colors['bg'], fg=colors['fg'])
 
+
+    def on_close(self):
+        self.root.destroy()
         
         
     def cargar_total_acumulado(self):
@@ -567,4 +573,7 @@ class View(Observer):
         self.actualizar_label_total_acumulado()
         self.cargar_total_acumulado()
         self.cargar_datos_en_treeview()
+        # Set up the custom close behavior
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.theme_manager.set_theme('light')
         self.root.mainloop()

@@ -27,9 +27,6 @@ def main():
     controller.set_view(view)
     view.create_view()  # This should setup the root and other UI components
 
-    # Set initial theme
-    theme_manager.set_theme('light')
-
 
 if __name__ == "__main__":
     main()
