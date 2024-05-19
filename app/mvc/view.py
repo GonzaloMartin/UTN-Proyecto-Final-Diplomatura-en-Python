@@ -145,11 +145,55 @@ class View(Observer):
 
     def update_widget_colors(self, colors):
         if self.root and self.root.winfo_exists():
-            self.root.config(background=colors['bg'])
-            if self.estado:
+            self.root.config(background=colors['bg'])  # Update the root background color
+            
+            # Update header frame and its children
+            if hasattr(self, 'header_frame'):
+                self.header_frame.config(bg=colors['bg'])
+                for widget in self.header_frame.winfo_children():
+                    if isinstance(widget, (Label, Button, Entry)):  # Check for standard widgets
+                        widget.config(bg=colors['bg'], fg=colors['fg'])
+                    elif isinstance(widget, ttk.Combobox):  # ttk Combobox needs a style change
+                        style_name = 'Custom.TCombobox'
+                        self.style.configure(style_name, fieldbackground=colors['bg'], foreground=colors['fg'])
+                        widget.config(style=style_name)
+
+            # Update estado label
+            if hasattr(self, 'estado'):
                 self.estado.config(bg=colors['bg'], fg=colors['fg'])
-            if self.l_total:
+
+            # Update l_total label
+            if hasattr(self, 'l_total'):
                 self.l_total.config(bg=colors['bg'], fg=colors['fg'])
+
+            # Update version frame and its children explicitly
+            if hasattr(self, 'version_frame'):
+                self.version_frame.config(bg=colors['bg'])
+                if hasattr(self, 'version'):  # Check if the version label is an attribute
+                    self.version.config(bg=colors['bg'], fg=colors['fg'])
+
+            # Additional frame updates can be added following the same pattern
+            if hasattr(self, 'frame_formulario'):
+                self.frame_formulario.config(bg=colors['bg'])
+                # Update each widget inside frame_formulario
+                if hasattr(self, 'l_producto'):
+                    self.l_producto.config(bg=colors['bg'], fg=colors['fg'])
+                if hasattr(self, 'e_producto'):
+                    self.e_producto.config(bg=colors['bg'], fg=colors['fg'])
+                if hasattr(self, 'l_cantidad'):
+                    self.l_cantidad.config(bg=colors['bg'], fg=colors['fg'])
+                if hasattr(self, 'e_cantidad'):
+                    self.e_cantidad.config(bg=colors['bg'], fg=colors['fg'])
+                if hasattr(self, 'l_monto'):
+                    self.l_monto.config(bg=colors['bg'], fg=colors['fg'])
+                if hasattr(self, 'e_monto'):
+                    self.e_monto.config(bg=colors['bg'], fg=colors['fg'])
+                if hasattr(self, 'l_responsable'):
+                    self.l_responsable.config(bg=colors['bg'], fg=colors['fg'])
+                if hasattr(self, 'cb_responsable'):
+                    style_name = 'Custom.TCombobox'
+                    self.style.configure(style_name, fieldbackground=colors['bg'], foreground=colors['fg'])
+                    self.cb_responsable.config(style=style_name)
 
 
     def on_close(self):
@@ -328,25 +372,26 @@ class View(Observer):
         self.root.geometry('1600x900')     # Tamaño de la ventana standard notebook 14'
 
         #-----FRAMES-----#
-        header_frame = Frame(self.root)
+        header_frame = Frame(self.root, bg='white')
         ## header_frame.grid_columnconfigure(1, weight=1)
         header_frame.grid(row=0, column=0, sticky='ew', padx=0, pady=5)
         
-        version_frame = Frame(self.root, borderwidth=1, relief="solid")
+        version_frame = Frame(self.root, borderwidth=1, relief="solid", bg='white')
         version_frame.grid(row=0, column=1, sticky='ew', padx=20, pady=10)
+        version_frame.grid_columnconfigure(0, weight=1)
         
         version_frame.grid_columnconfigure(0, weight=1)
         version_frame.grid_columnconfigure(1, weight=0)
         version_frame.grid_columnconfigure(2, weight=1)
 
-        frame_estado = Frame(self.root, borderwidth=1, relief="solid")
+        frame_estado = Frame(self.root, borderwidth=1, relief="solid", bg='white')
         frame_estado.grid(row=0, column=3, sticky='ew', padx=10, pady=0, columnspan=3)
         # frame_estado.grid(row=0, column=2, padx=0, pady=10, columnspan=3)
                
         self.frame_grafico = Frame(self.root, borderwidth=1, relief="solid")
         self.frame_grafico.grid(row=2, column=3, rowspan=9, padx=10, pady=0, sticky='nsew')
 
-        frame_formulario = LabelFrame(self.root, text="Ingreso de datos", padx=10, pady=10)
+        frame_formulario = LabelFrame(self.root, text="Ingreso de datos", padx=10, pady=10, bg='white')
         frame_formulario.grid(row=2, column=0, columnspan=2, rowspan=6, padx=10,
                               pady=10, sticky="we")
 
@@ -362,8 +407,9 @@ class View(Observer):
         frame_treeview.grid_rowconfigure(0, weight=1)
         frame_treeview.grid_columnconfigure(0, weight=1)
         
-        frame_theme = Frame(self.root, borderwidth=1, relief="solid")
-        frame_theme.grid(row=0, column=2, sticky='ew', padx=20, pady=10)
+        frame_theme = Frame(self.root)
+        frame_theme.grid(row=0, column=2, columnspan=1, sticky='n', padx=20, pady=10)
+        frame_theme.grid_columnconfigure(0, weight=1)
         #-----FIN FRAMES-----#
 
         self.var_id = IntVar()
@@ -401,7 +447,7 @@ class View(Observer):
         img = Label(header_frame, image=foto)
         img.grid(row=0, column=0, padx=10, pady=5, sticky=W)
 
-        title = Label(header_frame, text='GESTOR DE GASTOS PYTHON', font=('Arial', 20, 'bold'))
+        title = Label(header_frame, text='GESTOR DE GASTOS PYTHON', font=('Arial', 20, 'bold'), bg='white', fg='black')
         title.grid(row=0, column=1, padx=0, sticky=W)
         #-----FIN HEADER-----#
 
@@ -413,8 +459,7 @@ class View(Observer):
         #-----FIN ESTADO-----#
         
         # VERSION
-        version = Label(version_frame, text="Version 1.0.0", font=('Arial', 10, 'bold'),
-                        bg='grey', fg='white')
+        version = Label(version_frame, text="Version 1.0.0", font=('Arial', 10, 'bold'))
         version.grid(row=0, column=1, sticky='ew')  # Centra el label en el frame
         # END VERSION
 
@@ -483,7 +528,8 @@ class View(Observer):
         #-----FIN FORMULARIO-----#
 
         #-----BOTONES-----#
-        self.toggle_theme_button = Button(frame_theme, text="Theme", command=self.toggle_theme)
+        self.toggle_theme_button = Button(frame_theme, text="Theme", command=self.toggle_theme,
+                                          bg='grey', fg='white', width=15)
         self.toggle_theme_button.grid(row=0, column=2, sticky=N)
         
         self.boton_alta = Button(self.root, text='Alta', command=self.controller.preparar_alta, 

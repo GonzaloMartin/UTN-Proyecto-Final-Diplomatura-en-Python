@@ -25,7 +25,7 @@ def main():
     view.set_theme_manager(theme_manager)  # Set theme manager to view
 
     controller.set_view(view)
-    view.create_view()  # This should setup the root and other UI components
+    view.create_view()
 
 
 if __name__ == "__main__":
