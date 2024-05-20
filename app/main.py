@@ -4,7 +4,7 @@ main.py
 """
 
 from mvc.model import Model
-from mvc.view import View, ThemeManager
+from mvc.view import View, GestorTema
 from mvc.controller import Controller
 
 
@@ -17,12 +17,12 @@ def main():
     model.initialize_database()
     
     controller = Controller(model)
-    view = View(controller)  # View initializes with controller
+    view = View(controller)  # La vista se inicia con el controlador.
 
-    # Create and configure ThemeManager
-    theme_manager = ThemeManager()
-    theme_manager.add_observer(view)  # Add view as an observer to theme changes
-    view.set_theme_manager(theme_manager)  # Set theme manager to view
+    # Creacion y configuracion del gestor de temas.
+    gestor_tema = GestorTema()
+    gestor_tema.add_observer(view)  # Agrega a la vista como observador a los cambios de tema.
+    view.setear_gestor_tema(gestor_tema)  # Setea al gestor de temas a la vista.
 
     controller.set_view(view)
     view.create_view()

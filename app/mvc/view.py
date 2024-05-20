@@ -43,14 +43,14 @@ from utils.observer import Observable, Observer
 from utils.utils import obtener_fecha_actual
 
 
-class ThemeManager(Observable):
+class GestorTema(Observable):
     def __init__(self):
         super().__init__()
-        self.theme = 'light'  # Default theme
+        self.tema = 'light'  # Tema por defecto
 
-    def set_theme(self, theme):
-        self.theme = theme
-        self.notify_observers(theme=theme)
+    def setear_tema(self, tema):
+        self.tema = tema
+        self.notify_observers(tema=tema)
 
 
 class View(Observer):
@@ -102,80 +102,83 @@ class View(Observer):
         self.cb_medio_pago = None
         
     
-    def set_theme_manager(self, theme_manager):
-        self.theme_manager = theme_manager
+    def setear_gestor_tema(self, gestor_tema):
+        self.gestor_tema = gestor_tema
 
 
-    def toggle_theme(self):
+    def toggle_tema(self):
         """
-        Toggle the theme based on the current theme
+        Alterna el tema según el tema actual.
         """
-        new_theme = 'dark' if self.theme_manager.theme == 'light' else 'light'
-        self.theme_manager.set_theme(new_theme)
+        nuevo_tema = 'dark' if self.gestor_tema.tema == 'light' else 'light'
+        self.gestor_tema.setear_tema(nuevo_tema)
 
 
     def update(self, *args, **kwargs):
         """
-        Handle theme changes
+        Gestiona los camios de tema.
         """
-        if 'theme' in kwargs:
-            self.apply_theme(kwargs['theme'])
+        if 'tema' in kwargs:
+            self.aplicar_tema(kwargs['tema'])
 
 
-    def apply_theme(self, theme):
+    def aplicar_tema(self, tema):
         """
-        Update the colors based on the theme
+        Actualiza los colores basandose en el tema.
         """
-        if self.root:  # Check if the root window exists
-            colors = self.get_color_scheme(theme)
-            self.update_widget_colors(colors)
+        if self.root:  # Corrobora que la ventana root exista.
+            colors = self.obtener_esquema_color(tema)
+            self.actualizar_colores_widgets(colors)
         else:
             print("Root widget is not initialized.")
 
 
-    def get_color_scheme(self, theme):
+    def obtener_esquema_color(self, tema):
         """
-        Define color schemes for light and dark themes
+        Define los esquemas de colores para tema clsro y oscuro.
         """
         return {
-            'bg': '#FFF' if theme == 'light' else '#333',
-            'fg': '#000' if theme == 'light' else '#FFF'
+            'bg': '#FFF' if tema == 'light' else '#333',
+            'fg': '#000' if tema == 'light' else '#FFF'
         }
 
 
-    def update_widget_colors(self, colors):
+    def actualizar_colores_widgets(self, colors):
+        """
+        Gestiona la reconfiguracion de las propiedades de los widgets.
+        """
         if self.root and self.root.winfo_exists():
-            self.root.config(background=colors['bg'])  # Update the root background color
+            self.root.config(background=colors['bg'])  # Actualiza color de fondo de root.
             
-            # Update header frame and its children
+            # Actualiza el frame header y sus hijos.
             if hasattr(self, 'header_frame'):
                 self.header_frame.config(bg=colors['bg'])
                 for widget in self.header_frame.winfo_children():
-                    if isinstance(widget, (Label, Button, Entry)):  # Check for standard widgets
+                    if isinstance(widget, (Label, Button, Entry)):  # Corrobora los widgets estandar.
                         widget.config(bg=colors['bg'], fg=colors['fg'])
-                    elif isinstance(widget, ttk.Combobox):  # ttk Combobox needs a style change
+                    elif isinstance(widget, ttk.Combobox):  # ttk Combobox necesira un cambio de estilo.
                         style_name = 'Custom.TCombobox'
                         self.style.configure(style_name, fieldbackground=colors['bg'], foreground=colors['fg'])
                         widget.config(style=style_name)
 
-            # Update estado label
+            # Actualiza el label estado.
             if hasattr(self, 'estado'):
                 self.estado.config(bg=colors['bg'], fg=colors['fg'])
 
-            # Update l_total label
+            # Actualiza el label l_total.
             if hasattr(self, 'l_total'):
                 self.l_total.config(bg=colors['bg'], fg=colors['fg'])
 
-            # Update version frame and its children explicitly
+            # Actualiza el frame version y a sus hijos explicitamente.
             if hasattr(self, 'version_frame'):
                 self.version_frame.config(bg=colors['bg'])
-                if hasattr(self, 'version'):  # Check if the version label is an attribute
+                if hasattr(self, 'version'):  # Corrobota que el label version sea un atributo.
                     self.version.config(bg=colors['bg'], fg=colors['fg'])
 
-            # Additional frame updates can be added following the same pattern
+            # Se aplica el mismo patron al resto de widgets correspondientes.
             if hasattr(self, 'frame_formulario'):
                 self.frame_formulario.config(bg=colors['bg'])
-                # Update each widget inside frame_formulario
+                # Actualiza los widgets hijos del frame formulario.
                 if hasattr(self, 'l_producto'):
                     self.l_producto.config(bg=colors['bg'], fg=colors['fg'])
                 if hasattr(self, 'e_producto'):
@@ -196,7 +199,10 @@ class View(Observer):
                     self.cb_responsable.config(style=style_name)
 
 
-    def on_close(self):
+    def cierre(self):
+        """
+        Destruye el objeto root al cerrar la aplicacion.
+        """
         self.root.destroy()
         
         
@@ -528,9 +534,9 @@ class View(Observer):
         #-----FIN FORMULARIO-----#
 
         #-----BOTONES-----#
-        self.toggle_theme_button = Button(frame_theme, text="Theme", command=self.toggle_theme,
+        self.toggle_tema_button = Button(frame_theme, text="Theme", command=self.toggle_tema,
                                           bg='grey', fg='white', width=15)
-        self.toggle_theme_button.grid(row=0, column=2, sticky=N)
+        self.toggle_tema_button.grid(row=0, column=2, sticky=N)
         
         self.boton_alta = Button(self.root, text='Alta', command=self.controller.preparar_alta, 
                                  bg='grey',fg='white', width=15)
@@ -619,7 +625,6 @@ class View(Observer):
         self.actualizar_label_total_acumulado()
         self.cargar_total_acumulado()
         self.cargar_datos_en_treeview()
-        # Set up the custom close behavior
-        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
-        self.theme_manager.set_theme('light')
+        self.root.protocol("WM_DELETE_WINDOW", self.cierre)
+        self.gestor_tema.setear_tema('light')
         self.root.mainloop()
