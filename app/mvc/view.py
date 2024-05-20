@@ -9,6 +9,10 @@ view.py
 """
 
 import matplotlib.pyplot as plt
+import subprocess
+import threading
+import platform
+import sys
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -40,8 +44,10 @@ from tkcalendar import DateEntry
 from .model import Model
 
 from utils.observer import Observable, Observer
-from utils.utils import obtener_fecha_actual
+from utils.utils import obtener_fecha_actual, obtener_ruta
 
+
+t_proceso = ""
 
 class GestorTema(Observable):
     def __init__(self):
@@ -100,11 +106,12 @@ class View(Observer):
         self.e_vencimiento = None
         self.var_check_vencimiento = None
         self.cb_medio_pago = None
+        self.ruta_server = obtener_ruta(valor="servidor")
+        self.ruta_client = obtener_ruta(valor="cliente")
         
     
     def setear_gestor_tema(self, gestor_tema):
         self.gestor_tema = gestor_tema
-
 
     def toggle_tema(self):
         """
@@ -118,6 +125,7 @@ class View(Observer):
         """
         Gestiona los camios de tema.
         """
+        
         if 'tema' in kwargs:
             self.aplicar_tema(kwargs['tema'])
 
@@ -126,6 +134,7 @@ class View(Observer):
         """
         Actualiza los colores basandose en el tema.
         """
+        
         if self.root:  # Corrobora que la ventana root exista.
             colors = self.obtener_esquema_color(tema)
             self.actualizar_colores_widgets(colors)
@@ -137,6 +146,7 @@ class View(Observer):
         """
         Define los esquemas de colores para tema clsro y oscuro.
         """
+        
         return {
             'bg': '#FFF' if tema == 'light' else '#333',
             'fg': '#000' if tema == 'light' else '#FFF'
@@ -147,6 +157,7 @@ class View(Observer):
         """
         Gestiona la reconfiguracion de las propiedades de los widgets.
         """
+        
         if self.root and self.root.winfo_exists():
             self.root.config(background=colors['bg'])  # Actualiza color de fondo de root.
             
@@ -203,8 +214,10 @@ class View(Observer):
         """
         Destruye el objeto root al cerrar la aplicacion.
         """
-        self.root.destroy()
         
+        self.terminar_conexion()
+        self.root.destroy()
+                
         
     def cargar_total_acumulado(self):
         """
@@ -355,6 +368,61 @@ class View(Observer):
         canvas.get_tk_widget().pack(fill='both', expand=True)
 
 
+    # CONEXIONES
+    def iniciar_conexion(self, ):
+        """
+        Inicia el servidor de la aplicación.
+        Se ejecuta en un hilo separado.
+        
+        :param self: objeto View
+        :return: None
+        """
+        
+        try:
+            if t_proceso != "":
+                t_proceso.kill()
+            
+            threading.Thread(target=self.lanzar_servidor, args=(True,), daemon=True).start()
+        except Exception as e:
+            print(f"Error al intentar matar el proceso: {e}")
+
+
+    def lanzar_servidor(self, var):
+        """
+        Lanza el servidor de la aplicación.
+        Función derivada de iniciar_conexion().
+        
+        :param var: variable booleana.
+        :return: None
+        """
+        
+        if var:
+            try:
+                global t_proceso
+                t_proceso = subprocess.Popen([sys.executable, self.ruta_server])
+                t_proceso.communicate()
+            except Exception as e:
+                print(f"Error al iniciar el servidor: {e}")
+    
+    def terminar_conexion(self, ):
+        """
+        Termina el servidor de la aplicación.
+        Cierra el proceso del servidor.
+        
+        :param self: objeto View
+        :return: None
+        """
+        
+        global t_proceso
+        
+        try:
+            if t_proceso != "":
+                t_proceso.kill()
+                print("[Servidor apagado]")
+        except Exception as e:
+            print(f"Error al intentar matar el proceso: {e}")
+    
+
     # VIEW
     def create_view(self):
         """
@@ -369,6 +437,7 @@ class View(Observer):
         """
         
         self.root = Tk()
+        self.iniciar_conexion()  # Inicia el servidor
         self.root.grid_columnconfigure(0, weight=1)
         self.root.grid_columnconfigure(1, weight=0)
         self.root.grid_columnconfigure(2, weight=1)

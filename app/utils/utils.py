@@ -4,6 +4,8 @@ utils.py
 """
 
 import re
+import os
+from pathlib import Path
 from datetime import datetime
 
 
@@ -73,6 +75,7 @@ def logs(func):
     :param func: función a decorar.
     :return: función envoltura que incluye capacidades de registro.
     """
+    
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
 
@@ -89,3 +92,18 @@ def logs(func):
 
         return result
     return wrapper
+
+def obtener_ruta(valor):
+    """
+    Obtiene la ruta del servidor donde se está ejecutando la aplicación.
+    
+    :return: ruta del servidor.
+    """
+    
+    ruta_script = os.path.abspath(__file__)
+    ruta_repositorio = os.path.dirname(os.path.dirname(ruta_script))
+    
+    if valor == 'cliente':
+        return os.path.join(ruta_repositorio, 'mvc', 't_cliente.py')
+    elif valor == 'servidor':
+        return os.path.join(ruta_repositorio, 'mvc', 't_servidor.py')
