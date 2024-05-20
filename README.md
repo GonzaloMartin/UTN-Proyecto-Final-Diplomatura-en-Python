@@ -8,7 +8,7 @@ Proyecto Final de la Diplomatura en Python impartida por la Universidad Tecnoló
 ## Pautas del Proyecto
 
 ### Objetivo
-El objetivo de este proyecto es consolidar y aplicar los conocimientos adquiridos durante el Nivel Inicial de la Diplomatura.
+El objetivo de este proyecto es consolidar y aplicar los conocimientos adquiridos durante la Diplomatura.
 
 ### Alcance de la Aplicación
 El proyecto incluye las siguientes unidades, en las cuales se aplicarán los temas abordados durante el curso:
