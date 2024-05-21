@@ -7,7 +7,7 @@ def conectar_base_de_datos():
     La base de datos se encuentra en la carpeta 'database'.
     """
     try:
-        conn = sqlite3.connect('database/registros.db')
+        conn = sqlite3.connect('database/records.db')
         return conn
     except sqlite3.Error as e:
         print(e)
@@ -29,7 +29,6 @@ def desconectar_base_de_datos(conn):
 def crear_tabla(conn):
     """
     Crea la tabla si no existe en la base de datos.
-    La base de datos es 'registros.db'.
     
     :param conn: objeto conexión sobre el que se ejecuta la acción
     """

@@ -3,6 +3,7 @@ model.py
     Este módulo contiene la clase Model que se encarga de la lógica de la aplicación.
     Tiene funciones inherentes a la base de datos y a la manipulación de los datos.
     Se vincula con el controlador y la vista para realizar las operaciones necesarias.
+    Se usa el decorador @logs para registrar las operaciones realizadas en la base de datos.
 """
 
 import sqlite3
@@ -87,7 +88,7 @@ class Model:
     def baja_bd(self, id_registro):
         """
         Elimina un registro de la base de datos.
-        La base de datos es registros.db
+        La base de datos es records.db
         
         :param self: objeto Model
         :param id_registro: id del registro a eliminar

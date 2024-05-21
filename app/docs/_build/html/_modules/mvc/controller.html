@@ -93,12 +93,15 @@
 
 <span class="kn">from</span> <span class="nn">tkinter.messagebox</span> <span class="kn">import</span> <span class="n">showinfo</span>
 
-<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="kn">import</span> <span class="n">obtener_mes_actual</span><span class="p">,</span> <span class="n">reformatear_fecha</span><span class="p">,</span> <span class="n">des_reformatear_fecha</span><span class="p">,</span> <span class="n">validar_regex</span>
+<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="kn">import</span> <span class="n">obtener_mes_actual</span><span class="p">,</span> <span class="n">reformatear_fecha</span>
+<span class="kn">from</span> <span class="nn">utils.validators</span> <span class="kn">import</span> <span class="n">DataValidator</span>
+
 
 <div class="viewcode-block" id="Controller">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller">[documentos]</a>
 <span class="k">class</span> <span class="nc">Controller</span><span class="p">:</span>
-    
+
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor de la clase Controller.</span>
@@ -109,7 +112,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="kc">None</span>
-    
+
+
 <div class="viewcode-block" id="Controller.set_view">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.set_view">[documentos]</a>
     <span class="k">def</span> <span class="nf">set_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
@@ -122,7 +126,8 @@
         
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">view</span></div>
 
-    
+
+
 <div class="viewcode-block" id="Controller.get_obtener_datos_grafico">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.get_obtener_datos_grafico">[documentos]</a>
     <span class="k">def</span> <span class="nf">get_obtener_datos_grafico</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -137,7 +142,8 @@
         <span class="n">mes_actual</span> <span class="o">=</span> <span class="n">obtener_mes_actual</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">obtener_datos_grafico</span><span class="p">(</span><span class="n">mes_actual</span><span class="p">)</span></div>
 
-    
+
+
 <div class="viewcode-block" id="Controller.get_consulta_bd">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.get_consulta_bd">[documentos]</a>
     <span class="k">def</span> <span class="nf">get_consulta_bd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -150,9 +156,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">consulta_bd</span><span class="p">(</span><span class="n">mes</span><span class="p">)</span></div>
 
-    
-        
-    <span class="c1">#-----ABMC-----#</span>
+
+
+    <span class="c1"># ABMC</span>
 <div class="viewcode-block" id="Controller.alta">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.alta">[documentos]</a>
     <span class="k">def</span> <span class="nf">alta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -186,21 +192,36 @@
             <span class="s1">&#39;cantidad&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_cantidad</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
             <span class="s1">&#39;vencimiento&#39;</span><span class="p">:</span> <span class="n">vencimiento_value</span>
         <span class="p">}</span>
-        
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">validar_campos</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="n">valores</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="s2">&quot;Campos vacíos o inconsistentes. Revisar.&quot;</span><span class="p">)</span>
-            <span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Info&quot;</span><span class="p">,</span> <span class="s2">&quot;Campos vacíos o inconsistentes. Revisar.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validar campos requeridos y formatos</span>
+        <span class="n">resultado</span><span class="p">,</span> <span class="n">mensaje</span> <span class="o">=</span> <span class="n">DataValidator</span><span class="o">.</span><span class="n">validar_campos_requeridos</span><span class="p">(</span><span class="o">**</span><span class="n">valores</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resultado</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="n">mensaje</span><span class="p">)</span>
+            <span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Error de Validación&quot;</span><span class="p">,</span> <span class="n">mensaje</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cancelar</span><span class="p">()</span>
             <span class="k">return</span>
 
-        <span class="c1"># Fuerzo con casting para poder agregar</span>
-        <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">])</span>
-        <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">])</span>
-        
-        <span class="k">if</span> <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="s2">&quot;Cantidad y monto deben ser números positivos.&quot;</span><span class="p">)</span>
+        <span class="c1"># Validar monto y cantidad como números positivos</span>
+        <span class="n">resultado</span><span class="p">,</span> <span class="n">mensaje</span> <span class="o">=</span> <span class="n">DataValidator</span><span class="o">.</span><span class="n">validar_numero_positivo</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resultado</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="n">mensaje</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">resultado</span><span class="p">,</span> <span class="n">mensaje</span> <span class="o">=</span> <span class="n">DataValidator</span><span class="o">.</span><span class="n">validar_numero_positivo</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resultado</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="n">mensaje</span><span class="p">)</span>
             <span class="k">return</span>
         
+        <span class="n">resultado</span><span class="p">,</span> <span class="n">mensaje</span> <span class="o">=</span> <span class="n">DataValidator</span><span class="o">.</span><span class="n">validar_regex</span><span class="p">(</span><span class="n">nuevo_valor</span><span class="o">=</span><span class="n">valores</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resultado</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="n">mensaje</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Convertir a tipos adecuados para evitar errores en la inserción</span>
+        <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">])</span>
+        <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Insertar en la base de datos</span>
         <span class="n">ultimo_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">alta_bd</span><span class="p">(</span><span class="n">valores</span><span class="p">)</span>
 
         <span class="n">subtotal_acumulado</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">valores</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
@@ -225,6 +246,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">confirmar</span><span class="p">()</span></div>
 
 
+
 <div class="viewcode-block" id="Controller.baja">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.baja">[documentos]</a>
     <span class="k">def</span> <span class="nf">baja</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -245,23 +267,26 @@
         
         <span class="n">id_bd_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">compra_id</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d+$&#39;</span><span class="p">,</span> <span class="n">id_bd_str</span><span class="p">):</span> <span class="c1"># Enteros &gt;= 0</span>
-            <span class="n">id_bd</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">id_bd_str</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">,</span>  <span class="s2">&quot;El ID no es un número válido.&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="s2">&quot;El ID no es un número válido.&quot;</span><span class="p">)</span>
+        <span class="c1"># Validar que el ID es un número positivo</span>
+        <span class="n">resultado</span><span class="p">,</span> <span class="n">mensaje</span> <span class="o">=</span> <span class="n">DataValidator</span><span class="o">.</span><span class="n">validar_numero_positivo</span><span class="p">(</span><span class="n">id_bd_str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resultado</span><span class="p">:</span>
+            <span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">,</span> <span class="n">mensaje</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="n">mensaje</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cancelar</span><span class="p">()</span>
             <span class="k">return</span>
+        
+        <span class="n">id_bd</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">id_bd_str</span><span class="p">)</span>  <span class="c1"># Convertir el ID a entero después de validar</span>
 
+        <span class="c1"># Proceder con la baja en la base de datos</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">baja_bd</span><span class="p">(</span><span class="n">id_bd</span><span class="p">)</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">compra_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cargar_total_acumulado</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="s2">&quot;Se dio de baja el registro con ID: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">id_bd</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Se dio de baja el registro con ID: </span><span class="si">{</span><span class="n">id_bd</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">confirmar</span><span class="p">()</span></div>
 
-        
-        
+
+
 <div class="viewcode-block" id="Controller.modificacion">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.modificacion">[documentos]</a>
     <span class="k">def</span> <span class="nf">modificacion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -280,9 +305,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="s2">&quot;Debe seleccionar un registro para Modificar.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cancelar</span><span class="p">()</span>
             <span class="k">return</span>
-        
-        <span class="n">id_bd</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">compra_id</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">))</span>
-        
+
+        <span class="n">id_bd_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">compra_id</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Validar que el ID es un número positivo</span>
+        <span class="n">resultado</span><span class="p">,</span> <span class="n">mensaje</span> <span class="o">=</span> <span class="n">DataValidator</span><span class="o">.</span><span class="n">validar_numero_positivo</span><span class="p">(</span><span class="n">id_bd_str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resultado</span><span class="p">:</span>
+            <span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">,</span> <span class="n">mensaje</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="n">mensaje</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cancelar</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="n">id_bd</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">id_bd_str</span><span class="p">)</span>  <span class="c1"># Convertir el ID a entero después de validar</span>
+
         <span class="n">valores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">compra_id</span><span class="p">,</span> <span class="s1">&#39;values&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_producto</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_cantidad</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -296,6 +331,7 @@
         <span class="k">if</span> <span class="n">valores</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;N/A&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_check_vencimiento</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">e_vencimiento</span><span class="o">.</span><span class="n">set_date</span><span class="p">(</span><span class="n">reformatear_fecha</span><span class="p">(</span><span class="n">valores</span><span class="p">[</span><span class="mi">9</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">e_vencimiento</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_check_vencimiento</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">e_vencimiento</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
@@ -319,73 +355,42 @@
 <span class="sd">        :return: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
-        <span class="n">termino_busqueda</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_consulta</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">termino_busqueda</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_consulta</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="c1"># Si término_busqueda contiene &quot;*&quot;, se muestran todos los registros</span>
-        <span class="k">if</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">termino_busqueda</span><span class="p">:</span> <span class="n">termino_busqueda</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">termino_busqueda</span><span class="p">:</span>
+            <span class="n">termino_busqueda</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         
         <span class="n">registros</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">consulta_bd</span><span class="p">()</span>
 
-        <span class="c1"># Crea objeto regex desde &#39;termino_busqueda&#39; NO sensible a mayúsculas</span>
-        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">termino_busqueda</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span> 
+        <span class="k">if</span> <span class="n">termino_busqueda</span><span class="p">:</span>  <span class="c1"># Solo compila la regex si hay un término a buscar</span>
+            <span class="c1"># Crea objeto regex desde &#39;termino_busqueda&#39; NO sensible a mayúsculas</span>
+            <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">termino_busqueda</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
 
-        <span class="n">registros_filtrados</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">registros</span><span class="p">:</span>
-            <span class="n">row_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">row</span><span class="p">))</span>  <span class="c1"># Registro -&gt; cadena</span>
-            <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">row_str</span><span class="p">):</span>
-                <span class="n">registros_filtrados</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">registros_filtrados</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">registros</span> <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">row</span><span class="p">)))]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">registros_filtrados</span> <span class="o">=</span> <span class="n">registros</span>  <span class="c1"># Mostrar todos los registros si no hay término de búsqueda</span>
 
+        <span class="c1"># Limpiar el Treeview antes de insertar nuevos registros</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_children</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
+        <span class="c1"># Insertar registros filtrados en el Treeview</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">registros_filtrados</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">values</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 
-        <span class="k">if</span> <span class="n">termino_busqueda</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="c1"># Si no se especifica un término de búsqueda</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Se muestran todos los registros.&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Actualizar la barra de estado con información relevante</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">registros_filtrados</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="s2">&quot;No se encontraron registros que coincidan con la búsqueda.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">termino_busqueda</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resultados de la búsqueda para: </span><span class="si">{</span><span class="n">termino_busqueda</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="s2">&quot;Se muestran todos los registros.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cargar_total_acumulado</span><span class="p">()</span></div>
 
-    <span class="c1">#-----FIN ABMC-----#</span>
+    <span class="c1"># FIN ABMC</span>
 
-<div class="viewcode-block" id="Controller.validar_campos">
-<a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.validar_campos">[documentos]</a>
-    <span class="k">def</span> <span class="nf">validar_campos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nuevo_valor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Valida que todos los campos del formulario no tengan inconsistencias.</span>
-<span class="sd">        </span>
-<span class="sd">        :param self: Objeto Controller.</span>
-<span class="sd">        :param valores: Diccionario con los valores a validar.</span>
-<span class="sd">        :param nuevo_valor: Diccionario con los valores a validar.</span>
-<span class="sd">        :return: True si los valores cumplen con los patrones definidos, False en caso contrario.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        
-        <span class="n">campos_var</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_producto</span><span class="p">,</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_cantidad</span><span class="p">,</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_monto</span><span class="p">,</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_proveedor</span><span class="p">,</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_fecha</span><span class="p">,</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_vencimiento</span><span class="p">]</span>
-        <span class="n">campos_cb</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cb_responsable</span><span class="p">,</span>
-                     <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cb_rubro</span><span class="p">,</span>
-                     <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cb_medio_pago</span><span class="p">]</span>
-        
-        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">campos_var</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">var</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">for</span> <span class="n">cb</span> <span class="ow">in</span> <span class="n">campos_cb</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">cb</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span>
-
-        <span class="c1"># Validaciones Regex:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">validar_regex</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="n">valores</span><span class="p">,</span> <span class="n">nuevo_valor</span><span class="o">=</span><span class="n">nuevo_valor</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-
-        <span class="k">return</span> <span class="kc">True</span></div>
-
-        
 <div class="viewcode-block" id="Controller.preparar_alta">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.preparar_alta">[documentos]</a>
     <span class="k">def</span> <span class="nf">preparar_alta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -435,7 +440,8 @@
             <span class="n">widget</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>  <span class="c1"># Borrar graficos anteriores</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">crear_grafico</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">frame_grafico</span><span class="p">)</span>  <span class="c1"># Grafico actualiazado</span></div>
 
-            
+
+
 <div class="viewcode-block" id="Controller.cancelar">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.cancelar">[documentos]</a>
     <span class="k">def</span> <span class="nf">cancelar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -451,7 +457,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">boton_cancelar</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">limpiar_formulario</span><span class="p">()</span></div>
 
-        
+
+
 <div class="viewcode-block" id="Controller.aplicar_modificacion">
 <a class="viewcode-back" href="../../mvc.html#mvc.controller.Controller.aplicar_modificacion">[documentos]</a>
     <span class="k">def</span> <span class="nf">aplicar_modificacion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compra_id</span><span class="p">,</span> <span class="n">id_bd</span><span class="p">):</span>
@@ -460,7 +467,7 @@
 <span class="sd">        Controla que todos los campos del formulario estén completos.</span>
 <span class="sd">        </span>
 <span class="sd">        :param self: Objeto Controller.</span>
-<span class="sd">        :param compra_id: ID del registro a modificar en el Treeview.</span>
+<span class="sd">        :param compra_id: ID del registro a modificar en the Treeview.</span>
 <span class="sd">        :param id_bd: ID del registro a modificar en la base de datos.</span>
 <span class="sd">        :return: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -473,24 +480,30 @@
             <span class="s1">&#39;rubro&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cb_rubro</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
             <span class="s1">&#39;proveedor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_proveedor</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
             <span class="s1">&#39;medio_pago&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cb_medio_pago</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
-            <span class="s1">&#39;fecha&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cal_fecha</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
-            <span class="s1">&#39;vencimiento&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">e_vencimiento</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="s1">&#39;fecha&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cal_fecha</span><span class="o">.</span><span class="n">get_date</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">),</span>  <span class="c1"># Ensure proper date formatting</span>
+            <span class="s1">&#39;vencimiento&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">e_vencimiento</span><span class="o">.</span><span class="n">get_date</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_check_vencimiento</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;N/A&#39;</span>
         <span class="p">}</span>
         
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">var_check_vencimiento</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
-            <span class="n">vencimiento_value</span> <span class="o">=</span> <span class="s1">&#39;N/A&#39;</span>
-            <span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vencimiento_value</span>
+         <span class="c1"># Validate each field using DataValidator</span>
+        <span class="n">error_messages</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;for field, value in nuevo_valor.items():</span>
+<span class="sd">            if field in [&#39;monto&#39;, &#39;cantidad&#39;] and not DataValidator.validar_numero_positivo(value)[0]:</span>
+<span class="sd">                error_messages.append(DataValidator.validar_numero_positivo(value)[1])&quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">DataValidator</span><span class="o">.</span><span class="n">validar_regex</span><span class="p">(</span><span class="n">nuevo_valor</span><span class="o">=</span><span class="n">nuevo_valor</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">error_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DataValidator</span><span class="o">.</span><span class="n">validar_regex</span><span class="p">(</span><span class="n">nuevo_valor</span><span class="o">=</span><span class="n">nuevo_valor</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">validar_campos</span><span class="p">(</span><span class="n">nuevo_valor</span><span class="o">=</span><span class="n">nuevo_valor</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="s2">&quot;Campos vacíos o inconsistentes. Revisar.&quot;</span><span class="p">)</span>
-            <span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Info&quot;</span><span class="p">,</span> <span class="s2">&quot;Campos vacíos o inconsistentes. Revisar.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">error_messages</span><span class="p">:</span>
+            <span class="n">error_message</span> <span class="o">=</span> <span class="s2">&quot;Error: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_messages</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">actualizar_estado_bar</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
+            <span class="n">showinfo</span><span class="p">(</span><span class="s2">&quot;Errores de validación&quot;</span><span class="p">,</span> <span class="n">error_message</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cancelar</span><span class="p">()</span>
             <span class="k">return</span>
-
+        
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">modificacion_bd</span><span class="p">(</span><span class="n">id_bd</span><span class="p">,</span> <span class="n">nuevo_valor</span><span class="p">)</span>
 
-        <span class="n">subtotal_acumulado</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">])</span> <span class="o">*</span> 
-                                   <span class="nb">float</span><span class="p">(</span><span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">subtotal_acumulado</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">compra_id</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">compra_id</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">(</span>
@@ -498,7 +511,7 @@
                 <span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;cantidad&#39;</span><span class="p">],</span>
                 <span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">],</span>
                 <span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;responsable&#39;</span><span class="p">],</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subtotal_acumulado</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="c1"># Subtotal</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subtotal_acumulado</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># Subtotal</span>
                 <span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;rubro&#39;</span><span class="p">],</span>
                 <span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;proveedor&#39;</span><span class="p">],</span>
                 <span class="n">nuevo_valor</span><span class="p">[</span><span class="s1">&#39;medio_pago&#39;</span><span class="p">],</span>
@@ -510,6 +523,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">cargar_total_acumulado</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">limpiar_formulario</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">confirmar</span><span class="p">()</span></div>
+
 
 
 <div class="viewcode-block" id="Controller.obtener_mes_palabra_actual">
@@ -527,6 +541,7 @@
         <span class="n">mes_actual</span> <span class="o">=</span> <span class="n">obtener_mes_actual</span><span class="p">()</span>
         <span class="n">mes_actual_str</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mes_actual</span><span class="p">),</span> <span class="s2">&quot;%m&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%B&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mes_actual_str</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span></div>
+
 
 
 <div class="viewcode-block" id="Controller.obtener_total_acumulado">

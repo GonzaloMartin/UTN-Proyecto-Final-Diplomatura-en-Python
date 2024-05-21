@@ -83,7 +83,10 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
 
 <div class="viewcode-block" id="obtener_mes_actual">
 <a class="viewcode-back" href="../../utils.html#utils.utils.obtener_mes_actual">[documentos]</a>
@@ -97,15 +100,16 @@
     <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">month</span></div>
 
 
+
 <div class="viewcode-block" id="obtener_fecha_actual">
 <a class="viewcode-back" href="../../utils.html#utils.utils.obtener_fecha_actual">[documentos]</a>
 <span class="k">def</span> <span class="nf">obtener_fecha_actual</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Obtiene la fecha actual del sistema con formato mm-dd-yyyy.</span>
 <span class="sd">    </span>
-<span class="sd">    mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.</span>
-<span class="sd">    dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.</span>
-<span class="sd">    yyyy: año, 4 dígitos.</span>
+<span class="sd">    :param mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.</span>
+<span class="sd">    :param dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.</span>
+<span class="sd">    :param yyyy: año, 4 dígitos.</span>
 <span class="sd">    :return: fecha actual.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -114,6 +118,7 @@
     <span class="n">dia</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">fecha_actual</span><span class="o">.</span><span class="n">day</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>    <span class="c1"># Rellenar con ceros a la izquierda si es necesario</span>
     <span class="n">año</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">fecha_actual</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mes</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">dia</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">año</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
 
 
 <div class="viewcode-block" id="reformatear_fecha">
@@ -130,68 +135,75 @@
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mes</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">dia</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">año</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
+
 <div class="viewcode-block" id="des_reformatear_fecha">
 <a class="viewcode-back" href="../../utils.html#utils.utils.des_reformatear_fecha">[documentos]</a>
 <span class="k">def</span> <span class="nf">des_reformatear_fecha</span><span class="p">(</span><span class="n">fecha</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reformatea la fecha de MM/DD/AA a AAAA-MM-DD.</span>
-<span class="sd">    mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.</span>
-<span class="sd">    dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.</span>
-<span class="sd">    yyyy: año, 4 dígitos.</span>
 <span class="sd">    </span>
+<span class="sd">    :param mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.</span>
+<span class="sd">    :param dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.</span>
+<span class="sd">    :param yyyy: año, 4 dígitos.</span>
 <span class="sd">    :param fecha: fecha a reformatear.</span>
 <span class="sd">    :return: fecha reformateada.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="k">try</span><span class="p">:</span>
         <span class="n">fecha_objeto</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">fecha</span><span class="p">,</span> <span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%y&quot;</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">fecha_objeto</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">fecha</span><span class="p">,</span> <span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">fecha_objeto</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">fecha</span><span class="p">,</span> <span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%Y&quot;</span><span class="p">)</span>
+        <span class="n">fecha_reformateada</span> <span class="o">=</span> <span class="n">fecha_objeto</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">pass</span>  <span class="c1"># No es necesario hacer nada si ocurre un error</span>
     
-    <span class="k">return</span> <span class="n">fecha_objeto</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">fecha_reformateada</span></div>
 
 
-<div class="viewcode-block" id="validar_regex">
-<a class="viewcode-back" href="../../utils.html#utils.utils.validar_regex">[documentos]</a>
-<span class="k">def</span> <span class="nf">validar_regex</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nuevo_valor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="logs">
+<a class="viewcode-back" href="../../utils.html#utils.utils.logs">[documentos]</a>
+<span class="k">def</span> <span class="nf">logs</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Valida que los valores ingresados cumplan con los patrones definidos.</span>
-<span class="sd">    Las validaciones se realizan con expresiones regulares.</span>
-<span class="sd">    </span>
-<span class="sd">    :param valores: diccionario con los valores a validar.</span>
-<span class="sd">    :param nuevo_valor: diccionario con los valores a validar.</span>
-<span class="sd">    :return: True si los valores cumplen con los patrones definidos, False en caso contrario.&quot;&quot;&quot;</span>
+<span class="sd">    Decoraador que registra acciones tomadas por las funciones decoradas.</span>
+
+<span class="sd">    :param func: función a aplicar decoradores.</span>
+<span class="sd">    :return: función wrapper que incluye capacidades de registro.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">patrones</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;producto&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;cantidad&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^\d+$&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;monto&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^\d+(\.\d+)?$&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;responsable&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;rubro&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 ]+$&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;proveedor&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;medio_pago&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9 áéíóúÁÉÍÓÚüÜñÑ]+$&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;fecha&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^\d</span><span class="si">{4}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">$&#39;</span><span class="p">,</span>  <span class="c1"># Formato fecha aaaa-mm-dd</span>
-        <span class="s1">&#39;vencimiento&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^(?:\d</span><span class="si">{4}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">|N/A)$&#39;</span>  <span class="c1"># N/A o fecha</span>
-    <span class="p">}</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="n">diccionario_valor</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">valores</span><span class="p">:</span>
-        <span class="n">diccionario_valor</span> <span class="o">=</span> <span class="n">valores</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">diccionario_valor</span> <span class="o">=</span> <span class="n">nuevo_valor</span>
-        <span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;fecha&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">des_reformatear_fecha</span><span class="p">(</span><span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;fecha&#39;</span><span class="p">])</span>
-        <span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">des_reformatear_fecha</span><span class="p">(</span><span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">diccionario_valor</span><span class="p">[</span><span class="s1">&#39;vencimiento&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;N/A&#39;</span> <span class="k">else</span> <span class="s1">&#39;N/A&#39;</span>
+        <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;alta_bd&#39;</span><span class="p">:</span>
+            <span class="n">valores</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nuevo registro ingresado: </span><span class="si">{</span><span class="n">valores</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;baja_bd&#39;</span><span class="p">:</span>
+            <span class="n">id_registro</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registro eliminado con ID: </span><span class="si">{</span><span class="n">id_registro</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;modificacion_bd&#39;</span><span class="p">:</span>
+            <span class="n">id_registro</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">valores</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registro actualizado con ID: </span><span class="si">{</span><span class="n">id_registro</span><span class="si">}</span><span class="s2"> y datos: </span><span class="si">{</span><span class="n">valores</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">campo</span><span class="p">,</span> <span class="n">valor</span> <span class="ow">in</span> <span class="n">diccionario_valor</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="c1"># No intenta validar campos que no tienen un patrón definido</span>
-        <span class="k">if</span> <span class="n">campo</span> <span class="ow">in</span> <span class="n">patrones</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">patrones</span><span class="p">[</span><span class="n">campo</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Campo </span><span class="si">{</span><span class="n">campo</span><span class="si">}</span><span class="s2"> no cumple con el patrón definido. Campo </span><span class="si">{</span><span class="n">campo</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">valor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>       
-                <span class="k">return</span> <span class="kc">False</span>
-            
-    <span class="k">return</span> <span class="kc">True</span></div>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="obtener_ruta">
+<a class="viewcode-back" href="../../utils.html#utils.utils.obtener_ruta">[documentos]</a>
+<span class="k">def</span> <span class="nf">obtener_ruta</span><span class="p">(</span><span class="n">valor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Obtiene la ruta del servidor donde se está ejecutando la aplicación.</span>
+<span class="sd">    </span>
+<span class="sd">    :param valor: valor a obtener.</span>
+<span class="sd">    :return: ruta del servidor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">ruta_script</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">ruta_repositorio</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ruta_script</span><span class="p">))</span>
+    
+    <span class="k">if</span> <span class="n">valor</span> <span class="o">==</span> <span class="s1">&#39;cliente&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ruta_repositorio</span><span class="p">,</span> <span class="s1">&#39;mvc&#39;</span><span class="p">,</span> <span class="s1">&#39;t_cliente.py&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">valor</span> <span class="o">==</span> <span class="s1">&#39;servidor&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ruta_repositorio</span><span class="p">,</span> <span class="s1">&#39;mvc&#39;</span><span class="p">,</span> <span class="s1">&#39;t_servidor.py&#39;</span><span class="p">)</span></div>
 
 </pre></div>
 

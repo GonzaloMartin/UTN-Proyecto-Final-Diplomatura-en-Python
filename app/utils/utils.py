@@ -23,9 +23,9 @@ def obtener_fecha_actual():
     """
     Obtiene la fecha actual del sistema con formato mm-dd-yyyy.
     
-    mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.
-    dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.
-    yyyy: año, 4 dígitos.
+    :param mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.
+    :param dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.
+    :param yyyy: año, 4 dígitos.
     :return: fecha actual.
     """
     
@@ -51,10 +51,10 @@ def reformatear_fecha(fecha):
 def des_reformatear_fecha(fecha):
     """
     Reformatea la fecha de MM/DD/AA a AAAA-MM-DD.
-    mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.
-    dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.
-    yyyy: año, 4 dígitos.
     
+    :param mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.
+    :param dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.
+    :param yyyy: año, 4 dígitos.
     :param fecha: fecha a reformatear.
     :return: fecha reformateada.
     """
@@ -70,10 +70,10 @@ def des_reformatear_fecha(fecha):
 
 def logs(func):
     """
-    Decorator that logs actions taken by the decorated functions.
+    Decoraador que registra acciones tomadas por las funciones decoradas.
 
-    :param func: función a decorar.
-    :return: función envoltura que incluye capacidades de registro.
+    :param func: función a aplicar decoradores.
+    :return: función wrapper que incluye capacidades de registro.
     """
     
     def wrapper(*args, **kwargs):
@@ -97,6 +97,7 @@ def obtener_ruta(valor):
     """
     Obtiene la ruta del servidor donde se está ejecutando la aplicación.
     
+    :param valor: valor a obtener.
     :return: ruta del servidor.
     """
     

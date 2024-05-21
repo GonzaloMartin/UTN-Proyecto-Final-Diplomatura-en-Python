@@ -7,7 +7,13 @@ class DataValidator:
     
     @staticmethod
     def validar_numero_positivo(valor):
-        """Valida que el valor sea un número positivo."""
+        """
+        Valida que el valor sea un número positivo.
+        
+        :param valor: valor a validar.
+        :return: True si el valor es un número positivo, False en caso contrario.
+        """
+        
         try:
             valor = float(valor)
             if valor <= 0:
@@ -19,7 +25,13 @@ class DataValidator:
 
     @staticmethod
     def validar_campos_requeridos(**campos):
-        """Valida que los campos requeridos contengan datos."""
+        """
+        Valida que los campos requeridos contengan datos.
+        
+        :param campos: diccionario con los campos a validar.
+        :return: True si los campos contienen datos, False en caso contrario.
+        """
+        
         for campo, valor in campos.items():
             if not valor.strip():
                 return False, f"El campo '{campo}' es requerido y está vacío."

@@ -83,8 +83,9 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">mvc.model</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">mvc.view</span> <span class="kn">import</span> <span class="n">View</span>
+<span class="kn">from</span> <span class="nn">mvc.view</span> <span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">GestorTema</span>
 <span class="kn">from</span> <span class="nn">mvc.controller</span> <span class="kn">import</span> <span class="n">Controller</span>
+
 
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../main.html#main.main">[documentos]</a>
@@ -94,11 +95,19 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
-    <span class="n">controller</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-    <span class="n">view</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span><span class="n">controller</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">initialize_database</span><span class="p">()</span>
     
+    <span class="n">controller</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">view</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span><span class="n">controller</span><span class="p">)</span>  <span class="c1"># La vista se inicia con el controlador.</span>
+
+    <span class="c1"># Creacion y configuracion del gestor de temas.</span>
+    <span class="n">gestor_tema</span> <span class="o">=</span> <span class="n">GestorTema</span><span class="p">()</span>
+    <span class="n">gestor_tema</span><span class="o">.</span><span class="n">add_observer</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>  <span class="c1"># Agrega a la vista como observador a los cambios de tema.</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">setear_gestor_tema</span><span class="p">(</span><span class="n">gestor_tema</span><span class="p">)</span>  <span class="c1"># Setea al gestor de temas a la vista.</span>
+
     <span class="n">controller</span><span class="o">.</span><span class="n">set_view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
     <span class="n">view</span><span class="o">.</span><span class="n">create_view</span><span class="p">()</span></div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

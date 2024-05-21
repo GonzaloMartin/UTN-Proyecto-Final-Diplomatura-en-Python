@@ -1,3 +1,21 @@
+"""
+t_cliente.py
+    Este módulo contiene la implementación de un cliente UDP que se comunica con un servidor UDP.
+    El cliente envía un mensaje al servidor y recibe un mensaje de respuesta.
+    
+    El cliente se ejecuta con el siguiente comando:
+        python t_cliente.py [mensaje opcional]
+    
+    Parámetros:
+        mensaje: mensaje opcional que se enviará al servidor.
+        
+    Ejemplo:
+        python t_cliente.py "Hola, servidor UDP!"
+    
+    El cliente se conecta al servidor en el puerto 9999.
+    El servidor debe estar en ejecución para que el cliente pueda establecer la conexión.
+"""
+
 import socket
 import sys
 
