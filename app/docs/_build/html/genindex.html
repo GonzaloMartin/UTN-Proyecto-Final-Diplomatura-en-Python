@@ -84,12 +84,16 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  
@@ -97,6 +101,8 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.view.View.actualizar_colores_widgets">actualizar_colores_widgets() (método de mvc.view.View)</a>
+</li>
       <li><a href="mvc.html#mvc.view.View.actualizar_estado_bar">actualizar_estado_bar() (método de mvc.view.View)</a>
 </li>
       <li><a href="mvc.html#mvc.view.View.actualizar_estado_fecha">actualizar_estado_fecha() (método de mvc.view.View)</a>
@@ -105,11 +111,15 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utils.html#utils.observer.Observable.add_observer">add_observer() (método de utils.observer.Observable)</a>
+</li>
       <li><a href="mvc.html#mvc.controller.Controller.alta">alta() (método de mvc.controller.Controller)</a>
 </li>
       <li><a href="mvc.html#mvc.model.Model.alta_bd">alta_bd() (método de mvc.model.Model)</a>
 </li>
       <li><a href="mvc.html#mvc.controller.Controller.aplicar_modificacion">aplicar_modificacion() (método de mvc.controller.Controller)</a>
+</li>
+      <li><a href="mvc.html#mvc.view.View.aplicar_tema">aplicar_tema() (método de mvc.view.View)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -135,12 +145,16 @@
 </li>
       <li><a href="mvc.html#mvc.view.View.cargar_total_acumulado">cargar_total_acumulado() (método de mvc.view.View)</a>
 </li>
-      <li><a href="mvc.html#mvc.model.Model.conectar_base_de_datos">conectar_base_de_datos() (método de mvc.model.Model)</a>
+      <li><a href="mvc.html#mvc.view.View.cierre">cierre() (método de mvc.view.View)</a>
 </li>
-      <li><a href="mvc.html#mvc.controller.Controller.confirmar">confirmar() (método de mvc.controller.Controller)</a>
+      <li><a href="mvc.html#mvc.model.Model.close_connection">close_connection() (método de mvc.model.Model)</a>
+</li>
+      <li><a href="mvc.html#mvc.database.conectar_base_de_datos">conectar_base_de_datos() (en el módulo mvc.database)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.controller.Controller.confirmar">confirmar() (método de mvc.controller.Controller)</a>
+</li>
       <li><a href="mvc.html#mvc.controller.Controller.consulta">consulta() (método de mvc.controller.Controller)</a>
 </li>
       <li><a href="mvc.html#mvc.model.Model.consulta_bd">consulta_bd() (método de mvc.model.Model)</a>
@@ -149,7 +163,7 @@
 </li>
       <li><a href="mvc.html#mvc.view.View.crear_grafico">crear_grafico() (método de mvc.view.View)</a>
 </li>
-      <li><a href="mvc.html#mvc.model.Model.crear_tabla">crear_tabla() (método de mvc.model.Model)</a>
+      <li><a href="mvc.html#mvc.database.crear_tabla">crear_tabla() (en el módulo mvc.database)</a>
 </li>
       <li><a href="mvc.html#mvc.view.View.create_view">create_view() (método de mvc.view.View)</a>
 </li>
@@ -159,11 +173,13 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="utils.html#utils.utils.des_reformatear_fecha">des_reformatear_fecha() (en el módulo utils.utils)</a>
+      <li><a href="utils.html#utils.validators.DataValidator">DataValidator (clase en utils.validators)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="mvc.html#mvc.model.Model.desconectar_base_de_datos">desconectar_base_de_datos() (método de mvc.model.Model)</a>
+      <li><a href="utils.html#utils.utils.des_reformatear_fecha">des_reformatear_fecha() (en el módulo utils.utils)</a>
+</li>
+      <li><a href="mvc.html#mvc.database.desconectar_base_de_datos">desconectar_base_de_datos() (en el módulo mvc.database)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -171,11 +187,33 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="mvc.html#mvc.controller.Controller.get_consulta_bd">get_consulta_bd() (método de mvc.controller.Controller)</a>
+      <li><a href="mvc.html#mvc.view.GestorTema">GestorTema (clase en mvc.view)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.controller.Controller.get_consulta_bd">get_consulta_bd() (método de mvc.controller.Controller)</a>
+</li>
       <li><a href="mvc.html#mvc.controller.Controller.get_obtener_datos_grafico">get_obtener_datos_grafico() (método de mvc.controller.Controller)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.t_servidor.MyUDPHandler.handle">handle() (método de mvc.t_servidor.MyUDPHandler)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.view.View.iniciar_conexion">iniciar_conexion() (método de mvc.view.View)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.model.Model.initialize_database">initialize_database() (método de mvc.model.Model)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -183,7 +221,13 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.view.View.lanzar_servidor">lanzar_servidor() (método de mvc.view.View)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mvc.html#mvc.view.View.limpiar_formulario">limpiar_formulario() (método de mvc.view.View)</a>
+</li>
+      <li><a href="utils.html#utils.utils.logs">logs() (en el módulo utils.utils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -216,11 +260,21 @@
 </li>
         <li><a href="mvc.html#module-mvc.controller">mvc.controller</a>
 </li>
+        <li><a href="mvc.html#module-mvc.database">mvc.database</a>
+</li>
         <li><a href="mvc.html#module-mvc.model">mvc.model</a>
+</li>
+        <li><a href="mvc.html#module-mvc.t_cliente">mvc.t_cliente</a>
+</li>
+        <li><a href="mvc.html#module-mvc.t_servidor">mvc.t_servidor</a>
 </li>
         <li><a href="mvc.html#module-mvc.view">mvc.view</a>
 </li>
+        <li><a href="utils.html#module-utils.observer">utils.observer</a>
+</li>
         <li><a href="utils.html#module-utils.utils">utils.utils</a>
+</li>
+        <li><a href="utils.html#module-utils.validators">utils.validators</a>
 </li>
       </ul></li>
   </ul></td>
@@ -240,10 +294,31 @@
 </li>
       </ul></li>
       <li>
+    mvc.database
+
+      <ul>
+        <li><a href="mvc.html#module-mvc.database">module</a>
+</li>
+      </ul></li>
+      <li>
     mvc.model
 
       <ul>
         <li><a href="mvc.html#module-mvc.model">module</a>
+</li>
+      </ul></li>
+      <li>
+    mvc.t_cliente
+
+      <ul>
+        <li><a href="mvc.html#module-mvc.t_cliente">module</a>
+</li>
+      </ul></li>
+      <li>
+    mvc.t_servidor
+
+      <ul>
+        <li><a href="mvc.html#module-mvc.t_servidor">module</a>
 </li>
       </ul></li>
       <li>
@@ -253,22 +328,40 @@
         <li><a href="mvc.html#module-mvc.view">module</a>
 </li>
       </ul></li>
+      <li><a href="mvc.html#mvc.t_servidor.MyUDPHandler">MyUDPHandler (clase en mvc.t_servidor)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utils.html#utils.observer.Observable.notify_observers">notify_observers() (método de utils.observer.Observable)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utils.html#utils.observer.Observable">Observable (clase en utils.observer)</a>
+</li>
+      <li><a href="utils.html#utils.observer.Observer">Observer (clase en utils.observer)</a>
+</li>
       <li><a href="mvc.html#mvc.model.Model.obtener_datos_grafico">obtener_datos_grafico() (método de mvc.model.Model)</a>
+</li>
+      <li><a href="mvc.html#mvc.view.View.obtener_esquema_color">obtener_esquema_color() (método de mvc.view.View)</a>
 </li>
       <li><a href="utils.html#utils.utils.obtener_fecha_actual">obtener_fecha_actual() (en el módulo utils.utils)</a>
 </li>
       <li><a href="utils.html#utils.utils.obtener_mes_actual">obtener_mes_actual() (en el módulo utils.utils)</a>
 </li>
-      <li><a href="mvc.html#mvc.controller.Controller.obtener_mes_palabra_actual">obtener_mes_palabra_actual() (método de mvc.controller.Controller)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.controller.Controller.obtener_mes_palabra_actual">obtener_mes_palabra_actual() (método de mvc.controller.Controller)</a>
+</li>
+      <li><a href="utils.html#utils.utils.obtener_ruta">obtener_ruta() (en el módulo utils.utils)</a>
+</li>
       <li><a href="mvc.html#mvc.controller.Controller.obtener_total_acumulado">obtener_total_acumulado() (método de mvc.controller.Controller)</a>
 </li>
       <li><a href="mvc.html#mvc.view.View.opciones_medio_pago">opciones_medio_pago (atributo de mvc.view.View)</a>
@@ -298,6 +391,10 @@
       <li><a href="utils.html#utils.utils.reformatear_fecha">reformatear_fecha() (en el módulo utils.utils)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utils.html#utils.observer.Observable.remove_observer">remove_observer() (método de utils.observer.Observable)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
@@ -306,10 +403,43 @@
       <li><a href="mvc.html#mvc.controller.Controller.set_view">set_view() (método de mvc.controller.Controller)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.view.View.setear_gestor_tema">setear_gestor_tema() (método de mvc.view.View)</a>
+</li>
+      <li><a href="mvc.html#mvc.view.GestorTema.setear_tema">setear_tema() (método de mvc.view.GestorTema)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.view.View.terminar_conexion">terminar_conexion() (método de mvc.view.View)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.view.View.toggle_tema">toggle_tema() (método de mvc.view.View)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mvc.html#mvc.view.View.update">update() (método de mvc.view.View)</a>
+
+      <ul>
+        <li><a href="utils.html#utils.observer.Observer.update">(método de utils.observer.Observer)</a>
+</li>
+      </ul></li>
+      <li>
+    utils.observer
+
+      <ul>
+        <li><a href="utils.html#module-utils.observer">module</a>
+</li>
+      </ul></li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     utils.utils
@@ -318,17 +448,26 @@
         <li><a href="utils.html#module-utils.utils">module</a>
 </li>
       </ul></li>
+      <li>
+    utils.validators
+
+      <ul>
+        <li><a href="utils.html#module-utils.validators">module</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="mvc.html#mvc.controller.Controller.validar_campos">validar_campos() (método de mvc.controller.Controller)</a>
+      <li><a href="utils.html#utils.validators.DataValidator.validar_campos_requeridos">validar_campos_requeridos() (método estático de utils.validators.DataValidator)</a>
+</li>
+      <li><a href="utils.html#utils.validators.DataValidator.validar_numero_positivo">validar_numero_positivo() (método estático de utils.validators.DataValidator)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="utils.html#utils.utils.validar_regex">validar_regex() (en el módulo utils.utils)</a>
+      <li><a href="utils.html#utils.validators.DataValidator.validar_regex">validar_regex() (método estático de utils.validators.DataValidator)</a>
 </li>
       <li><a href="mvc.html#mvc.view.View">View (clase en mvc.view)</a>
 </li>

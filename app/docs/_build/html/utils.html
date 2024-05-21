@@ -52,11 +52,28 @@
 <li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mvc.html">MVC Package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Utils Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#utils.observer.Observable"><code class="docutils literal notranslate"><span class="pre">Observable</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#utils.observer.Observable.add_observer"><code class="docutils literal notranslate"><span class="pre">Observable.add_observer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.observer.Observable.notify_observers"><code class="docutils literal notranslate"><span class="pre">Observable.notify_observers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.observer.Observable.remove_observer"><code class="docutils literal notranslate"><span class="pre">Observable.remove_observer()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.observer.Observer"><code class="docutils literal notranslate"><span class="pre">Observer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#utils.observer.Observer.update"><code class="docutils literal notranslate"><span class="pre">Observer.update()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#utils.utils.des_reformatear_fecha"><code class="docutils literal notranslate"><span class="pre">des_reformatear_fecha()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.utils.logs"><code class="docutils literal notranslate"><span class="pre">logs()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#utils.utils.obtener_fecha_actual"><code class="docutils literal notranslate"><span class="pre">obtener_fecha_actual()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#utils.utils.obtener_mes_actual"><code class="docutils literal notranslate"><span class="pre">obtener_mes_actual()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.utils.obtener_ruta"><code class="docutils literal notranslate"><span class="pre">obtener_ruta()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#utils.utils.reformatear_fecha"><code class="docutils literal notranslate"><span class="pre">reformatear_fecha()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.utils.validar_regex"><code class="docutils literal notranslate"><span class="pre">validar_regex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.validators.DataValidator"><code class="docutils literal notranslate"><span class="pre">DataValidator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#utils.validators.DataValidator.validar_campos_requeridos"><code class="docutils literal notranslate"><span class="pre">DataValidator.validar_campos_requeridos()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.validators.DataValidator.validar_numero_positivo"><code class="docutils literal notranslate"><span class="pre">DataValidator.validar_numero_positivo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.validators.DataValidator.validar_regex"><code class="docutils literal notranslate"><span class="pre">DataValidator.validar_regex()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -85,22 +102,105 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-utils.utils">
-<span id="utils-module"></span><h1>Utils Module<a class="headerlink" href="#module-utils.utils" title="Link to this heading"></a></h1>
+  <section id="module-utils.observer">
+<span id="utils-module"></span><h1>Utils Module<a class="headerlink" href="#module-utils.observer" title="Link to this heading"></a></h1>
 <dl class="simple">
+<dt>observer.py</dt><dd><p>Este módulo contiene las clases Observer y Observable que implementan el patrón de diseño Observer.
+La clase Observer define un método update que se llama cuando el estado de un objeto Observable cambia.
+La clase Observable mantiene una lista de observadores y notifica a todos los observadores cuando cambia su estado.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.observer.Observable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.observer.</span></span><span class="sig-name descname"><span class="pre">Observable</span></span><a class="reference internal" href="_modules/utils/observer.html#Observable"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.observer.Observable" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.observer.Observable.add_observer">
+<span class="sig-name descname"><span class="pre">add_observer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/observer.html#Observable.add_observer"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.observer.Observable.add_observer" title="Link to this definition"></a></dt>
+<dd><p>Agrega un observador a la lista de observadores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>observer</strong> – observador a agregar.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.observer.Observable.notify_observers">
+<span class="sig-name descname"><span class="pre">notify_observers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/observer.html#Observable.notify_observers"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.observer.Observable.notify_observers" title="Link to this definition"></a></dt>
+<dd><p>Notifica a todos los observadores que el estado del objeto ha cambiado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – argumentos adicionales.</p></li>
+<li><p><strong>kwargs</strong> – argumentos con nombre.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.observer.Observable.remove_observer">
+<span class="sig-name descname"><span class="pre">remove_observer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/observer.html#Observable.remove_observer"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.observer.Observable.remove_observer" title="Link to this definition"></a></dt>
+<dd><p>Elimina un observador de la lista de observadores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>observer</strong> – observador a eliminar.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.observer.Observer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.observer.</span></span><span class="sig-name descname"><span class="pre">Observer</span></span><a class="reference internal" href="_modules/utils/observer.html#Observer"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.observer.Observer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.observer.Observer.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observable</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/observer.html#Observer.update"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.observer.Observer.update" title="Link to this definition"></a></dt>
+<dd><p>Método que se llama cuando el estado de un objeto Observable cambia.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observable</strong> – objeto Observable que ha cambiado.</p></li>
+<li><p><strong>args</strong> – argumentos adicionales.</p></li>
+<li><p><strong>kwargs</strong> – argumentos con nombre.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="simple" id="module-utils.utils">
 <dt>utils.py</dt><dd><p>Este módulo contiene funciones que son utilizadas por otros módulos.</p>
 </dd>
 </dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.utils.des_reformatear_fecha">
 <span class="sig-prename descclassname"><span class="pre">utils.utils.</span></span><span class="sig-name descname"><span class="pre">des_reformatear_fecha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fecha</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/utils.html#des_reformatear_fecha"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.utils.des_reformatear_fecha" title="Link to this definition"></a></dt>
-<dd><p>Reformatea la fecha de MM/DD/AA a AAAA-MM-DD.
-mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.
-dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.
-yyyy: año, 4 dígitos.</p>
+<dd><p>Reformatea la fecha de MM/DD/AA a AAAA-MM-DD.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fecha</strong> – fecha a reformatear.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mm</strong> – mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.</p></li>
+<li><p><strong>dd</strong> – día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.</p></li>
+<li><p><strong>yyyy</strong> – año, 4 dígitos.</p></li>
+<li><p><strong>fecha</strong> – fecha a reformatear.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Devuelve<span class="colon">:</span></dt>
 <dd class="field-even"><p>fecha reformateada.</p>
@@ -109,13 +209,35 @@ yyyy: año, 4 dígitos.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="utils.utils.logs">
+<span class="sig-prename descclassname"><span class="pre">utils.utils.</span></span><span class="sig-name descname"><span class="pre">logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/utils.html#logs"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.utils.logs" title="Link to this definition"></a></dt>
+<dd><p>Decoraador que registra acciones tomadas por las funciones decoradas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func</strong> – función a aplicar decoradores.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>función wrapper que incluye capacidades de registro.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="utils.utils.obtener_fecha_actual">
 <span class="sig-prename descclassname"><span class="pre">utils.utils.</span></span><span class="sig-name descname"><span class="pre">obtener_fecha_actual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/utils.html#obtener_fecha_actual"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.utils.obtener_fecha_actual" title="Link to this definition"></a></dt>
 <dd><p>Obtiene la fecha actual del sistema con formato mm-dd-yyyy.</p>
-<p>mm: mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.
-dd: día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.
-yyyy: año, 4 dígitos.
-:return: fecha actual.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mm</strong> – mes, 1 dígito si mes va de 1 a 9. 2 dígitos si mes va de 10 a 12.</p></li>
+<li><p><strong>dd</strong> – día, 1 dígito si día va de 1 a 9. 2 dígitos si día va de 10 a 31.</p></li>
+<li><p><strong>yyyy</strong> – año, 4 dígitos.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>fecha actual.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -125,6 +247,20 @@ yyyy: año, 4 dígitos.
 <dl class="field-list simple">
 <dt class="field-odd">Devuelve<span class="colon">:</span></dt>
 <dd class="field-odd"><p>número de mes actual.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.utils.obtener_ruta">
+<span class="sig-prename descclassname"><span class="pre">utils.utils.</span></span><span class="sig-name descname"><span class="pre">obtener_ruta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/utils.html#obtener_ruta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.utils.obtener_ruta" title="Link to this definition"></a></dt>
+<dd><p>Obtiene la ruta del servidor donde se está ejecutando la aplicación.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>valor</strong> – valor a obtener.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>ruta del servidor.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -143,9 +279,41 @@ yyyy: año, 4 dígitos.
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="utils.utils.validar_regex">
-<span class="sig-prename descclassname"><span class="pre">utils.utils.</span></span><span class="sig-name descname"><span class="pre">validar_regex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nuevo_valor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/utils.html#validar_regex"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.utils.validar_regex" title="Link to this definition"></a></dt>
+<dl class="py class" id="module-utils.validators">
+<dt class="sig sig-object py" id="utils.validators.DataValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.validators.</span></span><span class="sig-name descname"><span class="pre">DataValidator</span></span><a class="reference internal" href="_modules/utils/validators.html#DataValidator"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.validators.DataValidator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.validators.DataValidator.validar_campos_requeridos">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validar_campos_requeridos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">campos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/validators.html#DataValidator.validar_campos_requeridos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.validators.DataValidator.validar_campos_requeridos" title="Link to this definition"></a></dt>
+<dd><p>Valida que los campos requeridos contengan datos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>campos</strong> – diccionario con los campos a validar.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>True si los campos contienen datos, False en caso contrario.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.validators.DataValidator.validar_numero_positivo">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validar_numero_positivo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/validators.html#DataValidator.validar_numero_positivo"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.validators.DataValidator.validar_numero_positivo" title="Link to this definition"></a></dt>
+<dd><p>Valida que el valor sea un número positivo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>valor</strong> – valor a validar.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>True si el valor es un número positivo, False en caso contrario.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.validators.DataValidator.validar_regex">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validar_regex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nuevo_valor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/validators.html#DataValidator.validar_regex"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#utils.validators.DataValidator.validar_regex" title="Link to this definition"></a></dt>
 <dd><p>Valida que los valores ingresados cumplan con los patrones definidos.
 Las validaciones se realizan con expresiones regulares.</p>
 <dl class="field-list simple">
@@ -159,6 +327,8 @@ Las validaciones se realizan con expresiones regulares.</p>
 <dd class="field-even"><p>True si los valores cumplen con los patrones definidos, False en caso contrario.</p>
 </dd>
 </dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

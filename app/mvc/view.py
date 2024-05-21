@@ -6,9 +6,15 @@ view.py
     Se usa también la librería matplotlib para la creación de gráficos.
     El gráfico se muestra en un Frame de la interfaz gráfica, el cual se actualiza con los datos de la base de datos.
     La lista treeview se actualiza con los datos de la base de datos.
+    Se emplea el patrón Observador para la actualización de los temas de la interfaz gráfica.
+    Se aplica la arquitectura Cliente-Servidor para la comunicación entre la aplicación y los posibles procesos de Clientes.
 """
 
 import matplotlib.pyplot as plt
+import subprocess
+import threading
+import platform
+import sys
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -39,9 +45,38 @@ from tkcalendar import DateEntry
 
 from .model import Model
 
-from utils.utils import obtener_fecha_actual
+from utils.observer import Observable, Observer
+from utils.utils import obtener_fecha_actual, obtener_ruta
 
-class View:
+
+t_proceso = ""
+
+class GestorTema(Observable):
+    def __init__(self):
+        """
+        Constructor de la clase GestorTema.
+        Se inicializa el tema por defecto como 'light'.
+        
+        :return: None
+        """
+        
+        super().__init__()
+        self.tema = 'light'  # Tema por defecto
+
+    def setear_tema(self, tema):
+        """
+        Establece el tema de la aplicación.
+        Notifica a los observadores el cambio de tema.
+        
+        :param tema: string
+        :return: None
+        """
+        
+        self.tema = tema
+        self.notify_observers(tema=tema)
+
+
+class View(Observer):
     
     opciones_rubro = ["Mantenimiento", "Impuestos", "Servicios",
                       "Mercado", "Limpieza", "Colegio", "Otros"]
@@ -51,6 +86,7 @@ class View:
                            "Tarjeta de Débito", "Transferencia", "Otro"]
 
     opciones_responsable = ["Gonzalo", "Matías", "Juan"]
+    
     
     def __init__(self, controller):
         """
@@ -87,7 +123,137 @@ class View:
         self.e_vencimiento = None
         self.var_check_vencimiento = None
         self.cb_medio_pago = None
+        self.ruta_server = obtener_ruta(valor="servidor")
+        self.ruta_client = obtener_ruta(valor="cliente")
+        self.header_frame = None
+        self.frame_estado = None
+        self.version_frame = None
+        self.frame_formulario = None
+        self.frame_confirmacion = None
+        
     
+    def setear_gestor_tema(self, gestor_tema):
+        """
+        Setea el gestor de temas a la vista.
+        
+        :param gestor_tema: objeto GestorTema
+        :return: None
+        """
+        
+        self.gestor_tema = gestor_tema
+
+    def toggle_tema(self):
+        """
+        Alterna el tema según el tema actual.
+        El nuevo tema se establece como 'dark' si el tema actual es 'light' o viceversa.
+        
+        :param self: objeto View
+        :return: None
+        """
+                
+        nuevo_tema = 'dark' if self.gestor_tema.tema == 'light' else 'light'
+        self.gestor_tema.setear_tema(nuevo_tema)
+
+
+    def update(self, *args, **kwargs):
+        """
+        Gestiona los camios de tema.
+        Toma los argumentos y palabras clave y los pasa a aplicar_tema().
+        
+        :param args: argumentos
+        :param kwargs: palabras clave
+        :return: None
+        """
+        
+        if 'tema' in kwargs:
+            self.aplicar_tema(kwargs['tema'])
+
+
+    def aplicar_tema(self, tema):
+        """
+        Actualiza los colores basandose en el tema.
+        
+        :param tema: string
+        :return: None
+        """
+        
+        if self.root:  # Corrobora que la ventana root exista.
+            colors = self.obtener_esquema_color(tema)
+            self.actualizar_colores_widgets(colors)
+        else:
+            print("El widget Root no está inicalizado.")
+
+
+    def obtener_esquema_color(self, tema):
+        """
+        Define los esquemas de colores para tema clsro y oscuro.
+        
+        :param tema: string
+        :return: diccionario con los colores
+        """
+        
+        return {
+            'bg': '#FFF' if tema == 'light' else '#333',
+            'fg': '#000' if tema == 'light' else '#FFF'
+        }
+
+
+    def actualizar_colores_widgets(self, colors):
+        """
+        Gestiona la reconfiguracion de las propiedades de los widgets.
+        
+        :param colors: diccionario con los colores
+        :return: None
+        """
+        
+        if self.root and self.root.winfo_exists():
+            self.root.config(background=colors['bg'])  # Actualiza color de fondo de root.
+            
+            # Actualiza el frame header y sus hijos.
+            if hasattr(self, 'header_frame'):
+                self.header_frame.config(bg=colors['bg'])
+                
+                for widget in self.header_frame.winfo_children():
+                    if isinstance(widget, (Label, Button, Entry)):  # Corrobora los widgets estandar.
+                        widget.config(bg=colors['bg'], fg=colors['fg'])
+
+            # Actualiza el label estado.
+            if hasattr(self, 'estado'):
+                self.estado.config(bg=colors['bg'], fg=colors['fg'])
+
+            # Actualiza el label l_total.
+            if hasattr(self, 'l_total'):
+                self.l_total.config(bg=colors['bg'], fg=colors['fg'])
+                
+            if hasattr(self, 'ch_vencimiento'):
+                self.ch_vencimiento.config(bg=colors['bg'], fg=colors['fg'])
+                
+            if hasattr(self, 'l_consulta'):
+                self.l_consulta.config(bg=colors['bg'], fg=colors['fg'])
+
+            # Se aplica el mismo patron al resto de widgets correspondientes.
+            if hasattr(self, 'frame_formulario'):
+                self.frame_formulario.config(bg=colors['bg'])
+                # Actualiza los widgets hijos del frame formulario.
+
+                for widget in self.frame_formulario.winfo_children():
+                    if isinstance(widget, (Label, LabelFrame)):  # Corrobora los widgets estandar.
+                        widget.config(bg=colors['bg'], fg=colors['fg'])
+
+
+    def cierre(self):
+        """
+        Destruye el objeto root al cerrar la aplicacion.
+        Termina la conexion con el servidor.
+        
+        :param self: objeto View
+        :return: None
+        """
+        
+        self.terminar_conexion()
+        self.root.destroy()
+                
+        
     def cargar_total_acumulado(self):
         """
         Carga el total acumulado en el Entry correspondiente.
@@ -101,6 +267,7 @@ class View:
         self.var_total.set(f"$ {total_acumulado:.2f}")
         return total_acumulado
 
+
     def actualizar_label_total_acumulado(self):
         """
         Actualiza el label que indica el mes actual.
@@ -112,6 +279,7 @@ class View:
         
         mes_actual_str = self.controller.obtener_mes_palabra_actual()
         self.l_total.config(text=f"Total {mes_actual_str}:")
+        
     
     def limpiar_formulario(self):
         """
@@ -137,6 +305,7 @@ class View:
         self.e_vencimiento.config(state='normal')
         self.e_vencimiento.set_date(obtener_fecha_actual())
         
+        
     def actualizar_estado_bar(self, mensaje): 
         """
         Actualiza el estado de la barra de estado.
@@ -149,6 +318,7 @@ class View:
         
         self.estado.config(text=mensaje)  # Actualiza texto del label
         self.root.update_idletasks()  # Fuerza la actualización de la UI
+        
     
     def actualizar_estado_fecha(self):
         """
@@ -165,6 +335,7 @@ class View:
         else:
             self.e_vencimiento.config(state='normal')
             
+            
     def cargar_datos_en_treeview(self):
         """
         Carga los datos de la base de datos en el TreeView.
@@ -177,6 +348,7 @@ class View:
         registros = self.controller.get_consulta_bd()
         for row in registros:
             self.tree.insert('', 'end', text=str(row[0]), values=row[1:])
+
 
     # GRÁFICO            
     def crear_grafico(self, frame_grafico):
@@ -229,8 +401,80 @@ class View:
         canvas = FigureCanvasTkAgg(fig, master=frame_grafico)
         canvas.draw()
         canvas.get_tk_widget().pack(fill='both', expand=True)
-    # FIN GRÁFICO
-    # FIN MÉTODOS
+
+
+    # CONEXIONES
+    def iniciar_conexion(self, ):
+        """
+        Inicia el servidor de la aplicación.
+        Se ejecuta en un hilo separado.
+        Previamente se analiza si hay procesos usando el puerto 9999.
+        En caso de haberlos, se matan los procesos.
+        
+        :param self: objeto View
+        :return: None
+        """
+        
+        try:
+            if platform.system() == "Windows":
+                comando = f"netstat -oan | findstr 9999"
+            elif platform.system() == "Linux":
+                comando = f"lsof -i :9999"
+        
+            resultado = subprocess.run(comando, shell=True, capture_output=True, text=True)
+            if resultado.stdout != "":
+                salida = resultado.stdout.split()
+                # Windows: último elemento, Linux: segundo elemento
+                pid = salida[-1] if platform.system() == "Windows" else salida[1]
+                
+                kill_cmd = f"taskkill /PID {pid} /F" if platform.system() == "Windows" else f"kill -9 {pid}"
+                
+                subprocess.run(kill_cmd, shell=True, capture_output=True, text=True)
+
+            
+            if t_proceso != "":
+                t_proceso.kill()
+            
+            threading.Thread(target=self.lanzar_servidor, args=(True,), daemon=True).start()
+        except Exception as e:
+            print(f"Error al intentar matar el proceso: {e}")
+
+
+    def lanzar_servidor(self, var):
+        """
+        Lanza el servidor de la aplicación.
+        Función derivada de iniciar_conexion().
+        
+        :param var: variable booleana.
+        :return: None
+        """
+        
+        if var:
+            try:
+                global t_proceso
+                t_proceso = subprocess.Popen([sys.executable, self.ruta_server])
+                t_proceso.communicate()
+            except Exception as e:
+                print(f"Error al iniciar el servidor: {e}")
+    
+    def terminar_conexion(self, ):
+        """
+        Termina el servidor de la aplicación.
+        Cierra el proceso del servidor.
+        
+        :param self: objeto View
+        :return: None
+        """
+        
+        global t_proceso
+        
+        try:
+            if t_proceso != "":
+                t_proceso.kill()
+                print("[Servidor apagado]")
+        except Exception as e:
+            print(f"Error al intentar matar el proceso: {e}")
+    
 
     # VIEW
     def create_view(self):
@@ -240,12 +484,15 @@ class View:
         La interfaz gráfica se compone de varios frames, labels, entrys, 
         comboboxes, botones y un TreeView.
         La vista puede variar según la resolución de la pantalla y el sistema operativo.
+        Al iniciar la vista, se inicia el servidor y se queda a la espera de conexiones.
+        Al cerrarse la vista, se termina la conexión con el servidor.
         
         :param self: objeto View
         :return: None
         """
         
         self.root = Tk()
+        self.iniciar_conexion()  # Inicia el servidor
         self.root.grid_columnconfigure(0, weight=1)
         self.root.grid_columnconfigure(1, weight=0)
         self.root.grid_columnconfigure(2, weight=1)
@@ -255,39 +502,42 @@ class View:
         self.root.geometry('1600x900')     # Tamaño de la ventana standard notebook 14'
 
         #-----FRAMES-----#
-        header_frame = Frame(self.root)
-        ## header_frame.grid_columnconfigure(1, weight=1)
-        header_frame.grid(row=0, column=0, sticky='ew', padx=0, pady=5)
+        self.header_frame = Frame(self.root, bg='white')
+        self.header_frame.grid(row=0, column=0, sticky='ew', padx=0, pady=5)
         
-        version_frame = Frame(self.root, borderwidth=1, relief="solid")
-        version_frame.grid(row=0, column=1, sticky='ew', padx=20, pady=10)
-        
-        version_frame.grid_columnconfigure(0, weight=1)
-        version_frame.grid_columnconfigure(1, weight=0)
-        version_frame.grid_columnconfigure(2, weight=1)
+        self.version_frame = Frame(self.root, borderwidth=1, relief="solid", bg='white')
+        self.version_frame.grid(row=0, column=1, sticky='ew', padx=20, pady=10)
+        self.version_frame.grid_columnconfigure(0, weight=1)
 
-        frame_estado = Frame(self.root, borderwidth=1, relief="solid")
-        frame_estado.grid(row=0, column=3, sticky='ew', padx=10, pady=0, columnspan=3)
-        # frame_estado.grid(row=0, column=2, padx=0, pady=10, columnspan=3)
+        self.version_frame.grid_columnconfigure(0, weight=1)
+        self.version_frame.grid_columnconfigure(1, weight=0)
+        self.version_frame.grid_columnconfigure(2, weight=1)
+
+        self.frame_estado = Frame(self.root, borderwidth=1, relief="solid", bg='white')
+        self.frame_estado.grid(row=0, column=3, sticky='ew', padx=10, pady=0, columnspan=3)
                
         self.frame_grafico = Frame(self.root, borderwidth=1, relief="solid")
         self.frame_grafico.grid(row=2, column=3, rowspan=9, padx=10, pady=0, sticky='nsew')
 
-        frame_formulario = LabelFrame(self.root, text="Ingreso de datos", padx=10, pady=10)
-        frame_formulario.grid(row=2, column=0, columnspan=2, rowspan=6, padx=10,
+        self.frame_formulario = LabelFrame(self.root, text="", padx=10, pady=10, bg='white', fg='black')
+        self.frame_formulario.grid(row=2, column=0, columnspan=2, rowspan=6, padx=10,
                               pady=10, sticky="we")
 
-        frame_confirmacion = Frame(self.root)
-        frame_confirmacion.grid(row=8, column=0, columnspan=2, padx=10, pady=10)
-        frame_confirmacion.grid_rowconfigure(0, weight=1)
-        frame_confirmacion.grid_columnconfigure(0, weight=1)
-        frame_confirmacion.grid_columnconfigure(1, weight=1)
+        self.frame_confirmacion = Frame(self.root)
+        self.frame_confirmacion.grid(row=8, column=0, columnspan=2, padx=10, pady=10)
+        self.frame_confirmacion.grid_rowconfigure(0, weight=1)
+        self.frame_confirmacion.grid_columnconfigure(0, weight=1)
+        self.frame_confirmacion.grid_columnconfigure(1, weight=1)
         
         frame_treeview = Frame(self.root)
         frame_treeview.grid(row=12, column=0, columnspan=11, padx=10, pady=10,
                             sticky='nsew')
         frame_treeview.grid_rowconfigure(0, weight=1)
-        frame_treeview.grid_columnconfigure(0, weight=1)        
+        frame_treeview.grid_columnconfigure(0, weight=1)
+        
+        frame_theme = Frame(self.root)
+        frame_theme.grid(row=0, column=2, columnspan=1, sticky='n', padx=20, pady=10)
+        frame_theme.grid_columnconfigure(0, weight=1)
         #-----FIN FRAMES-----#
 
         self.var_id = IntVar()
@@ -322,79 +572,77 @@ class View:
         imagen_resize = imagen_original.resize((50, 50))
         foto = ImageTk.PhotoImage(imagen_resize)
 
-        img = Label(header_frame, image=foto)
+        img = Label(self.header_frame, image=foto)
         img.grid(row=0, column=0, padx=10, pady=5, sticky=W)
 
-        title = Label(header_frame, text='GESTOR DE GASTOS PYTHON', font=('Arial', 20, 'bold'))
+        title = Label(self.header_frame, text='GESTOR DE GASTOS PYTHON', font=('Arial', 20, 'bold'), bg='white', fg='black')
         title.grid(row=0, column=1, padx=0, sticky=W)
         #-----FIN HEADER-----#
 
         #-----ESTADO-----#
-        self.estado = Label(frame_estado, text="Bienvenido.", font=('Arial', 10),
-                            width=50, anchor=W)
-        self.estado.grid(row=0, column=3, sticky=W, padx=0, pady=0)
-        # self.estado.grid(row=0, column=0, sticky=W, padx=0, pady=0)
+        self.estado = Label(self.frame_estado, text="Bienvenido.", font=('Arial', 10),
+                            width=58, anchor=W)
+        self.estado.grid(row=0, column=3, sticky=W+E, padx=0, pady=0, columnspan=3)
         #-----FIN ESTADO-----#
         
         # VERSION
-        version = Label(version_frame, text="Version 1.0.0", font=('Arial', 10, 'bold'),
-                        bg='grey', fg='white')
+        version = Label(self.version_frame, text="Version 1.0.0", font=('Arial', 10, 'bold'))
         version.grid(row=0, column=1, sticky='ew')  # Centra el label en el frame
         # END VERSION
 
         #-----FORMULARIO-----#
         we_ancho = 30               # Widget Entry Ancho
         wcb_ancho = we_ancho - 2    # Widget Combobox Ancho
-        self.l_producto = Label(frame_formulario, text='Producto:')
+        self.l_producto = Label(self.frame_formulario, text='Producto:', bg='white', fg='black')
         self.l_producto.grid(row=2, column=0, sticky=W)
-        self.e_producto = Entry(frame_formulario, textvariable=self.var_producto, width=we_ancho)
+        self.e_producto = Entry(self.frame_formulario, textvariable=self.var_producto, width=we_ancho)
         self.e_producto.grid(row=3, column=0, sticky=W, pady=5)
 
-        self.l_cantidad = Label(frame_formulario, text='Cantidad:')
+        self.l_cantidad = Label(self.frame_formulario, text='Cantidad:', bg='white', fg='black')
         self.l_cantidad.grid(row=2, column=1, sticky=W, padx=10)
-        self.e_cantidad = Entry(frame_formulario, textvariable=self.var_cantidad, width=we_ancho)
+        self.e_cantidad = Entry(self.frame_formulario, textvariable=self.var_cantidad, width=we_ancho)
         self.e_cantidad.grid(row=3, column=1, sticky=W, padx=10, pady=5)
         
-        self.l_monto = Label(frame_formulario, text='Monto:')
+        self.l_monto = Label(self.frame_formulario, text='Monto:', bg='white', fg='black')
         self.l_monto.grid(row=2, column=2, sticky=SW)
-        self.e_monto = Entry(frame_formulario, textvariable=self.var_monto, width=we_ancho)
+        self.e_monto = Entry(self.frame_formulario, textvariable=self.var_monto, width=we_ancho)
         self.e_monto.grid(row=3, column=2, sticky=W, pady=5)
         
-        self.l_responsable = Label(frame_formulario, text='Responsable:')
+        self.l_responsable = Label(self.frame_formulario, text='Responsable:', bg='white', fg='black')
         self.l_responsable.grid(row=4, column=0, sticky=SW)
-        self.cb_responsable = ttk.Combobox(frame_formulario, values=self.opciones_responsable,
+        self.cb_responsable = ttk.Combobox(self.frame_formulario, values=self.opciones_responsable,
                                            width=wcb_ancho)
         self.cb_responsable.grid(row=5, column=0, sticky=W, pady=5)
 
-        self.l_rubro = Label(frame_formulario, text='Rubro:')
+        self.l_rubro = Label(self.frame_formulario, text='Rubro:', bg='white', fg='black')
         self.l_rubro.grid(row=4, column=1, sticky=SW, padx=10)
-        self.cb_rubro = ttk.Combobox(frame_formulario, values=self.opciones_rubro, width=wcb_ancho)
+        self.cb_rubro = ttk.Combobox(self.frame_formulario, values=self.opciones_rubro, width=wcb_ancho)
         self.cb_rubro.grid(row=5, column=1, sticky=W, padx=10, pady=5)
 
-        self.l_proveedor = Label(frame_formulario, text='Proveedor:')
+        self.l_proveedor = Label(self.frame_formulario, text='Proveedor:', bg='white', fg='black')
         self.l_proveedor.grid(row=4, column=2, sticky=SW)
-        self.e_proveedor = Entry(frame_formulario, textvariable=self.var_proveedor, width=we_ancho)
+        self.e_proveedor = Entry(self.frame_formulario, textvariable=self.var_proveedor, width=we_ancho)
         self.e_proveedor.grid(row=5, column=2, sticky=W, pady=5)
 
-        self.l_medio_pago = Label(frame_formulario, text='Medio de pago:')
+        self.l_medio_pago = Label(self.frame_formulario, text='Medio de pago:', bg='white', fg='black')
         self.l_medio_pago.grid(row=6, column=0, sticky=SW)
-        self.cb_medio_pago = ttk.Combobox(frame_formulario, values=self.opciones_medio_pago,
+        self.cb_medio_pago = ttk.Combobox(self.frame_formulario, values=self.opciones_medio_pago,
                                     width=wcb_ancho)
         self.cb_medio_pago.grid(row=7, column=0, sticky=W, pady=5)
 
-        self.l_fecha = Label(frame_formulario, text='Fecha:')
+        self.l_fecha = Label(self.frame_formulario, text='Fecha:', bg='white', fg='black')
         self.l_fecha.grid(row=6, column=1, sticky=SW, padx=10)
-        self.cal_fecha = DateEntry(frame_formulario, width=wcb_ancho, background='darkblue',
+        self.cal_fecha = DateEntry(self.frame_formulario, width=wcb_ancho, background='darkblue',
                             foreground='white', borderwidth=2)
         self.cal_fecha.grid(row=7, column=1, sticky=W, padx=10, pady=5)       
 
-        self.l_vencimiento = Label(frame_formulario, text='Vencimiento:')
+        self.l_vencimiento = Label(self.frame_formulario, text='Vencimiento:', bg='white', fg='black')
         self.l_vencimiento.grid(row=6, column=2, sticky=SW)
-        self.e_vencimiento = DateEntry(frame_formulario, width=wcb_ancho, background='darkblue',
+        self.e_vencimiento = DateEntry(self.frame_formulario, width=wcb_ancho, background='darkblue',
                                 foreground='white', borderwidth=2)
         self.e_vencimiento.grid(row=7, column=2, sticky=W, pady=5)
         
-        self.l_consulta = Label(self.root, text='Consulta:')
+        self.l_consulta = Label(self.root, text='Consulta:', bg='white', fg='black')
         self.l_consulta.grid(row=9, column=0, sticky=W, padx=10, pady=5)
         self.e_consulta = Entry (self.root, textvariable=self.var_consulta, width=12)
         self.e_consulta.grid(row=10, column=0, sticky='nsew', padx=10, pady=5)
@@ -407,6 +655,10 @@ class View:
         #-----FIN FORMULARIO-----#
 
         #-----BOTONES-----#
+        self.toggle_tema_button = Button(frame_theme, text="Theme", command=self.toggle_tema,
+                                          bg='grey', fg='white', width=15)
+        self.toggle_tema_button.grid(row=0, column=2, sticky=N)
+        
         self.boton_alta = Button(self.root, text='Alta', command=self.controller.preparar_alta, 
                                  bg='grey',fg='white', width=15)
         self.boton_alta.grid(row=3, column=2, sticky=N)
@@ -423,19 +675,20 @@ class View:
                                    bg='grey',fg='white',width=15)
         self.boton_buscar.grid(row=10, column=1, sticky=W)
 
-        self.boton_confirmar = Button(frame_confirmacion, text='Confirmar', state='disabled', 
+        self.boton_confirmar = Button(self.frame_confirmacion, text='Confirmar', state='disabled', 
                                       command=self.controller.confirmar, width=15, bg='green',
                                       fg='white')
         self.boton_confirmar.grid(row=8, column=0, sticky=E)
         
-        self.boton_cancelar = Button(frame_confirmacion, text='Cancelar', state='disabled', 
+        self.boton_cancelar = Button(self.frame_confirmacion, text='Cancelar', state='disabled', 
                                      command=self.controller.cancelar, width=15, bg='red',
                                      fg='white')
         self.boton_cancelar.grid(row=8, column=1, sticky=W)
 
-        self.ch_vencimiento = Checkbutton(frame_formulario, text='N/A', 
+        self.ch_vencimiento = Checkbutton(self.frame_formulario, text='N/A', 
                                           variable=self.var_check_vencimiento,
-                                          command=self.actualizar_estado_fecha)
+                                          command=self.actualizar_estado_fecha,
+                                          bg='white', fg='black')
         self.ch_vencimiento.grid(row=6, column=2, sticky=SE, padx=5)
 
         self.grafico_temp = Button(self.frame_grafico, bg='white',
@@ -494,4 +747,6 @@ class View:
         self.actualizar_label_total_acumulado()
         self.cargar_total_acumulado()
         self.cargar_datos_en_treeview()
+        self.root.protocol("WM_DELETE_WINDOW", self.cierre)
+        self.gestor_tema.setear_tema('light')
         self.root.mainloop()

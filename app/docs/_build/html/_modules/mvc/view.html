@@ -85,9 +85,15 @@
 <span class="sd">    Se usa también la librería matplotlib para la creación de gráficos.</span>
 <span class="sd">    El gráfico se muestra en un Frame de la interfaz gráfica, el cual se actualiza con los datos de la base de datos.</span>
 <span class="sd">    La lista treeview se actualiza con los datos de la base de datos.</span>
+<span class="sd">    Se emplea el patrón Observador para la actualización de los temas de la interfaz gráfica.</span>
+<span class="sd">    Se aplica la arquitectura Cliente-Servidor para la comunicación entre la aplicación y los posibles procesos de Clientes.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">matplotlib.backends.backend_tkagg</span> <span class="kn">import</span> <span class="n">FigureCanvasTkAgg</span>
 <span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
@@ -118,11 +124,46 @@
 
 <span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="n">Model</span>
 
-<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="kn">import</span> <span class="n">obtener_fecha_actual</span>
+<span class="kn">from</span> <span class="nn">utils.observer</span> <span class="kn">import</span> <span class="n">Observable</span><span class="p">,</span> <span class="n">Observer</span>
+<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="kn">import</span> <span class="n">obtener_fecha_actual</span><span class="p">,</span> <span class="n">obtener_ruta</span>
+
+
+<span class="n">t_proceso</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<div class="viewcode-block" id="GestorTema">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.GestorTema">[documentos]</a>
+<span class="k">class</span> <span class="nc">GestorTema</span><span class="p">(</span><span class="n">Observable</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor de la clase GestorTema.</span>
+<span class="sd">        Se inicializa el tema por defecto como &#39;light&#39;.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tema</span> <span class="o">=</span> <span class="s1">&#39;light&#39;</span>  <span class="c1"># Tema por defecto</span>
+
+<div class="viewcode-block" id="GestorTema.setear_tema">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.GestorTema.setear_tema">[documentos]</a>
+    <span class="k">def</span> <span class="nf">setear_tema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Establece el tema de la aplicación.</span>
+<span class="sd">        Notifica a los observadores el cambio de tema.</span>
+<span class="sd">        </span>
+<span class="sd">        :param tema: string</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">tema</span> <span class="o">=</span> <span class="n">tema</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notify_observers</span><span class="p">(</span><span class="n">tema</span><span class="o">=</span><span class="n">tema</span><span class="p">)</span></div>
+</div>
+
+
 
 <div class="viewcode-block" id="View">
 <a class="viewcode-back" href="../../mvc.html#mvc.view.View">[documentos]</a>
-<span class="k">class</span> <span class="nc">View</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">View</span><span class="p">(</span><span class="n">Observer</span><span class="p">):</span>
     
     <span class="n">opciones_rubro</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Mantenimiento&quot;</span><span class="p">,</span> <span class="s2">&quot;Impuestos&quot;</span><span class="p">,</span> <span class="s2">&quot;Servicios&quot;</span><span class="p">,</span>
                       <span class="s2">&quot;Mercado&quot;</span><span class="p">,</span> <span class="s2">&quot;Limpieza&quot;</span><span class="p">,</span> <span class="s2">&quot;Colegio&quot;</span><span class="p">,</span> <span class="s2">&quot;Otros&quot;</span><span class="p">]</span>
@@ -132,6 +173,7 @@
                            <span class="s2">&quot;Tarjeta de Débito&quot;</span><span class="p">,</span> <span class="s2">&quot;Transferencia&quot;</span><span class="p">,</span> <span class="s2">&quot;Otro&quot;</span><span class="p">]</span>
 
     <span class="n">opciones_responsable</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Gonzalo&quot;</span><span class="p">,</span> <span class="s2">&quot;Matías&quot;</span><span class="p">,</span> <span class="s2">&quot;Juan&quot;</span><span class="p">]</span>
+    
     
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -168,7 +210,158 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">e_vencimiento</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">var_check_vencimiento</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cb_medio_pago</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ruta_server</span> <span class="o">=</span> <span class="n">obtener_ruta</span><span class="p">(</span><span class="n">valor</span><span class="o">=</span><span class="s2">&quot;servidor&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ruta_client</span> <span class="o">=</span> <span class="n">obtener_ruta</span><span class="p">(</span><span class="n">valor</span><span class="o">=</span><span class="s2">&quot;cliente&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_frame</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_estado</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version_frame</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_confirmacion</span> <span class="o">=</span> <span class="kc">None</span>
+        
     
+<div class="viewcode-block" id="View.setear_gestor_tema">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.View.setear_gestor_tema">[documentos]</a>
+    <span class="k">def</span> <span class="nf">setear_gestor_tema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gestor_tema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setea el gestor de temas a la vista.</span>
+<span class="sd">        </span>
+<span class="sd">        :param gestor_tema: objeto GestorTema</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">gestor_tema</span> <span class="o">=</span> <span class="n">gestor_tema</span></div>
+
+
+<div class="viewcode-block" id="View.toggle_tema">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.View.toggle_tema">[documentos]</a>
+    <span class="k">def</span> <span class="nf">toggle_tema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Alterna el tema según el tema actual.</span>
+<span class="sd">        El nuevo tema se establece como &#39;dark&#39; si el tema actual es &#39;light&#39; o viceversa.</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto View</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+                
+        <span class="n">nuevo_tema</span> <span class="o">=</span> <span class="s1">&#39;dark&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gestor_tema</span><span class="o">.</span><span class="n">tema</span> <span class="o">==</span> <span class="s1">&#39;light&#39;</span> <span class="k">else</span> <span class="s1">&#39;light&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gestor_tema</span><span class="o">.</span><span class="n">setear_tema</span><span class="p">(</span><span class="n">nuevo_tema</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="View.update">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.View.update">[documentos]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gestiona los camios de tema.</span>
+<span class="sd">        Toma los argumentos y palabras clave y los pasa a aplicar_tema().</span>
+<span class="sd">        </span>
+<span class="sd">        :param args: argumentos</span>
+<span class="sd">        :param kwargs: palabras clave</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;tema&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aplicar_tema</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;tema&#39;</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="View.aplicar_tema">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.View.aplicar_tema">[documentos]</a>
+    <span class="k">def</span> <span class="nf">aplicar_tema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Actualiza los colores basandose en el tema.</span>
+<span class="sd">        </span>
+<span class="sd">        :param tema: string</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">:</span>  <span class="c1"># Corrobora que la ventana root exista.</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obtener_esquema_color</span><span class="p">(</span><span class="n">tema</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">actualizar_colores_widgets</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;El widget Root no está inicalizado.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="View.obtener_esquema_color">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.View.obtener_esquema_color">[documentos]</a>
+    <span class="k">def</span> <span class="nf">obtener_esquema_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define los esquemas de colores para tema clsro y oscuro.</span>
+<span class="sd">        </span>
+<span class="sd">        :param tema: string</span>
+<span class="sd">        :return: diccionario con los colores</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;bg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFF&#39;</span> <span class="k">if</span> <span class="n">tema</span> <span class="o">==</span> <span class="s1">&#39;light&#39;</span> <span class="k">else</span> <span class="s1">&#39;#333&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;fg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000&#39;</span> <span class="k">if</span> <span class="n">tema</span> <span class="o">==</span> <span class="s1">&#39;light&#39;</span> <span class="k">else</span> <span class="s1">&#39;#FFF&#39;</span>
+        <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="View.actualizar_colores_widgets">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.View.actualizar_colores_widgets">[documentos]</a>
+    <span class="k">def</span> <span class="nf">actualizar_colores_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gestiona la reconfiguracion de las propiedades de los widgets.</span>
+<span class="sd">        </span>
+<span class="sd">        :param colors: diccionario con los colores</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">winfo_exists</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">background</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;bg&#39;</span><span class="p">])</span>  <span class="c1"># Actualiza color de fondo de root.</span>
+            
+            <span class="c1"># Actualiza el frame header y sus hijos.</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;header_frame&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">header_frame</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">bg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;bg&#39;</span><span class="p">])</span>
+                
+                <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_frame</span><span class="o">.</span><span class="n">winfo_children</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="p">(</span><span class="n">Label</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Entry</span><span class="p">)):</span>  <span class="c1"># Corrobora los widgets estandar.</span>
+                        <span class="n">widget</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">bg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;bg&#39;</span><span class="p">],</span> <span class="n">fg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;fg&#39;</span><span class="p">])</span>
+
+            <span class="c1"># Actualiza el label estado.</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;estado&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">estado</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">bg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;bg&#39;</span><span class="p">],</span> <span class="n">fg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;fg&#39;</span><span class="p">])</span>
+
+            <span class="c1"># Actualiza el label l_total.</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;l_total&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">l_total</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">bg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;bg&#39;</span><span class="p">],</span> <span class="n">fg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;fg&#39;</span><span class="p">])</span>
+                
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;ch_vencimiento&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ch_vencimiento</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">bg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;bg&#39;</span><span class="p">],</span> <span class="n">fg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;fg&#39;</span><span class="p">])</span>
+                
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;l_consulta&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">l_consulta</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">bg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;bg&#39;</span><span class="p">],</span> <span class="n">fg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;fg&#39;</span><span class="p">])</span>
+
+            <span class="c1"># Se aplica el mismo patron al resto de widgets correspondientes.</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;frame_formulario&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">bg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;bg&#39;</span><span class="p">])</span>
+                <span class="c1"># Actualiza los widgets hijos del frame formulario.</span>
+
+                <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="o">.</span><span class="n">winfo_children</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="p">(</span><span class="n">Label</span><span class="p">,</span> <span class="n">LabelFrame</span><span class="p">)):</span>  <span class="c1"># Corrobora los widgets estandar.</span>
+                        <span class="n">widget</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">bg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;bg&#39;</span><span class="p">],</span> <span class="n">fg</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;fg&#39;</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="View.cierre">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.View.cierre">[documentos]</a>
+    <span class="k">def</span> <span class="nf">cierre</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Destruye el objeto root al cerrar la aplicacion.</span>
+<span class="sd">        Termina la conexion con el servidor.</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto View</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminar_conexion</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+
+                
+        
 <div class="viewcode-block" id="View.cargar_total_acumulado">
 <a class="viewcode-back" href="../../mvc.html#mvc.view.View.cargar_total_acumulado">[documentos]</a>
     <span class="k">def</span> <span class="nf">cargar_total_acumulado</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -185,6 +378,7 @@
         <span class="k">return</span> <span class="n">total_acumulado</span></div>
 
 
+
 <div class="viewcode-block" id="View.actualizar_label_total_acumulado">
 <a class="viewcode-back" href="../../mvc.html#mvc.view.View.actualizar_label_total_acumulado">[documentos]</a>
     <span class="k">def</span> <span class="nf">actualizar_label_total_acumulado</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -199,6 +393,7 @@
         <span class="n">mes_actual_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">obtener_mes_palabra_actual</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_total</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Total </span><span class="si">{</span><span class="n">mes_actual_str</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span></div>
 
+        
     
 <div class="viewcode-block" id="View.limpiar_formulario">
 <a class="viewcode-back" href="../../mvc.html#mvc.view.View.limpiar_formulario">[documentos]</a>
@@ -227,6 +422,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">e_vencimiento</span><span class="o">.</span><span class="n">set_date</span><span class="p">(</span><span class="n">obtener_fecha_actual</span><span class="p">())</span></div>
 
         
+        
 <div class="viewcode-block" id="View.actualizar_estado_bar">
 <a class="viewcode-back" href="../../mvc.html#mvc.view.View.actualizar_estado_bar">[documentos]</a>
     <span class="k">def</span> <span class="nf">actualizar_estado_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mensaje</span><span class="p">):</span> 
@@ -242,6 +438,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">estado</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">mensaje</span><span class="p">)</span>  <span class="c1"># Actualiza texto del label</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">update_idletasks</span><span class="p">()</span>  <span class="c1"># Fuerza la actualización de la UI</span></div>
 
+        
     
 <div class="viewcode-block" id="View.actualizar_estado_fecha">
 <a class="viewcode-back" href="../../mvc.html#mvc.view.View.actualizar_estado_fecha">[documentos]</a>
@@ -261,6 +458,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">e_vencimiento</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span></div>
 
             
+            
 <div class="viewcode-block" id="View.cargar_datos_en_treeview">
 <a class="viewcode-back" href="../../mvc.html#mvc.view.View.cargar_datos_en_treeview">[documentos]</a>
     <span class="k">def</span> <span class="nf">cargar_datos_en_treeview</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -275,6 +473,7 @@
         <span class="n">registros</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_consulta_bd</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">registros</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">values</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span></div>
+
 
 
     <span class="c1"># GRÁFICO            </span>
@@ -331,8 +530,89 @@
         <span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
         <span class="n">canvas</span><span class="o">.</span><span class="n">get_tk_widget</span><span class="p">()</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-    <span class="c1"># FIN GRÁFICO</span>
-    <span class="c1"># FIN MÉTODOS</span>
+
+
+    <span class="c1"># CONEXIONES</span>
+<div class="viewcode-block" id="View.iniciar_conexion">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.View.iniciar_conexion">[documentos]</a>
+    <span class="k">def</span> <span class="nf">iniciar_conexion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inicia el servidor de la aplicación.</span>
+<span class="sd">        Se ejecuta en un hilo separado.</span>
+<span class="sd">        Previamente se analiza si hay procesos usando el puerto 9999.</span>
+<span class="sd">        En caso de haberlos, se matan los procesos.</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto View</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span><span class="p">:</span>
+                <span class="n">comando</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;netstat -oan | findstr 9999&quot;</span>
+            <span class="k">elif</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Linux&quot;</span><span class="p">:</span>
+                <span class="n">comando</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;lsof -i :9999&quot;</span>
+        
+            <span class="n">resultado</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">comando</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resultado</span><span class="o">.</span><span class="n">stdout</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">salida</span> <span class="o">=</span> <span class="n">resultado</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="c1"># Windows: último elemento, Linux: segundo elemento</span>
+                <span class="n">pid</span> <span class="o">=</span> <span class="n">salida</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span> <span class="k">else</span> <span class="n">salida</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                
+                <span class="n">kill_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;taskkill /PID </span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2"> /F&quot;</span> <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;kill -9 </span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span>
+                
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">kill_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            
+            <span class="k">if</span> <span class="n">t_proceso</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">t_proceso</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            
+            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lanzar_servidor</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error al intentar matar el proceso: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="View.lanzar_servidor">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.View.lanzar_servidor">[documentos]</a>
+    <span class="k">def</span> <span class="nf">lanzar_servidor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lanza el servidor de la aplicación.</span>
+<span class="sd">        Función derivada de iniciar_conexion().</span>
+<span class="sd">        </span>
+<span class="sd">        :param var: variable booleana.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="n">var</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">global</span> <span class="n">t_proceso</span>
+                <span class="n">t_proceso</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ruta_server</span><span class="p">])</span>
+                <span class="n">t_proceso</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error al iniciar el servidor: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="View.terminar_conexion">
+<a class="viewcode-back" href="../../mvc.html#mvc.view.View.terminar_conexion">[documentos]</a>
+    <span class="k">def</span> <span class="nf">terminar_conexion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Termina el servidor de la aplicación.</span>
+<span class="sd">        Cierra el proceso del servidor.</span>
+<span class="sd">        </span>
+<span class="sd">        :param self: objeto View</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">global</span> <span class="n">t_proceso</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">t_proceso</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">t_proceso</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[Servidor apagado]&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error al intentar matar el proceso: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    
 
     <span class="c1"># VIEW</span>
 <div class="viewcode-block" id="View.create_view">
@@ -344,12 +624,15 @@
 <span class="sd">        La interfaz gráfica se compone de varios frames, labels, entrys, </span>
 <span class="sd">        comboboxes, botones y un TreeView.</span>
 <span class="sd">        La vista puede variar según la resolución de la pantalla y el sistema operativo.</span>
+<span class="sd">        Al iniciar la vista, se inicia el servidor y se queda a la espera de conexiones.</span>
+<span class="sd">        Al cerrarse la vista, se termina la conexión con el servidor.</span>
 <span class="sd">        </span>
 <span class="sd">        :param self: objeto View</span>
 <span class="sd">        :return: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Tk</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iniciar_conexion</span><span class="p">()</span>  <span class="c1"># Inicia el servidor</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -359,39 +642,42 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">geometry</span><span class="p">(</span><span class="s1">&#39;1600x900&#39;</span><span class="p">)</span>     <span class="c1"># Tamaño de la ventana standard notebook 14&#39;</span>
 
         <span class="c1">#-----FRAMES-----#</span>
-        <span class="n">header_frame</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
-        <span class="c1">## header_frame.grid_columnconfigure(1, weight=1)</span>
-        <span class="n">header_frame</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;ew&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_frame</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_frame</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;ew&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
         
-        <span class="n">version_frame</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">borderwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">relief</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">)</span>
-        <span class="n">version_frame</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;ew&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        
-        <span class="n">version_frame</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">version_frame</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">version_frame</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version_frame</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">borderwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">relief</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version_frame</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;ew&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version_frame</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-        <span class="n">frame_estado</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">borderwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">relief</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">)</span>
-        <span class="n">frame_estado</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;ew&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="c1"># frame_estado.grid(row=0, column=2, padx=0, pady=10, columnspan=3)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version_frame</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version_frame</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version_frame</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_estado</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">borderwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">relief</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_estado</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;ew&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
                
         <span class="bp">self</span><span class="o">.</span><span class="n">frame_grafico</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">borderwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">relief</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frame_grafico</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rowspan</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;nsew&#39;</span><span class="p">)</span>
 
-        <span class="n">frame_formulario</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Ingreso de datos&quot;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="n">frame_formulario</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">rowspan</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span> <span class="o">=</span> <span class="n">LabelFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">rowspan</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
                               <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;we&quot;</span><span class="p">)</span>
 
-        <span class="n">frame_confirmacion</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
-        <span class="n">frame_confirmacion</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="n">frame_confirmacion</span><span class="o">.</span><span class="n">grid_rowconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">frame_confirmacion</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">frame_confirmacion</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_confirmacion</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_confirmacion</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_confirmacion</span><span class="o">.</span><span class="n">grid_rowconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_confirmacion</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_confirmacion</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         
         <span class="n">frame_treeview</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
         <span class="n">frame_treeview</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
                             <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;nsew&#39;</span><span class="p">)</span>
         <span class="n">frame_treeview</span><span class="o">.</span><span class="n">grid_rowconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">frame_treeview</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>        
+        <span class="n">frame_treeview</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="n">frame_theme</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="n">frame_theme</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">frame_theme</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="c1">#-----FIN FRAMES-----#</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">var_id</span> <span class="o">=</span> <span class="n">IntVar</span><span class="p">()</span>
@@ -426,79 +712,77 @@
         <span class="n">imagen_resize</span> <span class="o">=</span> <span class="n">imagen_original</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
         <span class="n">foto</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">imagen_resize</span><span class="p">)</span>
 
-        <span class="n">img</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">header_frame</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">foto</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header_frame</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">foto</span><span class="p">)</span>
         <span class="n">img</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
 
-        <span class="n">title</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">header_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;GESTOR DE GASTOS PYTHON&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Arial&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;bold&#39;</span><span class="p">))</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;GESTOR DE GASTOS PYTHON&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Arial&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;bold&#39;</span><span class="p">),</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="n">title</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
         <span class="c1">#-----FIN HEADER-----#</span>
 
         <span class="c1">#-----ESTADO-----#</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">frame_estado</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Bienvenido.&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Arial&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-                            <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">estado</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="c1"># self.estado.grid(row=0, column=0, sticky=W, padx=0, pady=0)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_estado</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Bienvenido.&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Arial&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                            <span class="n">width</span><span class="o">=</span><span class="mi">58</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estado</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="o">+</span><span class="n">E</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
         <span class="c1">#-----FIN ESTADO-----#</span>
         
         <span class="c1"># VERSION</span>
-        <span class="n">version</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">version_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Version 1.0.0&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Arial&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;bold&#39;</span><span class="p">),</span>
-                        <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Version 1.0.0&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Arial&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;bold&#39;</span><span class="p">))</span>
         <span class="n">version</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;ew&#39;</span><span class="p">)</span>  <span class="c1"># Centra el label en el frame</span>
         <span class="c1"># END VERSION</span>
 
         <span class="c1">#-----FORMULARIO-----#</span>
         <span class="n">we_ancho</span> <span class="o">=</span> <span class="mi">30</span>               <span class="c1"># Widget Entry Ancho</span>
         <span class="n">wcb_ancho</span> <span class="o">=</span> <span class="n">we_ancho</span> <span class="o">-</span> <span class="mi">2</span>    <span class="c1"># Widget Combobox Ancho</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">l_producto</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Producto:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_producto</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Producto:&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_producto</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">e_producto</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_producto</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">we_ancho</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_producto</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_producto</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">we_ancho</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">e_producto</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">l_cantidad</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Cantidad:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_cantidad</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Cantidad:&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_cantidad</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">e_cantidad</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_cantidad</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">we_ancho</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_cantidad</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_cantidad</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">we_ancho</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">e_cantidad</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">l_monto</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Monto:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_monto</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Monto:&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_monto</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">SW</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">e_monto</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_monto</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">we_ancho</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_monto</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_monto</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">we_ancho</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">e_monto</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">l_responsable</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Responsable:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_responsable</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Responsable:&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_responsable</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">SW</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cb_responsable</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">opciones_responsable</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb_responsable</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">opciones_responsable</span><span class="p">,</span>
                                            <span class="n">width</span><span class="o">=</span><span class="n">wcb_ancho</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cb_responsable</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">l_rubro</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Rubro:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_rubro</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Rubro:&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_rubro</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">SW</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cb_rubro</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">opciones_rubro</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">wcb_ancho</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb_rubro</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">opciones_rubro</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">wcb_ancho</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cb_rubro</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">l_proveedor</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Proveedor:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_proveedor</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Proveedor:&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_proveedor</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">SW</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">e_proveedor</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_proveedor</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">we_ancho</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_proveedor</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_proveedor</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">we_ancho</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">e_proveedor</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">l_medio_pago</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Medio de pago:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_medio_pago</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Medio de pago:&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_medio_pago</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">SW</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cb_medio_pago</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">opciones_medio_pago</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb_medio_pago</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Combobox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">opciones_medio_pago</span><span class="p">,</span>
                                     <span class="n">width</span><span class="o">=</span><span class="n">wcb_ancho</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cb_medio_pago</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">l_fecha</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Fecha:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_fecha</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Fecha:&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_fecha</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">SW</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cal_fecha</span> <span class="o">=</span> <span class="n">DateEntry</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">wcb_ancho</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s1">&#39;darkblue&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cal_fecha</span> <span class="o">=</span> <span class="n">DateEntry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">wcb_ancho</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s1">&#39;darkblue&#39;</span><span class="p">,</span>
                             <span class="n">foreground</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">borderwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cal_fecha</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>       
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">l_vencimiento</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Vencimiento:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_vencimiento</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Vencimiento:&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_vencimiento</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">SW</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">e_vencimiento</span> <span class="o">=</span> <span class="n">DateEntry</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">wcb_ancho</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s1">&#39;darkblue&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_vencimiento</span> <span class="o">=</span> <span class="n">DateEntry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">wcb_ancho</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s1">&#39;darkblue&#39;</span><span class="p">,</span>
                                 <span class="n">foreground</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">borderwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">e_vencimiento</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">l_consulta</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Consulta:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_consulta</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Consulta:&#39;</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_consulta</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">e_consulta</span> <span class="o">=</span> <span class="n">Entry</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_consulta</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">e_consulta</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s1">&#39;nsew&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -511,6 +795,10 @@
         <span class="c1">#-----FIN FORMULARIO-----#</span>
 
         <span class="c1">#-----BOTONES-----#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_tema_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">frame_theme</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Theme&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_tema</span><span class="p">,</span>
+                                          <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_tema_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+        
         <span class="bp">self</span><span class="o">.</span><span class="n">boton_alta</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Alta&#39;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">preparar_alta</span><span class="p">,</span> 
                                  <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span><span class="n">fg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">boton_alta</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
@@ -527,19 +815,20 @@
                                    <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span><span class="n">fg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">boton_buscar</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">boton_confirmar</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">frame_confirmacion</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Confirmar&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">boton_confirmar</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_confirmacion</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Confirmar&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> 
                                       <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">confirmar</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span>
                                       <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">boton_confirmar</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">E</span><span class="p">)</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">boton_cancelar</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">frame_confirmacion</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Cancelar&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">boton_cancelar</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_confirmacion</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Cancelar&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> 
                                      <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">cancelar</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span>
                                      <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">boton_cancelar</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">ch_vencimiento</span> <span class="o">=</span> <span class="n">Checkbutton</span><span class="p">(</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;N/A&#39;</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">ch_vencimiento</span> <span class="o">=</span> <span class="n">Checkbutton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_formulario</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;N/A&#39;</span><span class="p">,</span> 
                                           <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_check_vencimiento</span><span class="p">,</span>
-                                          <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actualizar_estado_fecha</span><span class="p">)</span>
+                                          <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">actualizar_estado_fecha</span><span class="p">,</span>
+                                          <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">fg</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ch_vencimiento</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">SE</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">grafico_temp</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_grafico</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span>
@@ -598,6 +887,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">actualizar_label_total_acumulado</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cargar_total_acumulado</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cargar_datos_en_treeview</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">protocol</span><span class="p">(</span><span class="s2">&quot;WM_DELETE_WINDOW&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cierre</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gestor_tema</span><span class="o">.</span><span class="n">setear_tema</span><span class="p">(</span><span class="s1">&#39;light&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span></div>
 </div>
 

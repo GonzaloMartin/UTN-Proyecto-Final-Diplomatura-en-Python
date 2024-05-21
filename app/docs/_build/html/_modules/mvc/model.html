@@ -82,93 +82,50 @@
 <span class="sd">    Este módulo contiene la clase Model que se encarga de la lógica de la aplicación.</span>
 <span class="sd">    Tiene funciones inherentes a la base de datos y a la manipulación de los datos.</span>
 <span class="sd">    Se vincula con el controlador y la vista para realizar las operaciones necesarias.</span>
+<span class="sd">    Se usa el decorador @logs para registrar las operaciones realizadas en la base de datos.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">sqlite3</span>
-<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="kn">import</span> <span class="n">obtener_mes_actual</span>
+<span class="kn">from</span> <span class="nn">utils.utils</span> <span class="kn">import</span> <span class="n">logs</span><span class="p">,</span> <span class="n">obtener_mes_actual</span>
+<span class="kn">from</span> <span class="nn">.database</span> <span class="kn">import</span> <span class="n">conectar_base_de_datos</span><span class="p">,</span> <span class="n">desconectar_base_de_datos</span><span class="p">,</span> <span class="n">crear_tabla</span>
+
 
 <div class="viewcode-block" id="Model">
 <a class="viewcode-back" href="../../mvc.html#mvc.model.Model">[documentos]</a>
 <span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
-        
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Constructor de la clase Model.</span>
-<span class="sd">        </span>
-<span class="sd">        :param self: objeto Model</span>
-<span class="sd">        :return: None</span>
+<span class="sd">        Initializes the Model instance by establishing a database connection.</span>
+<span class="sd">        The connection is stored as an instance attribute for use in other methods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conectar_base_de_datos</span><span class="p">()</span>
-
-    <span class="c1">#-----BASE DE DATOS-----#</span>
-<div class="viewcode-block" id="Model.conectar_base_de_datos">
-<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.conectar_base_de_datos">[documentos]</a>
-    <span class="k">def</span> <span class="nf">conectar_base_de_datos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Conecta a la base de datos y devuelve el objeto conexión</span>
-<span class="sd">        La base de datos se encuentra en la carpeta database.</span>
-<span class="sd">        </span>
-<span class="sd">        :param self: objeto Model</span>
-<span class="sd">        :return: objeto conexión</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">conectar_base_de_datos</span><span class="p">()</span>
         
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;database/registros.db&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">conn</span>
-        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
 
-
-<div class="viewcode-block" id="Model.desconectar_base_de_datos">
-<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.desconectar_base_de_datos">[documentos]</a>
-    <span class="k">def</span> <span class="nf">desconectar_base_de_datos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Model.initialize_database">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.initialize_database">[documentos]</a>
+    <span class="k">def</span> <span class="nf">initialize_database</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Desconecta de la base de datos.</span>
-<span class="sd">        </span>
-<span class="sd">        :param self: objeto Model</span>
-<span class="sd">        :return: None</span>
+<span class="sd">        Initializes the database by creating necessary tables if they do not exist.</span>
+<span class="sd">        This method leverages the &#39;crear_tabla&#39; function, using the established</span>
+<span class="sd">        database connection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+        <span class="n">crear_tabla</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="Model.crear_tabla">
-<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.crear_tabla">[documentos]</a>
-    <span class="k">def</span> <span class="nf">crear_tabla</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Crea la tabla si no existe en la base de datos.</span>
-<span class="sd">        La base de datos es registros.db</span>
-<span class="sd">        </span>
-<span class="sd">        :param self: objeto Model</span>
-<span class="sd">        :return: None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS gastos (</span>
-<span class="s2">                    id INTEGER PRIMARY KEY AUTOINCREMENT,</span>
-<span class="s2">                    producto_servicio TEXT,</span>
-<span class="s2">                    cantidad INTEGER,</span>
-<span class="s2">                    monto FLOAT,</span>
-<span class="s2">                    responsable TEXT,</span>
-<span class="s2">                    subtotal FLOAT,</span>
-<span class="s2">                    rubro TEXT,</span>
-<span class="s2">                    proveedor TEXT,</span>
-<span class="s2">                    medio_de_pago TEXT,</span>
-<span class="s2">                    fecha DATE,</span>
-<span class="s2">                    vencimiento DATE</span>
-<span class="s2">                    );&quot;&quot;&quot;</span>
-            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.close_connection">
+<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.close_connection">[documentos]</a>
+    <span class="k">def</span> <span class="nf">close_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Closes the database connection cleanly. This method should be called</span>
+<span class="sd">        when the database operations are complete to ensure all resources are</span>
+<span class="sd">        properly freed and the connection is closed safely.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">desconectar_base_de_datos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Model.alta_bd">
-<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.alta_bd">[documentos]</a>
+
+    <span class="nd">@logs</span>
     <span class="k">def</span> <span class="nf">alta_bd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Inserta un nuevo registro en la base de datos</span>
@@ -211,15 +168,14 @@
             <span class="k">return</span> <span class="n">ultimo_id</span>
         <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+            <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="Model.baja_bd">
-<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.baja_bd">[documentos]</a>
+    <span class="nd">@logs</span>
     <span class="k">def</span> <span class="nf">baja_bd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_registro</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Elimina un registro de la base de datos.</span>
-<span class="sd">        La base de datos es registros.db</span>
+<span class="sd">        La base de datos es records.db</span>
 <span class="sd">        </span>
 <span class="sd">        :param self: objeto Model</span>
 <span class="sd">        :param id_registro: id del registro a eliminar</span>
@@ -232,11 +188,10 @@
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">id_registro</span><span class="p">,))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Model.modificacion_bd">
-<a class="viewcode-back" href="../../mvc.html#mvc.model.Model.modificacion_bd">[documentos]</a>
+    <span class="nd">@logs</span>
     <span class="k">def</span> <span class="nf">modificacion_bd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_registro</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Modifica un registro de la base de datos con los valores pasados por parámetro.</span>
@@ -278,9 +233,9 @@
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
-        
+
 <div class="viewcode-block" id="Model.consulta_bd">
 <a class="viewcode-back" href="../../mvc.html#mvc.model.Model.consulta_bd">[documentos]</a>
     <span class="k">def</span> <span class="nf">consulta_bd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -310,8 +265,7 @@
             <span class="k">return</span> <span class="p">[]</span></div>
 
 
-    
-    <span class="c1">#-----FIN BASE DE DATOS-----#</span>
+
 <div class="viewcode-block" id="Model.obtener_datos_grafico">
 <a class="viewcode-back" href="../../mvc.html#mvc.model.Model.obtener_datos_grafico">[documentos]</a>
     <span class="k">def</span> <span class="nf">obtener_datos_grafico</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obtener_mes_actual</span><span class="p">):</span>

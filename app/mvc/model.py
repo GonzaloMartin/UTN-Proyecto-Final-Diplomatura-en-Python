@@ -3,80 +3,42 @@ model.py
     Este módulo contiene la clase Model que se encarga de la lógica de la aplicación.
     Tiene funciones inherentes a la base de datos y a la manipulación de los datos.
     Se vincula con el controlador y la vista para realizar las operaciones necesarias.
+    Se usa el decorador @logs para registrar las operaciones realizadas en la base de datos.
 """
 
 import sqlite3
-from utils.utils import obtener_mes_actual
+from utils.utils import logs, obtener_mes_actual
+from .database import conectar_base_de_datos, desconectar_base_de_datos, crear_tabla
+
 
 class Model:
-        
     def __init__(self):
         """
-        Constructor de la clase Model.
-        
-        :param self: objeto Model
-        :return: None
+        Initializes the Model instance by establishing a database connection.
+        The connection is stored as an instance attribute for use in other methods.
         """
-        self.conn = self.conectar_base_de_datos()
+        self.conn = conectar_base_de_datos()
+        
 
-    #-----BASE DE DATOS-----#
-    def conectar_base_de_datos(self):
+    def initialize_database(self):
         """
-        Conecta a la base de datos y devuelve el objeto conexión
-        La base de datos se encuentra en la carpeta database.
-        
-        :param self: objeto Model
-        :return: objeto conexión
+        Initializes the database by creating necessary tables if they do not exist.
+        This method leverages the 'crear_tabla' function, using the established
+        database connection.
         """
+        crear_tabla(self.conn)
         
-        try:
-            conn = sqlite3.connect('database/registros.db')
-            return conn
-        except sqlite3.Error as e:
-            print(e)
-            return None
 
-    def desconectar_base_de_datos(self):
+    def close_connection(self):
         """
-        Desconecta de la base de datos.
-        
-        :param self: objeto Model
-        :return: None
+        Closes the database connection cleanly. This method should be called
+        when the database operations are complete to ensure all resources are
+        properly freed and the connection is closed safely.
         """
-        try:
-            self.conn.close()
-        except sqlite3.Error as e:
-            print(e)
+        desconectar_base_de_datos(self.conn)
 
-    def crear_tabla(self):
-        """
-        Crea la tabla si no existe en la base de datos.
-        La base de datos es registros.db
-        
-        :param self: objeto Model
-        :return: None
-        """
-        
-        try:
-            cursor = self.conn.cursor()
-            query = """CREATE TABLE IF NOT EXISTS gastos (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    producto_servicio TEXT,
-                    cantidad INTEGER,
-                    monto FLOAT,
-                    responsable TEXT,
-                    subtotal FLOAT,
-                    rubro TEXT,
-                    proveedor TEXT,
-                    medio_de_pago TEXT,
-                    fecha DATE,
-                    vencimiento DATE
-                    );"""
-            cursor.execute(query)
-            self.conn.commit()
-        except sqlite3.Error as e:
-            print(e)
 
+    @logs
     def alta_bd(self, valores):
         """
         Inserta un nuevo registro en la base de datos
@@ -121,10 +83,12 @@ class Model:
             print(e)
             return None
 
+
+    @logs
     def baja_bd(self, id_registro):
         """
         Elimina un registro de la base de datos.
-        La base de datos es registros.db
+        La base de datos es records.db
         
         :param self: objeto Model
         :param id_registro: id del registro a eliminar
@@ -139,6 +103,8 @@ class Model:
         except sqlite3.Error as e:
             print(e)
 
+
+    @logs
     def modificacion_bd(self, id_registro, valores):
         """
         Modifica un registro de la base de datos con los valores pasados por parámetro.
@@ -181,7 +147,8 @@ class Model:
             self.conn.commit()
         except sqlite3.Error as e:
             print(e)
-        
+
+
     def consulta_bd(self, mes=None):
         """
         Consulta todos los registros de la base de datos y devuelve una lista de tuplas
@@ -208,8 +175,7 @@ class Model:
             print(e)
             return []
 
-    
-    #-----FIN BASE DE DATOS-----#
+
     def obtener_datos_grafico(self, obtener_mes_actual):
         """
         Obtiene los datos para el gráfico de barras.
