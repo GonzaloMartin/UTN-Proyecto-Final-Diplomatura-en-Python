@@ -8,14 +8,16 @@
 
 import os
 import sys
+from datetime import datetime
 sys.path.insert(0, os.path.abspath('../'))
+anio = datetime.now().year
 
 project = 'Gestor de Gastos Python'
-copyright = '2024, Gonzalo Montalvo - Matias Falconaro'
+copyright = f'{anio}, Gonzalo Montalvo - Matias Falconaro'
 author = 'Gonzalo Montalvo - Matias Falconaro'
 
-version = '1.0.0'
-release = '1.0.0'
+version = '2.0.0'
+release = '2.0.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
